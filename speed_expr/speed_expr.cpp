@@ -1,8 +1,8 @@
 #include <string>
 #include <iostream>
 
-#include "util/configuration.h"
-#include "util/insertion_mgr.h"
+#include "../util/configuration.h"
+#include "../util/insertion_mgr.h"
 
 int main(int argc, char** argv) {
   if (argc != 3) {
@@ -18,5 +18,7 @@ int main(int argc, char** argv) {
   // so an empty sys_config will suffice
   sys_config conf;
 
+  backup_configuration();
   perform_insertions(input, output, conf);
+  restore_configuration();
 }

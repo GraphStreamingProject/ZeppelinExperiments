@@ -16,7 +16,7 @@ void write_configuration(struct sys_config config) {
       if (line.substr(0, line.find('=')) == "gutter_factor" && config.gutter_factor != 0)
         conf << "gutter_factor=" << config.gutter_factor << std::endl;
       else
-        conf << line;
+        conf << line << std::endl;
     }
   } else {
     printf("ERROR: backup_configuration() must be called before write_configuration.\n");
@@ -36,7 +36,7 @@ void write_configuration(struct sys_config config) {
       else if (line.substr(0, line.find('=')) == "group_size" && config.group_size != 0)
         conf << "group_size=" << config.group_size << std::endl;
       else
-        conf << line;
+        conf << line << std::endl;
     }
   } else {
     printf("ERROR: backup_configuration() must be called before write_configuration.\n");

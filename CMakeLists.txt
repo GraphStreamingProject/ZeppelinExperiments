@@ -97,7 +97,7 @@ ExternalProject_Add(
 
   PREFIX          GraphStreamingCC
   GIT_REPOSITORY  "https://github.com/Abi1024/StreamingGraphAlgo"
-  GIT_TAG         "external_project"
+  GIT_TAG         "buffering_rename_updates"
 
   UPDATE_DISCONNECTED false
   BUILD_ALWAYS    OFF

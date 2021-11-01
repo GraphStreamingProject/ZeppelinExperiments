@@ -22,6 +22,10 @@
 void track_insertions(std::string output_file, uint64_t total, Graph *g, std::chrono::steady_clock::time_point start_time) {
   total = total * 2;                // we insert 2 edge updates per edge
   ofstream out{output_file}; // open the outfile
+  if (!out.is_open()) {
+    printf("ERROR:Could not open output file!\n");
+    exit(EXIT_FAILURE);
+  }
 
   printf("Insertions\n");
   printf("Progress:                    | 0%%\r"); fflush(stdout);
@@ -98,7 +102,7 @@ void perform_insertions(std::string binary_input, std::string output_file, sys_c
 
   ofstream out{output_file,  std::ofstream::out | std::ofstream::app}; // open the outfile
   std::cout << "Number of connected components is " << num_CC << std::endl;
-  std::cout << "Writing runtime stats to runtime_stats.txt\n";
+  std::cout << "Writing runtime stats to " << output_file << std::endl;
 
   std::chrono::duration<double> runtime  = g.end_time - start;
 

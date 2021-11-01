@@ -11,24 +11,17 @@ for input in "$@"
 do
 	echo "Processing input file: $input"
 
-	mkdir results/test_$input
+	mkdir speed_results/test_`basename $input`
 
-	# run speed_experiment as seperate process
-	cgexec -g memory:16_GB ./speed_experiment $input results/test_$(input)/runtime_stats &
+	# run speed_experiment as seperate process with memory limitation
+	cgexec -g memory:16_GB ./speed_experiment $input speed_results/test_`basename $input`/runtime_stats &
 	pid=$!
 
 	#setup top logging
-	top -b -Em -p $pid > results/test_$input/memory_stats
+	top -b -Em -p $pid > speed_results/test_`basename $input`/memory_stats &
 	top_pid=$!
 
 	# wait for speed experiment to finish then kill top
 	wait $pid
 	kill -9 $top_pid
-
-#pid=$!
-#top -b -Em -p $pid > aspen_experiment_results/erdos_17_16GB_mem &
-#top_pid=$!
-#wait $pid
-#kill -9 $top_pid
-
 done
