@@ -121,9 +121,9 @@ link_directories(${CMAKE_CURRENT_BINARY_DIR}/GraphStreamingCC/src/GraphStreaming
 
 # Test the speed and memory consumption of the algorithm
 add_executable(speed_experiment
-  experiment/util/configuration.cpp
-  experiment/util/insertion_mgr.cpp
-  experiment/speed_expr.cpp)
+  util/configuration.cpp
+  util/insertion_mgr.cpp
+  speed_expr/speed_expr.cpp)
 add_dependencies(speed_experiment GraphStreamingCC)
 target_link_libraries(speed_experiment PRIVATE libGraphStreamingCC.a xxHash::xxhash GTest::gtest libGutterTree.a)
 #optimize unless DEBUG
