@@ -24,7 +24,7 @@ void test_continuous(std::string input_file, unsigned samples) {
     std::cout << "Starting updates" << std::endl;
     for (unsigned long j = 0; j < updates_per_sample; j++) {
       GraphUpdate upd = stream.get_edge();
-      uint64_t edge_uid = get_uid(upd.first.first, upd.first.second);
+      uint64_t edge_uid = MatGraphVerifier::get_uid(upd.first.first, upd.first.second);
       g.update(upd);
       adj[edge_uid] = !adj[edge_uid];
     }
@@ -47,7 +47,7 @@ void test_continuous(std::string input_file, unsigned samples) {
 }
 
 int main(int argc, char** argv) {
-  if (argc != 2) {
+  if (argc != 4) {
     std::cout << "Incorrect number of arguments. "
                  "Expected three but got " << argc-1 << std::endl;
     std::cout << "Arguments are: input_stream, samples, runs" << std::endl;
@@ -56,7 +56,7 @@ int main(int argc, char** argv) {
 
   std::string input_file = argv[1];
   unsigned samples = std::stoi(argv[2]);
-  unsigned runs = std::stoi(argv[2]);
+  unsigned runs = std::stoi(argv[3]);
 
   for (unsigned i = 0; i < runs; i++) {
     std::cout << "run: " << i << std::endl;
