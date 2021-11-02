@@ -6,15 +6,6 @@
 #include <mat_graph_verifier.h>
 #include <binary_graph_stream.h>
 
-// Returns a unique identifier for each edge using diagonalization
-// Params: n (number of nodes), src (first node id), dst (second node id)
-// Ignores self-edges (except for 0,0)
-inline uint64_t get_uid(uint64_t total, uint64_t n, uint64_t src, uint64_t dst) {
-  if (src > dst) std::swap(src, dst);
-
-  return total - ((n - src) * (n-src-1) / 2) + dst - src;
-}
-
 void test_continuous(std::string input_file, unsigned samples) {
   // create input stream
   BinaryGraphStream stream(input_file, 32 * 1024);
@@ -33,7 +24,7 @@ void test_continuous(std::string input_file, unsigned samples) {
     std::cout << "Starting updates" << std::endl;
     for (unsigned long j = 0; j < updates_per_sample; j++) {
       GraphUpdate upd = stream.get_edge();
-      uint64_t edge_uid = get_uid(total_edges, n, upd.first.first, upd.first.second);
+      uint64_t edge_uid = get_uid(upd.first.first, upd.first.second);
       g.update(upd);
       adj[edge_uid] = !adj[edge_uid];
     }
@@ -71,5 +62,4 @@ int main(int argc, char** argv) {
     std::cout << "run: " << i << std::endl;
     test_continuous(input_file, samples);
   }
-  
 }
