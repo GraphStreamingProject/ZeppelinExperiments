@@ -111,6 +111,7 @@ ExternalProject_Add(
 )
 include_directories(${CMAKE_CURRENT_BINARY_DIR}/GraphStreamingCC/prefix/include)
 include_directories(${CMAKE_CURRENT_BINARY_DIR}/GraphStreamingCC/prefix/include/GutterTree)
+include_directories(${CMAKE_CURRENT_BINARY_DIR}/GraphStreamingCC/prefix/include/test)
 link_directories(${CMAKE_CURRENT_BINARY_DIR}/GraphStreamingCC/prefix/lib)
 link_directories(${CMAKE_CURRENT_BINARY_DIR}/GraphStreamingCC/src/GraphStreamingCC-build/GutterTree/prefix/lib)
 
@@ -148,7 +149,6 @@ add_executable(parallel_experiment
   parallel_expr/parallel_expr.cpp)
 add_dependencies(parallel_experiment GraphStreamingCC)
 target_link_libraries(parallel_experiment PRIVATE libGraphStreamingCC.a xxHash::xxhash GTest::gtest libGutterTree.a)
-#optimize unless DEBUG
 # optimize unless debug
 if (DEFINED ENV{DEBUG})
   message("Disabling optimizations and enabling debug symbols")
@@ -167,7 +167,24 @@ endif()
 #add_executable(buffersize_experiment)
 
 # Test correctness by running many insertions and many queries
-#add_executable(cont_test)
+add_executable(cont_test
+  cont_expr/cont_expr.cpp)
+add_dependencies(cont_test GraphStreamingCC)
+target_link_libraries(cont_test PRIVATE libGraphStreamingVerifyCC.a xxHash::xxhash GTest::gtest libGutterTree.a)
+target_compile_definitions(cont_test PRIVATE VERIFY_SAMPLES_F)
+# optimize unless debug
+if (DEFINED ENV{DEBUG})
+  message("Disabling optimizations and enabling debug symbols")
+  target_compile_options(cont_test PRIVATE -g -fopenmp)
+  target_link_options(cont_test PRIVATE -fopenmp)
+else ()
+  if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+    target_compile_options(cont_test PRIVATE -O3 -fopenmp)
+    target_link_options(cont_test PRIVATE -fopenmp)
+  elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+    target_compile_options(cont_test PRIVATE /O2)
+  endif()
+endif()
 
 # Compare the performance of CubeSketch with state of the art l0-sketching
 #add_executable(sketch_experiment)
