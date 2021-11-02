@@ -139,10 +139,29 @@ else ()
   elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
     target_compile_options(speed_experiment PRIVATE /O2)
   endif()
-endif ()
+endif()
 
 # Test how insertion rate scales with additional threads
-#add_executable(parallel_experiment)
+add_executable(parallel_experiment
+  util/configuration.cpp
+  util/insertion_mgr.cpp
+  parallel_expr/parallel_expr.cpp)
+add_dependencies(parallel_experiment GraphStreamingCC)
+target_link_libraries(parallel_experiment PRIVATE libGraphStreamingCC.a xxHash::xxhash GTest::gtest libGutterTree.a)
+#optimize unless DEBUG
+# optimize unless debug
+if (DEFINED ENV{DEBUG})
+  message("Disabling optimizations and enabling debug symbols")
+  target_compile_options(parallel_experiment PRIVATE -g -fopenmp)
+  target_link_options(parallel_experiment PRIVATE -fopenmp)
+else ()
+  if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+    target_compile_options(parallel_experiment PRIVATE -O3 -fopenmp)
+    target_link_options(parallel_experiment PRIVATE -fopenmp)
+  elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+    target_compile_options(parallel_experiment PRIVATE /O2)
+  endif()
+endif()
 
 # Test the impact of buffer size upon performace
 #add_executable(buffersize_experiment)
