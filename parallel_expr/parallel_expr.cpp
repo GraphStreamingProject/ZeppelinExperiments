@@ -8,12 +8,12 @@
 
 /**
  * Run the parallel experiments
- * Both the group_size and 
+ * Both the group_size and num_groups are modified by these experiments
  */
 int main(int argc, char** argv) {
   if (argc != 4) {
     std::cout << "Incorrect number of arguments. "
-                 "Expected two but got " << argc-1 << std::endl;
+                 "Expected three but got " << argc-1 << std::endl;
     std::cout << "Arguments are: input_stream, output_file, max_threads" << std::endl;
     exit(EXIT_FAILURE);
   }

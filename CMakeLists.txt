@@ -164,7 +164,25 @@ else ()
 endif()
 
 # Test the impact of buffer size upon performace
-#add_executable(buffersize_experiment)
+add_executable(buffersize_experiment
+  util/configuration.cpp
+  util/insertion_mgr.cpp
+  parallel_expr/parallel_expr.cpp)
+add_dependencies(buffersize_experiment GraphStreamingCC)
+target_link_libraries(buffersize_experiment PRIVATE libGraphStreamingCC.a xxHash::xxhash GTest::gtest libGutterTree.a)
+# optimize unless debug
+if (DEFINED ENV{DEBUG})
+  message("Disabling optimizations and enabling debug symbols")
+  target_compile_options(buffersize_experiment PRIVATE -g -fopenmp)
+  target_link_options(buffersize_experiment PRIVATE -fopenmp)
+else ()
+  if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+    target_compile_options(buffersize_experiment PRIVATE -O3 -fopenmp)
+    target_link_options(buffersize_experiment PRIVATE -fopenmp)
+  elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+    target_compile_options(buffersize_experiment PRIVATE /O2)
+  endif()
+endif()
 
 # Test correctness by running many insertions and many queries
 add_executable(cont_test
