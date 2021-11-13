@@ -23,7 +23,7 @@ void track_insertions(std::string output_file, uint64_t total, Graph *g, std::ch
   total = total * 2;                // we insert 2 edge updates per edge
   ofstream out{output_file}; // open the outfile
   if (!out.is_open()) {
-    printf("ERROR:Could not open output file!\n");
+    printf("ERROR:Could not open output file! %s\n", output_file.c_str());
     exit(EXIT_FAILURE);
   }
 

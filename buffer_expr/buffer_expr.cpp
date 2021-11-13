@@ -2,6 +2,7 @@
 #include <iostream>
 #include <algorithm>
 #include <vector>
+#include <cmath>
 
 #include "../util/configuration.h"
 #include "../util/insertion_mgr.h"
@@ -21,8 +22,8 @@ int main(int argc, char** argv) {
   std::string input  = argv[1];
   std::string output = argv[2];
   int num_nodes = std::stoi(argv[3]); // number of bytes it takes to represent a sketch
-  if (max_thr <= 0 || max_thr > (1 << 20)) {
-    printf("Argument sketch_bytes out of range [1,1MiB]");
+  if (num_nodes <= 0 || num_nodes > 1000000) {
+    printf("Argument sketch_bytes out of range [1, 1 million]");
     exit(EXIT_FAILURE);
   }
 
@@ -51,11 +52,11 @@ int main(int argc, char** argv) {
 
   // Group Size Experiment
   for (int size : sizes) {
-    printf("Running system with buffering bytes = %i\n", size);
+    printf("Running experiment, buffer size factor %i\n", size);
 
     sys_config conf;
     conf.gutter_factor = size;
-    perform_insertions(input, output + "/group_exp/" + std::to_string(size), conf);
+    perform_insertions(input, output + "_" + std::to_string(size), conf);
   }
 
   // restore the configuration

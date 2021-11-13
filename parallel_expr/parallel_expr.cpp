@@ -25,8 +25,8 @@ int main(int argc, char** argv) {
     printf("Argument CPU cores invalid. Out of range [1,100");
     exit(EXIT_FAILURE);
   }
-  // set max_thr to be divisible by 20
-  max_thr = max_thr - (max_thr % 20);
+  // max_thr for group size experiment needs to be divisible by 20
+  int gr_max_thr = max_thr - (max_thr % 20);
 
   // backup the current configuration
   backup_configuration();
@@ -36,27 +36,31 @@ int main(int argc, char** argv) {
   // Group Size Experiment
   printf("Running group_size experiment\n");
   for (int size : sizes) {
-    if (size > max_thr) break;
+    if (size > gr_max_thr) break;
 
     // for this experiment we set group_size and num_groups
     sys_config conf;
     conf.group_size = size;
-    conf.num_groups = max_thr / size;
-    perform_insertions(input, output + "/group_exp/" + std::to_string(size), conf);
+    conf.num_groups = gr_max_thr / size;
+    perform_insertions(input, output + "_group_exp_" + std::to_string(size), conf);
   }
 
 
   // Num Threads Experiment
   printf("Running num_threads experiment\n");
   const int group_size = 1;
-  const int inc = 4 / group_size;
+  const int inc = 4;
 
-  for (int groups = 1; groups <= max_thr; groups = std::min(groups + inc, max_thr)) {
+  for (int groups = 1; groups <= max_thr + (max_thr % inc); groups += inc) {
+    if (groups > max_thr) groups = max_thr;
+
     // for this experiment we set group_size and num_groups
     sys_config conf;
     conf.group_size = group_size;
     conf.num_groups = groups;
-    perform_insertions(input, output + "/group_exp/" + std::to_string(groups), conf);
+    perform_insertions(input, output + "_threads_exp_" + std::to_string(groups), conf);
+
+    if (groups == 1) groups = 0; // correct shifted thread numbers because starting at 1
   }
 
   // restore the configuration
