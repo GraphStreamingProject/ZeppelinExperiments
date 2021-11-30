@@ -115,6 +115,17 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR}/GraphStreamingCC/prefix/include/
 link_directories(${CMAKE_CURRENT_BINARY_DIR}/GraphStreamingCC/prefix/lib)
 link_directories(${CMAKE_CURRENT_BINARY_DIR}/GraphStreamingCC/src/GraphStreamingCC-build/GutterTree/prefix/lib)
 
+###############################################################
+#########################  Utilities  #########################
+###############################################################
+# clean gets top logs ready for processing by max_finder
+add_executable(clean
+  clean.cpp)
+
+# max_finder gives the maximum memory usage of a log 
+# and returns RES/SWAP that gave this
+add_executable(max_finder
+  max_finder.cpp)
 
 ###############################################################
 ########################  Experiments  ########################
