@@ -8,6 +8,7 @@
 
 const int gb = 1 << 30;
 const int mb = 1 << 20;
+const int kb = 1 << 10;
 
 /**
  * @param arr the array to put extracted virt, res, swap.
@@ -25,6 +26,7 @@ void extract(double* arr, std::string& s) {
   i += chars_read;
   switch (s[i]) {
     case ' ': {
+      arr[0] *= kb;
       break;
     }
     case 'g': {
@@ -43,6 +45,7 @@ void extract(double* arr, std::string& s) {
   i += chars_read;
   switch (s[i]) {
     case ' ': {
+      arr[1] *= kb;
       break;
     }
     case 'g': {
@@ -61,6 +64,7 @@ void extract(double* arr, std::string& s) {
   i += chars_read;
   switch (s[i]) {
     case ' ': {
+      arr[2] *= kb;
       break;
     }
     case 'g': {

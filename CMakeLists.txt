@@ -120,12 +120,12 @@ link_directories(${CMAKE_CURRENT_BINARY_DIR}/GraphStreamingCC/src/GraphStreaming
 ###############################################################
 # clean gets top logs ready for processing by max_finder
 add_executable(top_cleaner
-  clean.cpp)
+  util/clean.cpp)
 
 # max_finder gives the maximum memory usage of a log 
 # and returns RES/SWAP that gave this
 add_executable(top_max_finder
-  max_finder.cpp)
+  util/max_finder.cpp)
 
 ###############################################################
 ########################  Experiments  ########################
