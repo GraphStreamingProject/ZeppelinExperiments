@@ -16,7 +16,7 @@ void test_continuous(std::string input_file, unsigned samples) {
   Graph g{n};
 
   size_t total_edges = static_cast<size_t>(n - 1) * n / 2;
-  node_t updates_per_sample = m / samples;
+  size_t updates_per_sample = m / samples;
   std::vector<bool> adj(total_edges);
   unsigned long num_failure = 0;
 
