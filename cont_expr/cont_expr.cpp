@@ -19,6 +19,7 @@ void test_continuous(std::string input_file, unsigned samples) {
   size_t updates_per_sample = m / samples;
   std::vector<bool> adj(total_edges);
   unsigned long num_failure = 0;
+  std::vector<double> cc_times (samples, 0.0);
 
   for (unsigned long i = 0; i < samples; i++) {
     std::cout << "Starting updates" << std::endl;
@@ -32,6 +33,8 @@ void test_continuous(std::string input_file, unsigned samples) {
       g.set_verifier(std::make_unique<MatGraphVerifier>(n, adj));
       std::cout << "Running cc" << std::endl;
       g.connected_components(true);
+      cc_times[i] = std::chrono::duration<double>(g.cc_end_time -
+            g.cc_start_time).count();
     } catch (const OutOfQueriesException& e) {
       num_failure++;
       std::cout << "CC #" << i << "failed with NoMoreQueries" << std::endl;
@@ -44,6 +47,10 @@ void test_continuous(std::string input_file, unsigned samples) {
     }
   }
   std::clog << n << ',' << num_failure << std::endl;
+  std::cout << "CC timings\n";
+  for (unsigned i = 0; i < samples; ++i) {
+    std::cout << i << ": " << cc_times[i] << " sec\n";
+  }
 }
 
 int main(int argc, char** argv) {

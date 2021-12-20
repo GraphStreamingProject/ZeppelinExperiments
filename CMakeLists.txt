@@ -97,7 +97,7 @@ ExternalProject_Add(
 
   PREFIX          GraphStreamingCC
   GIT_REPOSITORY  "https://github.com/GraphStreamingProject/GraphStreamingCC"
-  GIT_TAG         "main"
+  GIT_TAG         "time_hook"
 
   UPDATE_DISCONNECTED false
   BUILD_ALWAYS    OFF
