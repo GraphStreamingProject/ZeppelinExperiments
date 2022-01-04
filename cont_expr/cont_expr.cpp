@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include <graph.h>
+#include <vector>
 #include <mat_graph_verifier.h>
 
 void test_continuous(std::string input_file, unsigned samples) {
@@ -20,7 +21,9 @@ void test_continuous(std::string input_file, unsigned samples) {
   size_t updates_per_sample = m / samples;
 //  std::vector<bool> adj(total_edges);
   unsigned long num_failure = 0;
+  std::vector<double> flush_times (samples, 0.0);
   std::vector<double> cc_times (samples, 0.0);
+  std::vector<double> cc_times_with_return (samples, 0.0);
 
   node_id_t t,a,b;
   for (unsigned long i = 0; i < samples; i++) {
@@ -36,8 +39,12 @@ void test_continuous(std::string input_file, unsigned samples) {
 //      g.set_verifier(std::make_unique<MatGraphVerifier>(n, adj));
       std::cout << "Running cc" << std::endl;
       g.connected_components(true);
-      cc_times[i] = std::chrono::duration<double>(g.cc_end_time -
+      cc_times_with_return[i] = std::chrono::duration<double>
+            (std::chrono::steady_clock::now() - g.cc_flush_end_time).count();
+      flush_times[i] = std::chrono::duration<double>(g.cc_flush_end_time -
             g.cc_start_time).count();
+      cc_times[i] = std::chrono::duration<double>(g.cc_end_time -
+            g.cc_flush_end_time).count();
     } catch (const OutOfQueriesException& e) {
       num_failure++;
       std::cout << "CC #" << i << "failed with NoMoreQueries" << std::endl;
@@ -50,9 +57,19 @@ void test_continuous(std::string input_file, unsigned samples) {
     }
   }
   std::clog << n << ',' << num_failure << std::endl;
+  std::cout << "Flush timings\n";
+  for (unsigned i = 0; i < samples; ++i) {
+    std::cout << i << ": " << flush_times[i] << " sec\n";
+  }
+  std::cout << "\n";
   std::cout << "CC timings\n";
   for (unsigned i = 0; i < samples; ++i) {
     std::cout << i << ": " << cc_times[i] << " sec\n";
+  }
+  std::cout << "\n";
+  std::cout << "CC timings with return\n";
+  for (unsigned i = 0; i < samples; ++i) {
+    std::cout << i << ": " << cc_times_with_return[i] << " sec\n";
   }
 }
 
