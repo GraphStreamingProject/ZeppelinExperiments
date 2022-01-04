@@ -79,7 +79,7 @@ void perform_insertions(std::string binary_input, std::string output_file, sys_c
   // write the configuration to the config files
   write_configuration(config);
 
-  Node num_nodes = stream.nodes();
+  node_id_t num_nodes = stream.nodes();
   long m         = stream.edges();
   long total     = m;
   Graph g{num_nodes};
@@ -97,14 +97,16 @@ void perform_insertions(std::string binary_input, std::string output_file, sys_c
   auto end = std::chrono::steady_clock::now();
 
   querier.join();
-  long double time_taken = static_cast<std::chrono::duration<long double>>(g.end_time - start).count();
-  long double CC_time = static_cast<std::chrono::duration<long double>>(end - g.end_time).count();
+  long double time_taken = static_cast<std::chrono::duration<long double>>(g
+        .cc_end_time - start).count();
+  long double CC_time = static_cast<std::chrono::duration<long double>>(end -
+        g.cc_end_time).count();
 
   ofstream out{output_file,  std::ofstream::out | std::ofstream::app}; // open the outfile
   std::cout << "Number of connected components is " << num_CC << std::endl;
   std::cout << "Writing runtime stats to " << output_file << std::endl;
 
-  std::chrono::duration<double> runtime  = g.end_time - start;
+  std::chrono::duration<double> runtime  = g.cc_end_time - start;
 
   // calculate the insertion rate and write to file
   // insertion rate measured in stream updates 

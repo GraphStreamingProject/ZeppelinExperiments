@@ -200,8 +200,8 @@ endif()
 add_executable(cont_test
   cont_expr/cont_expr.cpp)
 add_dependencies(cont_test GraphStreamingCC)
-target_link_libraries(cont_test PRIVATE libGraphStreamingVerifyCC.a xxHash::xxhash GTest::gtest libGutterTree.a)
-target_compile_definitions(cont_test PRIVATE VERIFY_SAMPLES_F)
+target_link_libraries(cont_test PRIVATE libGraphStreamingCC.a xxHash::xxhash GTest::gtest libGutterTree.a)
+# target_compile_definitions(cont_test PRIVATE VERIFY_SAMPLES_F)
 # optimize unless debug
 if (DEFINED ENV{DEBUG})
   message("Disabling optimizations and enabling debug symbols")
