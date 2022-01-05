@@ -24,6 +24,7 @@ void test_continuous(std::string input_file, unsigned samples) {
   std::vector<double> flush_times (samples, 0.0);
   std::vector<double> cc_times (samples, 0.0);
   std::vector<double> cc_times_with_return (samples, 0.0);
+  std::vector<double> tot_times (samples, 0.0);
 
   node_id_t t,a,b;
   for (unsigned long i = 0; i < samples; i++) {
@@ -38,13 +39,16 @@ void test_continuous(std::string input_file, unsigned samples) {
     try {
 //      g.set_verifier(std::make_unique<MatGraphVerifier>(n, adj));
       std::cout << "Running cc" << std::endl;
+      auto start = std::chrono::steady_clock::now();
       g.connected_components(true);
+      auto end = std::chrono::steady_clock::now();
       cc_times_with_return[i] = std::chrono::duration<double>
-            (std::chrono::steady_clock::now() - g.cc_flush_end_time).count();
+            (end - g.cc_flush_end_time).count();
       flush_times[i] = std::chrono::duration<double>(g.cc_flush_end_time -
             g.cc_start_time).count();
       cc_times[i] = std::chrono::duration<double>(g.cc_end_time -
             g.cc_flush_end_time).count();
+      tot_times[i] = std::chrono::duration<double>(end - start).count();
     } catch (const OutOfQueriesException& e) {
       num_failure++;
       std::cout << "CC #" << i << "failed with NoMoreQueries" << std::endl;
@@ -70,6 +74,11 @@ void test_continuous(std::string input_file, unsigned samples) {
   std::cout << "CC timings with return\n";
   for (unsigned i = 0; i < samples; ++i) {
     std::cout << i << ": " << cc_times_with_return[i] << " sec\n";
+  }
+  std::cout << "\n";
+  std::cout << "Total processing time\n";
+  for (unsigned i = 0; i < samples; ++i) {
+    std::cout << i << ": " << tot_times[i] << " sec\n";
   }
 }
 
