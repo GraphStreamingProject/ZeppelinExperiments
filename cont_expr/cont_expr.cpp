@@ -43,11 +43,11 @@ void test_continuous(std::string input_file, unsigned samples) {
       g.connected_components(true);
       auto end = std::chrono::steady_clock::now();
       cc_times_with_return[i] = std::chrono::duration<double>
-            (end - g.cc_flush_end_time).count();
+            (end - g.cc_start_time).count();
       flush_times[i] = std::chrono::duration<double>(g.cc_flush_end_time -
-            g.cc_start_time).count();
+            g.cc_flush_start_time).count();
       cc_times[i] = std::chrono::duration<double>(g.cc_end_time -
-            g.cc_flush_end_time).count();
+            g.cc_start_time).count();
       tot_times[i] = std::chrono::duration<double>(end - start).count();
     } catch (const OutOfQueriesException& e) {
       num_failure++;
