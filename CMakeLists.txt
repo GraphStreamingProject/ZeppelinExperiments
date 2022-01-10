@@ -7,6 +7,9 @@ set(CMAKE_CXX_EXTENSIONS ON)
 
 project(StreamingCCExperiments)
 
+#Uncomment to enable debug
+#set(ENV{DEBUG} ON)
+
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
   message("Adding GNU compiler flags")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -W -Wall")
@@ -216,5 +219,75 @@ else ()
   endif()
 endif()
 
-# Compare the performance of CubeSketch with state of the art l0-sketching
-#add_executable(sketch_experiment)
+#########
+# Three executables for the purpose of comparing the performance 
+# of CubeSketch with state of the art l0-sketching
+#########
+# AGM sketching using 64 bit types
+add_executable(agm_sketch_native
+  sketch_expr/agm_sketch_expr.cpp
+  sketch_expr/agm_sketching/src/bucket.cpp
+  sketch_expr/agm_sketching/src/int127.cpp
+  sketch_expr/agm_sketching/src/agm_sketch.cpp
+  sketch_expr/agm_sketching/src/update.cpp
+)
+add_dependencies(agm_sketch_native GraphStreamingCC)
+target_link_libraries(agm_sketch_native PRIVATE libGraphStreamingCC.a xxHash::xxhash GTest::gtest libGutterTree.a)
+target_compile_definitions(agm_sketch_native PRIVATE USE_NATIVE_F)
+# optimize unless debug
+if (DEFINED ENV{DEBUG})
+  message("Disabling optimizations and enabling debug symbols")
+  target_compile_options(agm_sketch_native PRIVATE -g -fopenmp)
+  target_link_options(agm_sketch_native PRIVATE -fopenmp)
+else ()
+  if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+    target_compile_options(agm_sketch_native PRIVATE -O3 -fopenmp)
+    target_link_options(agm_sketch_native PRIVATE -fopenmp)
+  elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+    target_compile_options(agm_sketch_native PRIVATE /O2)
+  endif()
+endif()
+
+# AGM sketching using 128 bit types
+add_executable(agm_sketch
+  sketch_expr/agm_sketch_expr.cpp
+  sketch_expr/agm_sketching/src/bucket.cpp
+  sketch_expr/agm_sketching/src/int127.cpp
+  sketch_expr/agm_sketching/src/agm_sketch.cpp
+  sketch_expr/agm_sketching/src/update.cpp
+)
+add_dependencies(agm_sketch GraphStreamingCC)
+target_link_libraries(agm_sketch PRIVATE libGraphStreamingCC.a xxHash::xxhash GTest::gtest libGutterTree.a)
+# optimize unless debug
+if (DEFINED ENV{DEBUG})
+  message("Disabling optimizations and enabling debug symbols")
+  target_compile_options(agm_sketch PRIVATE -g -fopenmp)
+  target_link_options(agm_sketch PRIVATE -fopenmp)
+else ()
+  if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+    target_compile_options(agm_sketch PRIVATE -O3 -fopenmp)
+    target_link_options(agm_sketch PRIVATE -fopenmp)
+  elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+    target_compile_options(agm_sketch PRIVATE /O2)
+  endif()
+endif()
+
+# Sketch_experiment on CubeSketch
+add_executable(cube_sketch
+  sketch_expr/cube_sketch_expr.cpp
+)
+add_dependencies(cube_sketch GraphStreamingCC)
+target_link_libraries(cube_sketch PRIVATE libGraphStreamingCC.a xxHash::xxhash GTest::gtest libGutterTree.a)
+# optimize unless debug
+if (DEFINED ENV{DEBUG})
+  message("Disabling optimizations and enabling debug symbols")
+  target_compile_options(cube_sketch PRIVATE -g -fopenmp)
+  target_link_options(cube_sketch PRIVATE -fopenmp)
+else ()
+  if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+    target_compile_options(cube_sketch PRIVATE -O3 -fopenmp)
+    target_link_options(cube_sketch PRIVATE -fopenmp)
+  elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+    target_compile_options(cube_sketch PRIVATE /O2)
+  endif()
+endif()

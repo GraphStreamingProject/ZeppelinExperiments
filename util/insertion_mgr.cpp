@@ -79,9 +79,9 @@ void perform_insertions(std::string binary_input, std::string output_file, sys_c
   // write the configuration to the config files
   write_configuration(config);
 
-  Node num_nodes = stream.nodes();
-  long m         = stream.edges();
-  long total     = m;
+  node_id_t num_nodes = stream.nodes();
+  long m              = stream.edges();
+  long total          = m;
   Graph g{num_nodes};
 
   auto start = std::chrono::steady_clock::now();
