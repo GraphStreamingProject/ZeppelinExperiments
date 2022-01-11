@@ -19,13 +19,14 @@ int main(int argc, char** argv) {
   }
 
   srand(time(NULL));
-  const long n        = std::atol(argv[1]);
-  const long updates  = 100000; // 100,000 updates
+  const unsigned long n        = std::atol(argv[1]);
+  const unsigned long updates  = 100000; // 100,000 updates
+  std::cerr << "Number of nodes = " << n << std::endl;
 
   Update *stream = new Update[updates];
 
   // Initialize the stream, and finalize the input vector.
-  for (unsigned int i = 0; i < updates; i++) {
+  for (unsigned long i = 0; i < updates; i++) {
     stream[i] = {(long)rand() % n, (rand() % 2) * -2 + 1};
   }
 
@@ -34,7 +35,7 @@ int main(int argc, char** argv) {
   AGM_Sketch sketch  = AGM_Sketch(n, random);
 
   auto start = std::chrono::steady_clock::now();
-  for (unsigned int i = 0; i < updates; i++) {
+  for (unsigned long i = 0; i < updates; i++) {
     sketch.update(stream[i]);
   }
   auto end = std::chrono::steady_clock::now();
