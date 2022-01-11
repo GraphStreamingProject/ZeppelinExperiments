@@ -7,9 +7,6 @@ set(CMAKE_CXX_EXTENSIONS ON)
 
 project(StreamingCCExperiments)
 
-#Uncomment to enable debug
-#set(ENV{DEBUG} ON)
-
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
   message("Adding GNU compiler flags")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -W -Wall")
@@ -124,80 +121,53 @@ link_directories(${CMAKE_CURRENT_BINARY_DIR}/GraphStreamingCC/src/GraphStreaming
 ###############################################################
 # clean gets top logs ready for processing by max_finder
 add_executable(top_cleaner
-  util/clean.cpp)
+  util/clean.cpp
+)
 
 # max_finder gives the maximum memory usage of a log 
 # and returns RES/SWAP that gave this
 add_executable(top_max_finder
-  util/max_finder.cpp)
+  util/max_finder.cpp
+)
 
 ###############################################################
 ########################  Experiments  ########################
 ###############################################################
-
 # Test the speed and memory consumption of the algorithm
 add_executable(speed_experiment
   util/configuration.cpp
   util/insertion_mgr.cpp
-  speed_expr/speed_expr.cpp)
+  speed_expr/speed_expr.cpp
+)
 add_dependencies(speed_experiment GraphStreamingCC)
 target_link_libraries(speed_experiment PRIVATE libGraphStreamingCC.a xxHash::xxhash GTest::gtest libGutterTree.a)
-#optimize unless DEBUG
-# optimize unless debug
-if (DEFINED ENV{DEBUG})
-  message("Disabling optimizations and enabling debug symbols")
-  target_compile_options(speed_experiment PRIVATE -g -fopenmp)
-  target_link_options(speed_experiment PRIVATE -fopenmp)
-else ()
-  if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-    target_compile_options(speed_experiment PRIVATE -O3 -fopenmp)
-    target_link_options(speed_experiment PRIVATE -fopenmp)
-  elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
-    target_compile_options(speed_experiment PRIVATE /O2)
-  endif()
-endif()
+# add openmp
+target_compile_options(speed_experiment PRIVATE -fopenmp)
+target_link_options(speed_experiment PRIVATE -fopenmp)
 
 # Test how insertion rate scales with additional threads
 add_executable(parallel_experiment
   util/configuration.cpp
   util/insertion_mgr.cpp
-  parallel_expr/parallel_expr.cpp)
+  parallel_expr/parallel_expr.cpp
+)
 add_dependencies(parallel_experiment GraphStreamingCC)
 target_link_libraries(parallel_experiment PRIVATE libGraphStreamingCC.a xxHash::xxhash GTest::gtest libGutterTree.a)
-# optimize unless debug
-if (DEFINED ENV{DEBUG})
-  message("Disabling optimizations and enabling debug symbols")
-  target_compile_options(parallel_experiment PRIVATE -g -fopenmp)
-  target_link_options(parallel_experiment PRIVATE -fopenmp)
-else ()
-  if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-    target_compile_options(parallel_experiment PRIVATE -O3 -fopenmp)
-    target_link_options(parallel_experiment PRIVATE -fopenmp)
-  elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
-    target_compile_options(parallel_experiment PRIVATE /O2)
-  endif()
-endif()
+# add openmp
+target_compile_options(parallel_experiment PRIVATE -g -fopenmp)
+target_link_options(parallel_experiment PRIVATE -fopenmp)
 
 # Test the impact of buffer size upon performace
 add_executable(buffersize_experiment
   util/configuration.cpp
   util/insertion_mgr.cpp
-  parallel_expr/parallel_expr.cpp)
+  parallel_expr/parallel_expr.cpp
+)
 add_dependencies(buffersize_experiment GraphStreamingCC)
 target_link_libraries(buffersize_experiment PRIVATE libGraphStreamingCC.a xxHash::xxhash GTest::gtest libGutterTree.a)
-# optimize unless debug
-if (DEFINED ENV{DEBUG})
-  message("Disabling optimizations and enabling debug symbols")
-  target_compile_options(buffersize_experiment PRIVATE -g -fopenmp)
-  target_link_options(buffersize_experiment PRIVATE -fopenmp)
-else ()
-  if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-    target_compile_options(buffersize_experiment PRIVATE -O3 -fopenmp)
-    target_link_options(buffersize_experiment PRIVATE -fopenmp)
-  elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
-    target_compile_options(buffersize_experiment PRIVATE /O2)
-  endif()
-endif()
+# add openmp
+target_compile_options(buffersize_experiment PRIVATE -g -fopenmp)
+target_link_options(buffersize_experiment PRIVATE -fopenmp)
 
 # Test correctness by running many insertions and many queries
 add_executable(cont_test
@@ -205,19 +175,9 @@ add_executable(cont_test
 add_dependencies(cont_test GraphStreamingCC)
 target_link_libraries(cont_test PRIVATE libGraphStreamingVerifyCC.a xxHash::xxhash GTest::gtest libGutterTree.a)
 target_compile_definitions(cont_test PRIVATE VERIFY_SAMPLES_F)
-# optimize unless debug
-if (DEFINED ENV{DEBUG})
-  message("Disabling optimizations and enabling debug symbols")
-  target_compile_options(cont_test PRIVATE -g -fopenmp)
-  target_link_options(cont_test PRIVATE -fopenmp)
-else ()
-  if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-    target_compile_options(cont_test PRIVATE -O3 -fopenmp)
-    target_link_options(cont_test PRIVATE -fopenmp)
-  elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
-    target_compile_options(cont_test PRIVATE /O2)
-  endif()
-endif()
+# add openmp
+target_compile_options(cont_test PRIVATE -g -fopenmp)
+target_link_options(cont_test PRIVATE -fopenmp)
 
 #########
 # Three executables for the purpose of comparing the performance 
@@ -230,23 +190,10 @@ add_executable(agm_sketch_native
   sketch_expr/agm_sketching/src/int127.cpp
   sketch_expr/agm_sketching/src/agm_sketch.cpp
   sketch_expr/agm_sketching/src/update.cpp
+  sketch_expr/agm_sketching/src/util.cpp
 )
-add_dependencies(agm_sketch_native GraphStreamingCC)
-target_link_libraries(agm_sketch_native PRIVATE libGraphStreamingCC.a xxHash::xxhash GTest::gtest libGutterTree.a)
+target_link_libraries(agm_sketch_native PRIVATE xxHash::xxhash)
 target_compile_definitions(agm_sketch_native PRIVATE USE_NATIVE_F)
-# optimize unless debug
-if (DEFINED ENV{DEBUG})
-  message("Disabling optimizations and enabling debug symbols")
-  target_compile_options(agm_sketch_native PRIVATE -g -fopenmp)
-  target_link_options(agm_sketch_native PRIVATE -fopenmp)
-else ()
-  if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-    target_compile_options(agm_sketch_native PRIVATE -O3 -fopenmp)
-    target_link_options(agm_sketch_native PRIVATE -fopenmp)
-  elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
-    target_compile_options(agm_sketch_native PRIVATE /O2)
-  endif()
-endif()
 
 # AGM sketching using 128 bit types
 add_executable(agm_sketch
@@ -255,22 +202,9 @@ add_executable(agm_sketch
   sketch_expr/agm_sketching/src/int127.cpp
   sketch_expr/agm_sketching/src/agm_sketch.cpp
   sketch_expr/agm_sketching/src/update.cpp
+  sketch_expr/agm_sketching/src/util.cpp
 )
-add_dependencies(agm_sketch GraphStreamingCC)
-target_link_libraries(agm_sketch PRIVATE libGraphStreamingCC.a xxHash::xxhash GTest::gtest libGutterTree.a)
-# optimize unless debug
-if (DEFINED ENV{DEBUG})
-  message("Disabling optimizations and enabling debug symbols")
-  target_compile_options(agm_sketch PRIVATE -g -fopenmp)
-  target_link_options(agm_sketch PRIVATE -fopenmp)
-else ()
-  if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-    target_compile_options(agm_sketch PRIVATE -O3 -fopenmp)
-    target_link_options(agm_sketch PRIVATE -fopenmp)
-  elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
-    target_compile_options(agm_sketch PRIVATE /O2)
-  endif()
-endif()
+target_link_libraries(agm_sketch PRIVATE xxHash::xxhash)
 
 # Sketch_experiment on CubeSketch
 add_executable(cube_sketch
@@ -278,16 +212,6 @@ add_executable(cube_sketch
 )
 add_dependencies(cube_sketch GraphStreamingCC)
 target_link_libraries(cube_sketch PRIVATE libGraphStreamingCC.a xxHash::xxhash GTest::gtest libGutterTree.a)
-# optimize unless debug
-if (DEFINED ENV{DEBUG})
-  message("Disabling optimizations and enabling debug symbols")
-  target_compile_options(cube_sketch PRIVATE -g -fopenmp)
-  target_link_options(cube_sketch PRIVATE -fopenmp)
-else ()
-  if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-    target_compile_options(cube_sketch PRIVATE -O3 -fopenmp)
-    target_link_options(cube_sketch PRIVATE -fopenmp)
-  elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
-    target_compile_options(cube_sketch PRIVATE /O2)
-  endif()
-endif()
+# add openmp
+target_compile_options(cube_sketch PRIVATE -g -fopenmp)
+target_link_options(cube_sketch PRIVATE -fopenmp)

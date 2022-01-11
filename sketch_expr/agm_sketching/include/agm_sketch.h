@@ -1,6 +1,4 @@
 #pragma once
-#include <gtest/gtest_prod.h>
-
 #include <cmath>
 #include <exception>
 #include <iostream>
@@ -26,9 +24,6 @@ class AGM_Sketch {
   std::vector<Bucket_Boruvka> buckets;
   const ubucket_t large_prime;
   bool already_quered = false;
-
-  FRIEND_TEST(SketchTestSuite, TestExceptions);
-  FRIEND_TEST(SketchTestSuite, TestBatchUpdate);
 
   // Initialize a sketch of a vector of size n
  public:
