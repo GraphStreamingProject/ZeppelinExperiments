@@ -1,5 +1,5 @@
 
-mkdir -f sketch_expr_results
+mkdir sketch_expr_results
 
 echo "agm native experiments ..."
 ./agm_sketch_native 1000 > sketch_expr_results/agm_native_results
