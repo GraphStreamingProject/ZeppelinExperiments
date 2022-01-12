@@ -20,7 +20,7 @@ int main(int argc, char** argv) {
 
   srand(time(NULL));
   const unsigned long n        = std::atol(argv[1]);
-  const unsigned long updates  = 100000; // 100,000 updates
+  const unsigned long updates  = 500000; // 500,000 updates
   std::cerr << "Number of nodes = " << n << std::endl;
 
   Update *stream = new Update[updates];
@@ -30,7 +30,6 @@ int main(int argc, char** argv) {
     stream[i] = {(long)rand() % n, (rand() % 2) * -2 + 1};
   }
 
-  // cout << "Value of mu: " << mu << std::endl;
   int random     = rand();
   AGM_Sketch sketch  = AGM_Sketch(n, random);
 
