@@ -40,18 +40,50 @@ namespace PrimeGenerator{
     return res;
   }
 
+  // prime testing using witness testing
+  // the witnesses chosen here work for all numbers < 2^64
+  // based upon a wikipedia article on the Miller Rabin test
   static bool IsPrime(ubucket_t n) {
-    if (n < 2) return false;
-    if (n < 4) return true;
-    if (n % 2 == 0) return false;
+    if (n == 2) return true;
+    if (n < 2 || n % 2 == 0) return false;
 
-    const ubucket_t iMax = sqrt(n) + 1;
-    for (ubucket_t i = 3; i <= iMax; i += 2)
-      if (n % i == 0)
+    // Convert n to form (2^m * d) + 1
+    ubucket_t d = n - 1;
+    int m = 0;
+    while (d % 2 != 0) {
+      d = d >> 1;
+      m += 1;
+    }
+
+    // Check each witness (m times)
+    ubucket_t witnesses[12] = {2,3,5,7,11,13,17,19,23,29,31,37};
+    for (int i = 0; i < 12; i++) {
+      ubucket_t witness = witnesses[i];
+      if (witness >= n) return true;
+
+      ubucket_t result = powermod(witness, d, n);
+
+      if (result == 1 || result == n - 1)
+        continue;
+
+      bool approve = false;
+      ubucket_t temp = witness;
+      for (int j = 1; j < m; j++) {
+        temp *= temp;
+        result = powermod(temp, d, n);
+        if (result == 1 || result == n - 1) {
+          approve = true;
+          break;
+        }
+      }
+      if (!approve) {
         return false;
+      }
+    }
 
     return true;
   }
+
   //Generates a prime number greater than or equal to n
   inline ubucket_t generate_prime(ubucket_t n){
     if (n % 2 == 0){
