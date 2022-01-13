@@ -32,8 +32,9 @@ void test_continuous(std::string input_file, unsigned samples) {
         ::now() - empty_start).count();
   auto empty_flush = std::chrono::duration<double>(g.cc_flush_end_time - g.cc_flush_start_time).count();
   auto empty_cc = std::chrono::duration<double>(g.cc_end_time - g.cc_start_time).count();
-  std::cout << "Empty graph:\nTotal time: " << empty_time << "\nFLush time: "
-  << empty_flush << "\nCC time: " << empty_cc << std::endl;
+  std::cout << "Empty graph\nNumber CCs: " << empty_res.size() << "\nTotal time: "
+    << empty_time << "\nFLush time: " << empty_flush << "\nCC time: "
+    << empty_cc << std::endl;
 
   node_id_t t,a,b;
   for (unsigned long i = 0; i < samples; i++) {
