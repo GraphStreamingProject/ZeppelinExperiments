@@ -26,6 +26,15 @@ void test_continuous(std::string input_file, unsigned samples) {
   std::vector<double> cc_times_with_return (samples, 0.0);
   std::vector<double> tot_times (samples, 0.0);
 
+  auto empty_start = std::chrono::steady_clock::now();
+  auto empty_res = g.connected_components(true);
+  double empty_time = std::chrono::duration<double>(std::chrono::steady_clock
+        ::now() - empty_start).count();
+  auto empty_flush = std::chrono::duration<double>(g.cc_flush_end_time - g.cc_flush_start_time).count();
+  auto empty_cc = std::chrono::duration<double>(g.cc_end_time - g.cc_start_time).count();
+  std::cout << "Empty graph:\nTotal time: " << empty_time << "\nFLush time: "
+  << empty_flush << "\nCC time: " << empty_cc << std::endl;
+
   node_id_t t,a,b;
   for (unsigned long i = 0; i < samples; i++) {
     std::cout << "Starting updates" << std::endl;
@@ -40,8 +49,9 @@ void test_continuous(std::string input_file, unsigned samples) {
 //      g.set_verifier(std::make_unique<MatGraphVerifier>(n, adj));
       std::cout << "Running cc" << std::endl;
       auto start = std::chrono::steady_clock::now();
-      g.connected_components(true);
+      auto res = g.connected_components(true);
       auto end = std::chrono::steady_clock::now();
+      std::cout << "Number CCs: " << res.size();
       cc_times_with_return[i] = std::chrono::duration<double>
             (end - g.cc_start_time).count();
       flush_times[i] = std::chrono::duration<double>(g.cc_flush_end_time -
