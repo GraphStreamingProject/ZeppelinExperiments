@@ -7,14 +7,23 @@ set(CMAKE_CXX_EXTENSIONS ON)
 
 project(StreamingCCExperiments)
 
+# Make the default build type Release 
+# If user sets a different value than use that
+if(NOT CMAKE_BUILD_TYPE)
+  message(STATUS "Setting build type to default -- Release")
+  set(CMAKE_BUILD_TYPE "Release" CACHE
+      STRING "Choose the type of build." FORCE)
+endif()
+message(STATUS "CMake Build Type ${CMAKE_BUILD_TYPE}")
+
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-  message("Adding GNU compiler flags")
+  message(STATUS "Adding GNU compiler flags")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -W -Wall")
 elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
-  message("Adding MSVC compiler flags")
+  message(STATUS "Adding MSVC compiler flags")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Wall")
 else()
-  message("${CMAKE_CXX_COMPILER_ID} not recognized, no flags added")
+  message(STATUS "${CMAKE_CXX_COMPILER_ID} not recognized, no flags added")
 endif()
 
 message("${CMAKE_MODULE_PATH}")
@@ -51,6 +60,9 @@ if(NOT xxHash_FOUND)
 
     #Add aliases to targets
     add_library(xxHash::xxhash ALIAS xxhash)
+
+    #  Set xxHash dir to the appropriate location for this install
+    set(xxHash_DIR "${xxHash_SOURCE_DIR}/cmake_unofficial")
   endif()
 endif()
 
@@ -88,6 +100,9 @@ if(NOT GTest_FOUND)
     add_library(GTest::gtest_main ALIAS gtest_main)
     add_library(GTest::gmock ALIAS gmock)
     add_library(GTest::gmock_main ALIAS gmock_main)
+
+    # Set GoogleTest dir to the appropriate location for this install
+    set(GTest_DIR "${googletest_BINARY_DIR}/googletest/generated")
   endif()
 endif()
 
@@ -154,7 +169,7 @@ add_executable(parallel_experiment
 add_dependencies(parallel_experiment GraphStreamingCC)
 target_link_libraries(parallel_experiment PRIVATE libGraphStreamingCC.a xxHash::xxhash GTest::gtest libGutterTree.a)
 # add openmp
-target_compile_options(parallel_experiment PRIVATE -g -fopenmp)
+target_compile_options(parallel_experiment PRIVATE -fopenmp)
 target_link_options(parallel_experiment PRIVATE -fopenmp)
 
 # Test the impact of buffer size upon performace
@@ -166,7 +181,7 @@ add_executable(buffersize_experiment
 add_dependencies(buffersize_experiment GraphStreamingCC)
 target_link_libraries(buffersize_experiment PRIVATE libGraphStreamingCC.a xxHash::xxhash GTest::gtest libGutterTree.a)
 # add openmp
-target_compile_options(buffersize_experiment PRIVATE -g -fopenmp)
+target_compile_options(buffersize_experiment PRIVATE -fopenmp)
 target_link_options(buffersize_experiment PRIVATE -fopenmp)
 
 # Test correctness by running many insertions and many queries
@@ -176,7 +191,7 @@ add_dependencies(cont_test GraphStreamingCC)
 target_link_libraries(cont_test PRIVATE libGraphStreamingVerifyCC.a xxHash::xxhash GTest::gtest libGutterTree.a)
 target_compile_definitions(cont_test PRIVATE VERIFY_SAMPLES_F)
 # add openmp
-target_compile_options(cont_test PRIVATE -g -fopenmp)
+target_compile_options(cont_test PRIVATE -fopenmp)
 target_link_options(cont_test PRIVATE -fopenmp)
 
 #########
@@ -213,5 +228,5 @@ add_executable(cube_sketch
 add_dependencies(cube_sketch GraphStreamingCC)
 target_link_libraries(cube_sketch PRIVATE libGraphStreamingCC.a xxHash::xxhash GTest::gtest libGutterTree.a)
 # add openmp
-target_compile_options(cube_sketch PRIVATE -g -fopenmp)
+target_compile_options(cube_sketch PRIVATE -fopenmp)
 target_link_options(cube_sketch PRIVATE -fopenmp)
