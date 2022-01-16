@@ -128,6 +128,28 @@ add_executable(top_cleaner
 add_executable(top_max_finder
   util/max_finder.cpp)
 
+
+# stream_differ finds diffs between a given ascii-encoded stream and a given
+# binary-encoded stream
+add_executable(stream_differ
+  util/stream_differ.cpp)
+add_dependencies(stream_differ GraphStreamingCC)
+target_link_libraries(stream_differ PRIVATE libGraphStreamingCC.a xxHash::xxhash GTest::gtest libGutterTree.a)
+# optimize unless debug
+if (DEFINED ENV{DEBUG})
+  message("Disabling optimizations and enabling debug symbols")
+  target_compile_options(stream_differ PRIVATE -g -fopenmp)
+  target_link_options(stream_differ PRIVATE -fopenmp)
+else ()
+  if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+    target_compile_options(stream_differ PRIVATE -O3 -fopenmp)
+    target_link_options(stream_differ PRIVATE -fopenmp)
+  elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+    target_compile_options(stream_differ PRIVATE /O2)
+  endif()
+endif()
+
+
 ###############################################################
 ########################  Experiments  ########################
 ###############################################################
