@@ -1,3 +1,4 @@
+#include <cassert>
 #include <iostream>
 #include <fstream>
 
@@ -13,21 +14,23 @@ int main(int argc, char** argv) {
 
   std::ifstream ascii_in {argv[1]};
   BinaryGraphStream bin_in(argv[2], 32 * 1024);
-  node_id_t ascii_n, bin_n = stream.nodes();
-  edge_id_t ascii_m, bin_m = stream.edges();
+  node_id_t ascii_n, bin_n = bin_in.nodes();
+  edge_id_t ascii_m, bin_m = bin_in.edges();
 
   ascii_in >> ascii_n >> ascii_m;
 
   assert(ascii_n == bin_n);
   assert(ascii_m == bin_m);
 
-  GraphUpdate ascii_upd {{1,1},0};
+  GraphUpdate ascii_upd {{1,1},INSERT};
   GraphUpdate bin_upd;
   
   edge_id_t num_diffs = 0;
+  int temp_upd;
 
   for (int i = 0; i < ascii_m; ++i) {
-    ascii_in >> ascii_upd.second >> ascii_upd.first.first >> ascii_upd.first.second;
+    ascii_in >> temp_upd >> ascii_upd.first.first >> ascii_upd.first.second;
+    ascii_upd.second = static_cast<UpdateType>(temp_upd);
     bin_upd = bin_in.get_edge();
     if (ascii_upd != bin_upd) {
       ++num_diffs;
