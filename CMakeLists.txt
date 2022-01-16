@@ -116,6 +116,11 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR}/GraphStreamingCC/prefix/include/
 link_directories(${CMAKE_CURRENT_BINARY_DIR}/GraphStreamingCC/prefix/lib)
 link_directories(${CMAKE_CURRENT_BINARY_DIR}/GraphStreamingCC/src/GraphStreamingCC-build/GutterTree/prefix/lib)
 
+# hack to re-use GraphStreamingCC boost installation by hardcoding BOOST_ROOT
+set(BOOST_ROOT "${CMAKE_CURRENT_BINARY_DIR}/GraphStreamingCC/src/GraphStreamingCC-build/boost-src")
+find_package(Boost 1.66.0 REQUIRED)
+include_directories("${Boost_INCLUDE_DIR}")
+
 ###############################################################
 #########################  Utilities  #########################
 ###############################################################
@@ -127,7 +132,6 @@ add_executable(top_cleaner
 # and returns RES/SWAP that gave this
 add_executable(top_max_finder
   util/max_finder.cpp)
-
 
 # stream_differ finds diffs between a given ascii-encoded stream and a given
 # binary-encoded stream
@@ -148,7 +152,6 @@ else ()
     target_compile_options(stream_differ PRIVATE /O2)
   endif()
 endif()
-
 
 ###############################################################
 ########################  Experiments  ########################
