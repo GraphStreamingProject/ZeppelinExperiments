@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.15)
 include (ExternalProject)
+include (FetchContent)
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -7,14 +8,14 @@ set(CMAKE_CXX_EXTENSIONS ON)
 
 project(StreamingCCExperiments)
 
-# Make the default build type Release 
-# If user sets a different value than use that
+# Make the default build type Release. If user or another
+# project sets a different value than use that
 if(NOT CMAKE_BUILD_TYPE)
   message(STATUS "Setting build type to default -- Release")
   set(CMAKE_BUILD_TYPE "Release" CACHE
       STRING "Choose the type of build." FORCE)
 endif()
-message(STATUS "CMake Build Type ${CMAKE_BUILD_TYPE}")
+message(STATUS "Experiments Build Type ${CMAKE_BUILD_TYPE}")
 
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
   message(STATUS "Adding GNU compiler flags")
@@ -26,110 +27,18 @@ else()
   message(STATUS "${CMAKE_CXX_COMPILER_ID} not recognized, no flags added")
 endif()
 
-message("${CMAKE_MODULE_PATH}")
-include("DownloadProject.cmake")
-
-#Find or download xxHash
-find_package(xxHash 0.7 CONFIG)
-if(NOT xxHash_FOUND)
-  if(NOT AUTODOWNLOAD)
-    message(FATAL_ERROR "xxHash config not found.\n"
-      "Set xxHash_DIR to a directory containing one of \n"
-      "  xxHashConfig.cmake\n"
-      "  xxhash-config.cmake\n"
-      "or use -DAUTODOWNLOAD:BOOL=ON to automatically download")
-  else()
-    #Download xxHash
-    download_project(
-      PROJ xxHash
-      GIT_REPOSITORY "https://github.com/Cyan4973/xxHash.git"
-      GIT_TAG "v0.8.0"
-    )
-
-    #xxHash messes with BUILD_SHARED_LIBS if it is empty
-    set(SAVED_BUILD_SHARED_LIBS "${BUILD_SHARED_LIBS}")
-
-    add_subdirectory(
-      "${xxHash_SOURCE_DIR}/cmake_unofficial"
-      "${xxHash_BINARY_DIR}"
-      EXCLUDE_FROM_ALL
-    )
-
-    #Restore BUILD_SHARED_LIBS
-    set(BUILD_SHARED_LIBS "${SAVED_BUILD_SHARED_LIBS}" CACHE BOOL "" FORCE)
-
-    #Add aliases to targets
-    add_library(xxHash::xxhash ALIAS xxhash)
-
-    #  Set xxHash dir to the appropriate location for this install
-    set(xxHash_DIR "${xxHash_SOURCE_DIR}/cmake_unofficial")
-  endif()
-endif()
-
-#Find or download GTest
-find_package(GTest CONFIG)
-if(NOT GTest_FOUND)
-  if(NOT AUTODOWNLOAD)
-    message(FATAL_ERROR "GTest config not found.\n"
-      "Set GTest_DIR to a directory containing one of \n"
-      "  GTestConfig.cmake\n"
-      "  gtest-config.cmake\n"
-      "or use -DAUTODOWNLOAD:BOOL=ON to automatically download")
-  else()
-    #Download googletest
-    download_project(
-      PROJ googletest
-      GIT_REPOSITORY "https://github.com/google/googletest.git"
-      GIT_TAG "release-1.10.0"
-    )
-
-    #As specified in the googletest docs, need to set
-    #gtest_force_shared_crt for windows visual studio.
-    if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-      set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-    endif()
-
-    add_subdirectory(
-      "${googletest_SOURCE_DIR}"
-      "${googletest_BINARY_DIR}"
-      EXCLUDE_FROM_ALL
-    )
-
-    #Add aliases to targets
-    add_library(GTest::gtest ALIAS gtest)
-    add_library(GTest::gtest_main ALIAS gtest_main)
-    add_library(GTest::gmock ALIAS gmock)
-    add_library(GTest::gmock_main ALIAS gmock_main)
-
-    # Set GoogleTest dir to the appropriate location for this install
-    set(GTest_DIR "${googletest_BINARY_DIR}/googletest/generated")
-  endif()
-endif()
-
 # Install GraphStreamingCC Project
-ExternalProject_Add(
+FetchContent_Declare(
   GraphStreamingCC
-
-  PREFIX          GraphStreamingCC
-  GIT_REPOSITORY  "https://github.com/GraphStreamingProject/GraphStreamingCC"
-  GIT_TAG         "main"
-
-  UPDATE_DISCONNECTED false
-  BUILD_ALWAYS    OFF
-  INSTALL_DIR     ${CMAKE_CURRENT_BINARY_DIR}/GraphStreamingCC/prefix
+  GIT_REPOSITORY      "https://github.com/GraphStreamingProject/GraphStreamingCC"
+  GIT_TAG             "cmake_updates"
+  UPDATE_DISCONNECTED OFF
 
   CMAKE_CACHE_ARGS
-        -DAUTODOWNLOAD:BOOL=ON
-        -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
-
-  BUILD_COMMAND ${CMAKE_COMMAND} --build <BINARY_DIR> --target install
+    -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
 )
-include_directories(${CMAKE_CURRENT_BINARY_DIR}/GraphStreamingCC/prefix/include)
-include_directories(${CMAKE_CURRENT_BINARY_DIR}/GraphStreamingCC/prefix/include/GutterTree)
-include_directories(${CMAKE_CURRENT_BINARY_DIR}/GraphStreamingCC/prefix/include/test)
-include_directories(${CMAKE_CURRENT_BINARY_DIR}/GraphStreamingCC/prefix/include/GraphZeppelinCommon)
-link_directories(${CMAKE_CURRENT_BINARY_DIR}/GraphStreamingCC/prefix/lib)
-link_directories(${CMAKE_CURRENT_BINARY_DIR}/GraphStreamingCC/src/GraphStreamingCC-build/GutterTree/prefix/lib)
+
+FetchContent_MakeAvailable(GraphStreamingCC)
 
 ###############################################################
 #########################  Utilities  #########################
@@ -155,10 +64,7 @@ add_executable(speed_experiment
   speed_expr/speed_expr.cpp
 )
 add_dependencies(speed_experiment GraphStreamingCC)
-target_link_libraries(speed_experiment PRIVATE libGraphStreamingCC.a xxHash::xxhash GTest::gtest libGutterTree.a)
-# add openmp
-target_compile_options(speed_experiment PRIVATE -fopenmp)
-target_link_options(speed_experiment PRIVATE -fopenmp)
+target_link_libraries(speed_experiment PRIVATE GraphStreamingCC)
 
 # Test how insertion rate scales with additional threads
 add_executable(parallel_experiment
@@ -167,10 +73,7 @@ add_executable(parallel_experiment
   parallel_expr/parallel_expr.cpp
 )
 add_dependencies(parallel_experiment GraphStreamingCC)
-target_link_libraries(parallel_experiment PRIVATE libGraphStreamingCC.a xxHash::xxhash GTest::gtest libGutterTree.a)
-# add openmp
-target_compile_options(parallel_experiment PRIVATE -fopenmp)
-target_link_options(parallel_experiment PRIVATE -fopenmp)
+target_link_libraries(parallel_experiment PRIVATE GraphStreamingCC)
 
 # Test the impact of buffer size upon performace
 add_executable(buffersize_experiment
@@ -179,20 +82,13 @@ add_executable(buffersize_experiment
   parallel_expr/parallel_expr.cpp
 )
 add_dependencies(buffersize_experiment GraphStreamingCC)
-target_link_libraries(buffersize_experiment PRIVATE libGraphStreamingCC.a xxHash::xxhash GTest::gtest libGutterTree.a)
-# add openmp
-target_compile_options(buffersize_experiment PRIVATE -fopenmp)
-target_link_options(buffersize_experiment PRIVATE -fopenmp)
+target_link_libraries(buffersize_experiment PRIVATE GraphStreamingCC)
 
 # Test correctness by running many insertions and many queries
 add_executable(cont_test
   cont_expr/cont_expr.cpp)
 add_dependencies(cont_test GraphStreamingCC)
-target_link_libraries(cont_test PRIVATE libGraphStreamingVerifyCC.a xxHash::xxhash GTest::gtest libGutterTree.a)
-target_compile_definitions(cont_test PRIVATE VERIFY_SAMPLES_F)
-# add openmp
-target_compile_options(cont_test PRIVATE -fopenmp)
-target_link_options(cont_test PRIVATE -fopenmp)
+target_link_libraries(cont_test PRIVATE GraphStreamingVerifyCC)
 
 #########
 # Three executables for the purpose of comparing the performance 
@@ -207,7 +103,7 @@ add_executable(agm_sketch_native
   sketch_expr/agm_sketching/src/update.cpp
   sketch_expr/agm_sketching/src/util.cpp
 )
-target_link_libraries(agm_sketch_native PRIVATE xxHash::xxhash)
+target_link_libraries(agm_sketch_native PRIVATE xxhash)
 target_compile_definitions(agm_sketch_native PRIVATE USE_NATIVE_F)
 
 # AGM sketching using 128 bit types
@@ -219,14 +115,11 @@ add_executable(agm_sketch
   sketch_expr/agm_sketching/src/update.cpp
   sketch_expr/agm_sketching/src/util.cpp
 )
-target_link_libraries(agm_sketch PRIVATE xxHash::xxhash)
+target_link_libraries(agm_sketch PRIVATE xxhash)
 
 # Sketch_experiment on CubeSketch
 add_executable(cube_sketch
   sketch_expr/cube_sketch_expr.cpp
 )
 add_dependencies(cube_sketch GraphStreamingCC)
-target_link_libraries(cube_sketch PRIVATE libGraphStreamingCC.a xxHash::xxhash GTest::gtest libGutterTree.a)
-# add openmp
-target_compile_options(cube_sketch PRIVATE -fopenmp)
-target_link_options(cube_sketch PRIVATE -fopenmp)
+target_link_libraries(cube_sketch PRIVATE GraphStreamingCC)
