@@ -1,5 +1,4 @@
 cmake_minimum_required(VERSION 3.15)
-include (ExternalProject)
 include (FetchContent)
 
 set(CMAKE_CXX_STANDARD 14)
