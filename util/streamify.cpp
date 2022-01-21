@@ -9,8 +9,9 @@
 
 using namespace std;
 
-const int notification_frequency = 5000000;
-const int max_ccs = 1000;
+const int notification_frequency = 1e6;
+const unsigned max_ccs = 4096; // 2^12
+const int num_cc_combinations = 12;
 unsigned long long total_edges = 4294967296;
 
 double static_reinsertion_param = 0.5;
@@ -66,12 +67,14 @@ int main (int argc, char * argv []) {
   // changing mod every notification_frequency edges read
 
   vector<unsigned> cc_mod;
-  unsigned long long num_rounds = total_edges / notification_frequency;
-  for (unsigned i = 0; i < num_rounds; ++i) {
-    cc_mod.push_back((unsigned)((double)i/num_rounds*max_ccs + 1));
-  }
-  for (unsigned i = 0; i < num_rounds / 2; ++i) {
-    cc_mod.push_back(1);
+  unsigned long long num_rounds = total_edges / notification_frequency / num_cc_combinations;
+  int cnt = 0;
+  for (unsigned i = 0; i <= total_edges / notification_frequency; ++i) {
+    unsigned num_ccs = max(max_ccs >> cnt, 1u);
+    for (unsigned j = 0; j < num_rounds; ++j, ++i) {
+      cc_mod.push_back(num_ccs);
+    }
+    ++cnt;
   }
   sort(cc_mod.begin(), cc_mod.end(), greater<unsigned>());
   unsigned mod_ptr = 0;
@@ -90,9 +93,11 @@ int main (int argc, char * argv []) {
     if (k % notification_frequency == 0 && k != 0) {
       cout << k << " edges completed..." << endl;
 
+      cout << "Good edges: " << good_edges.size() << endl;
       // custom geometric generator to create roughly notification_frequency edge updates
-      double param = max((double) good_edges.size() / notification_frequency,
+      double param = min((double) good_edges.size() / notification_frequency,
                          static_reinsertion_param);
+      cout << "geometric param: " << param << endl;
       geometric_distribution<unsigned long> static_reinsertions(param);
 
       // add all edges to the stream
