@@ -109,7 +109,8 @@ target_link_libraries(binary_cont_test PRIVATE GraphStreamingCC)
 
 # Test query and insertion time multiple times throughout a stream
 add_executable(query_test
-    query_expr/query_expr.cpp)
+    query_expr/query_expr.cpp
+    util/insertion_mgr.cpp)
 add_dependencies(query_test GraphStreamingCC)
 target_link_libraries(query_test PRIVATE GraphStreamingCC)
 
