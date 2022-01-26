@@ -120,7 +120,7 @@ void perform_insertions(std::string binary_input, std::string output_file, sys_c
   out.close();
 }
 
-void perform_continuous_insertions(std::string binary_input, std::string output_file, sys_config config) {
+void perform_continuous_insertions(std::string binary_input, sys_config config) {
 // create the structure which will perform buffered input for us
   BinaryGraphStream stream(binary_input, 32 * 1024);
 
@@ -134,43 +134,58 @@ void perform_continuous_insertions(std::string binary_input, std::string output_
 
   const int samples = 10;
   const uint64_t upds_per_sample = m / samples;
+  unsigned long num_failure = 0;
+  std::vector<double> flush_times (samples, 0.0);
+  std::vector<double> cc_times (samples, 0.0);
+  std::vector<double> tot_times (samples, 0.0);
+  std::vector<double> insertion_times (samples, 0.0);
 
   // TODO: one insertion/query cycle per sample (for-loop)
 
-  auto start = std::chrono::steady_clock::now();
-  std::thread querier(track_insertions, output_file, total, &g, start);
-
-  while (m--) {
-    g.update(stream.get_edge());
+  for (int i = 0; i < samples; ++i) {
+    auto start = std::chrono::steady_clock::now();
+    for (unsigned j = 0; j < upds_per_sample; ++j) {
+      g.update(stream.get_edge());
+    }
+    try {
+      std::cout << "Running cc" << std::endl;
+      auto res = g.connected_components(true);
+      auto end = std::chrono::steady_clock::now();
+      std::cout << "Number CCs: " << res.size() << std::endl;
+      flush_times[i] = std::chrono::duration<double>(g.cc_flush_end_time -
+                                                     g.cc_flush_start_time).count();
+      cc_times[i] = std::chrono::duration<double>(g.cc_end_time -
+                                                  g.cc_start_time).count();
+      tot_times[i] = std::chrono::duration<double>(end - start).count();
+      insertion_times[i] = std::chrono::duration<double>(g.cc_flush_end_time
+            - start).count();
+    } catch (const OutOfQueriesException& e) {
+      num_failure++;
+      std::cout << "CC #" << i << "failed with NoMoreQueries" << std::endl;
+    }
   }
-
-  std::cout << "Starting CC" << std::endl;
-
-  uint64_t num_CC = g.connected_components().size();
-  auto end = std::chrono::steady_clock::now();
-
-  querier.join();
-  long double time_taken = static_cast<std::chrono::duration<long double>>(g
-                                                                                 .cc_end_time -
-                                                                           start).count();
-  long double CC_time = static_cast<std::chrono::duration<long double>>(end -
-                                                                        g.cc_end_time).count();
-
-  std::ofstream out{output_file, std::ofstream::out | std::ofstream::app}; //
-// open the outfile
-  std::cout << "Number of connected components is " << num_CC << std::endl;
-  std::cout << "Writing runtime stats to " << output_file << std::endl;
-
-  std::chrono::duration<double> runtime = g.cc_end_time - start;
-
-// calculate the insertion rate and write to file
-// insertion rate measured in stream updates
-// (not in the two sketch updates we process per stream update)
-  float ins_per_sec = (((float) (total)) / runtime.count());
-  out << "Procesing " << total << " updates took " << time_taken << " seconds, "
-      << ins_per_sec << " per second\n";
-
-  out << "Connected Components algorithm took " << CC_time << " and found "
-      << num_CC << " CC\n";
-  out.close();
+  std::clog << "Num failures: " << num_failure << std::endl;
+  std::cout << "Flush timings\n";
+  for (unsigned i = 0; i < samples; ++i) {
+    std::cout << i << ": " << flush_times[i] << " sec\n";
+  }
+  std::cout << "\n";
+  std::cout << "CC timings\n";
+  for (unsigned i = 0; i < samples; ++i) {
+    std::cout << i << ": " << cc_times[i] << " sec\n";
+  }
+  std::cout << "\n";
+  std::cout << "Total processing time\n";
+  for (unsigned i = 0; i < samples; ++i) {
+    std::cout << i << ": " << tot_times[i] << " sec\n";
+  }
+  std::cout << "\n";
+  std::cout << "Ingestion time\n";
+  double cum_ingestion_time = 0.0;
+  for (unsigned i = 0; i < samples; ++i) {
+    std::cout << i << ": " << insertion_times[i] << " sec\n";
+    cum_ingestion_time += insertion_times[i];
+  }
+  std::cout << "\nIngestion rate: " << (double) total / cum_ingestion_time <<
+  " sec" << std::endl;
 }
