@@ -29,20 +29,9 @@ endif()
 # Install GraphStreamingCC Project
 FetchContent_Declare(
   GraphStreamingCC
-<<<<<<< HEAD
-
-  PREFIX          GraphStreamingCC
-  GIT_REPOSITORY  "https://github.com/GraphStreamingProject/GraphStreamingCC"
-  GIT_TAG         "time_hook"
-
-  UPDATE_DISCONNECTED false
-  BUILD_ALWAYS    OFF
-  INSTALL_DIR     ${CMAKE_CURRENT_BINARY_DIR}/GraphStreamingCC/prefix
-=======
   GIT_REPOSITORY      "https://github.com/GraphStreamingProject/GraphStreamingCC"
-  GIT_TAG             "cmake_updates"
+  GIT_TAG             "time_hook"
   UPDATE_DISCONNECTED OFF
->>>>>>> origin
 
   CMAKE_CACHE_ARGS
     -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
@@ -123,7 +112,19 @@ target_link_libraries(buffersize_experiment PRIVATE GraphStreamingCC)
 add_executable(cont_test
   cont_expr/cont_expr.cpp)
 add_dependencies(cont_test GraphStreamingCC)
-target_link_libraries(cont_test PRIVATE GraphStreamingCC)
+target_link_libraries(cont_test PRIVATE GraphStreamingVerifyCC)
+
+# Continuous testing with binary stream ingestion
+add_executable(binary_cont_test
+    query_expr/binary_cont_expr.cpp)
+add_dependencies(binary_cont_test GraphStreamingCC)
+target_link_libraries(binary_cont_test PRIVATE GraphStreamingCC)
+
+# Test query and insertion time multiple times throughout a stream
+add_executable(query_test
+    query_expr/query_expr.cpp)
+add_dependencies(query_test GraphStreamingCC)
+target_link_libraries(query_test PRIVATE GraphStreamingCC)
 
 #########
 # Three executables for the purpose of comparing the performance 
