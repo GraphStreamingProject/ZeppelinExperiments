@@ -1,10 +1,10 @@
 #include <fstream>
 #include <string>
 #include <chrono>
-#include <ctime>
 #include <sstream>
 #include <thread>
 #include <iostream>
+#include <unistd.h>
 
 #include <graph.h>
 #include <binary_graph_stream.h>
@@ -21,7 +21,7 @@
  */
 void track_insertions(std::string output_file, uint64_t total, Graph *g, std::chrono::steady_clock::time_point start_time) {
   total = total * 2;                // we insert 2 edge updates per edge
-  ofstream out{output_file}; // open the outfile
+  std::ofstream out{output_file}; // open the outfile
   if (!out.is_open()) {
     printf("ERROR:Could not open output file! %s\n", output_file.c_str());
     exit(EXIT_FAILURE);
@@ -100,7 +100,7 @@ void perform_insertions(std::string binary_input, std::string output_file, sys_c
   long double time_taken = static_cast<std::chrono::duration<long double>>(g.end_time - start).count();
   long double CC_time = static_cast<std::chrono::duration<long double>>(end - g.end_time).count();
 
-  ofstream out{output_file,  std::ofstream::out | std::ofstream::app}; // open the outfile
+  std::ofstream out{output_file,  std::ofstream::out | std::ofstream::app}; // open the outfile
   std::cout << "Number of connected components is " << num_CC << std::endl;
   std::cout << "Writing runtime stats to " << output_file << std::endl;
 
