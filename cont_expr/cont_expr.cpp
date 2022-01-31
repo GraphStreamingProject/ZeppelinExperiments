@@ -30,7 +30,8 @@ void test_continuous(std::string input_file, unsigned samples) {
   auto empty_res = g.connected_components(true);
   double empty_time = std::chrono::duration<double>(std::chrono::steady_clock
         ::now() - empty_start).count();
-  auto empty_flush = std::chrono::duration<double>(g.cc_flush_end_time - g.cc_flush_start_time).count();
+  auto empty_flush = std::chrono::duration<double>(g.cont_cc_flush_end_time - g
+        .cont_cc_flush_start_time).count();
   auto empty_cc = std::chrono::duration<double>(g.cc_end_time - g.cc_start_time).count();
   std::cout << "Empty graph\nNumber CCs: " << empty_res.size() << "\nTotal time: "
     << empty_time << "\nFLush time: " << empty_flush << "\nCC time: "
@@ -55,8 +56,8 @@ void test_continuous(std::string input_file, unsigned samples) {
       std::cout << "Number CCs: " << res.size();
       cc_times_with_return[i] = std::chrono::duration<double>
             (end - g.cc_start_time).count();
-      flush_times[i] = std::chrono::duration<double>(g.cc_flush_end_time -
-            g.cc_flush_start_time).count();
+      flush_times[i] = std::chrono::duration<double>(g.cont_cc_flush_end_time -
+            g.cont_cc_flush_start_time).count();
       cc_times[i] = std::chrono::duration<double>(g.cc_end_time -
             g.cc_start_time).count();
       tot_times[i] = std::chrono::duration<double>(end - start).count();
