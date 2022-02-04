@@ -93,18 +93,18 @@ void perform_insertions(std::string binary_input, std::string output_file, sys_c
 
   std::cout << "Starting CC" << std::endl;
 
-  uint64_t num_CC = g.connected_components().size();
+  uint64_t num_CC = g.connected_components(true).size();
   auto end = std::chrono::steady_clock::now();
 
   querier.join();
-  long double time_taken = static_cast<std::chrono::duration<long double>>(g.end_time - start).count();
-  long double CC_time = static_cast<std::chrono::duration<long double>>(end - g.end_time).count();
+  long double time_taken = static_cast<std::chrono::duration<long double>>(g.flush_return - start).count();
+  long double CC_time = static_cast<std::chrono::duration<long double>>(g.cc_alg_end - g.cc_alg_start).count();
 
   std::ofstream out{output_file,  std::ofstream::out | std::ofstream::app}; // open the outfile
   std::cout << "Number of connected components is " << num_CC << std::endl;
   std::cout << "Writing runtime stats to " << output_file << std::endl;
 
-  std::chrono::duration<double> runtime  = g.end_time - start;
+  std::chrono::duration<double> runtime  = g.flush_return - start;
 
   // calculate the insertion rate and write to file
   // insertion rate measured in stream updates 
