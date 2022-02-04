@@ -140,6 +140,7 @@ void perform_continuous_insertions(std::string binary_input, sys_config config) 
   // TODO: one insertion/query cycle per sample (for-loop)
 
   for (int i = 0; i < samples; ++i) {
+    std::cout << "new iteration" << std::endl;
     auto start = std::chrono::steady_clock::now();
     for (unsigned j = 0; j < upds_per_sample; ++j) {
       g.update(stream.get_edge());
@@ -147,7 +148,7 @@ void perform_continuous_insertions(std::string binary_input, sys_config config) 
     try {
       std::cout << "Running cc" << std::endl;
       auto cc_start = std::chrono::steady_clock::now(); 
-      auto res = g.connected_components(true);
+      auto res = g.connected_components(false);
       auto end = std::chrono::steady_clock::now();
 
       std::cout << "Number CCs: " << res.size() << std::endl;
