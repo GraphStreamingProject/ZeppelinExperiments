@@ -89,6 +89,15 @@ add_executable(cont_test
 add_dependencies(cont_test GraphStreamingCC)
 target_link_libraries(cont_test PRIVATE GraphStreamingVerifyCC)
 
+# Test query performance by running many queries during experiment
+add_executable(query_test
+  query_expr/query_expr.cpp
+  util/insertion_mgr.cpp
+  util/configuration.cpp
+)
+add_dependencies(query_test GraphStreamingCC)
+target_link_libraries(query_test PRIVATE GraphStreamingCC)
+
 #########
 # Three executables for the purpose of comparing the performance 
 # of CubeSketch with state of the art l0-sketching
