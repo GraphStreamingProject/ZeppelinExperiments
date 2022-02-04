@@ -94,24 +94,21 @@ void perform_insertions(std::string binary_input, std::string output_file, sys_c
   std::cout << "Starting CC" << std::endl;
 
   uint64_t num_CC = g.connected_components().size();
-  auto end = std::chrono::steady_clock::now();
 
   querier.join();
-  long double time_taken = static_cast<std::chrono::duration<long double>>(g.end_time - start).count();
-  long double CC_time = static_cast<std::chrono::duration<long double>>(end - g.end_time).count();
+  std::chrono::duration<double> runtime = g.flush_return - start;
+  std::chrono::duration<double> CC_time = g.cc_alg_end - g.cc_alg_start;
 
   std::ofstream out{output_file,  std::ofstream::out | std::ofstream::app}; // open the outfile
   std::cout << "Number of connected components is " << num_CC << std::endl;
   std::cout << "Writing runtime stats to " << output_file << std::endl;
 
-  std::chrono::duration<double> runtime  = g.end_time - start;
-
   // calculate the insertion rate and write to file
   // insertion rate measured in stream updates 
   // (not in the two sketch updates we process per stream update)
   float ins_per_sec = (((float)(total)) / runtime.count());
-  out << "Procesing " << total << " updates took " << time_taken << " seconds, " << ins_per_sec << " per second\n";
+  out << "Procesing " << total << " updates took " << runtime.count() << " seconds, " << ins_per_sec << " per second\n";
 
-  out << "Connected Components algorithm took " << CC_time << " and found " << num_CC << " CC\n";
+  out << "Connected Components algorithm took " << CC_time.count() << " and found " << num_CC << " CC\n";
   out.close();
 }
