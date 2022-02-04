@@ -30,7 +30,7 @@ endif()
 FetchContent_Declare(
   GraphStreamingCC
   GIT_REPOSITORY      "https://github.com/GraphStreamingProject/GraphStreamingCC"
-  GIT_TAG             "mat_verify"
+  GIT_TAG             "backup_to_file"
   UPDATE_DISCONNECTED OFF
 
   CMAKE_CACHE_ARGS

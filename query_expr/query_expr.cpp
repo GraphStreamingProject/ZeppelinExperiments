@@ -41,7 +41,7 @@ void perform_continuous_insertions(std::string binary_input, sys_config config) 
     try {
       std::cout << "Running cc" << std::endl;
       auto cc_start = std::chrono::steady_clock::now(); 
-      auto res = g.connected_components(false);
+      auto res = g.connected_components(true);
       auto end = std::chrono::steady_clock::now();
 
       std::cout << "Number CCs: " << res.size() << std::endl;

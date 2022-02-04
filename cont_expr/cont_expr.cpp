@@ -31,7 +31,7 @@ void test_continuous(std::string input_file, unsigned samples) {
     verify.reset_cc_state();
     g.set_verifier(std::make_unique<MatGraphVerifier>(verify));
     std::cout << "Running cc" << std::endl;
-    g.connected_components(false);
+    g.connected_components(true);
   }
   std::clog << n << ',' << num_failure << std::endl;
 }
