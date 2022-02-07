@@ -30,7 +30,7 @@ endif()
 FetchContent_Declare(
   GraphStreamingCC
   GIT_REPOSITORY      "https://github.com/GraphStreamingProject/GraphStreamingCC"
-  GIT_TAG             "backup_to_file"
+  GIT_TAG             "cc_improve"
   UPDATE_DISCONNECTED OFF
 
   CMAKE_CACHE_ARGS
@@ -83,7 +83,7 @@ target_link_libraries(parallel_experiment PRIVATE GraphStreamingCC)
 add_executable(buffersize_experiment
   util/configuration.cpp
   util/insertion_mgr.cpp
-  parallel_expr/parallel_expr.cpp
+  buffer_expr/buffer_expr.cpp
 )
 add_dependencies(buffersize_experiment GraphStreamingCC)
 target_link_libraries(buffersize_experiment PRIVATE GraphStreamingCC)

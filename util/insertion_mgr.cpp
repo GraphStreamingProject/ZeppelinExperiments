@@ -11,6 +11,8 @@
 #include "configuration.h"
 #include "insertion_mgr.h"
 
+static bool shutdown = false;
+
 /*
  * Function which is run in a seperate thread and will query
  * the graph for the number of updates it has processed
@@ -59,7 +61,7 @@ void track_insertions(std::string output_file, uint64_t total, Graph *g, std::ch
       prev = now; // reset start time to right after query
     }
     
-    if (updates >= total)
+    if (updates >= total || shutdown)
       break;
 
     // display the progress
@@ -72,9 +74,10 @@ void track_insertions(std::string output_file, uint64_t total, Graph *g, std::ch
   return;
 }
 
-void perform_insertions(std::string binary_input, std::string output_file, sys_config config) {
+void perform_insertions(std::string binary_input, std::string output_file, sys_config config, long timeout) {
   // create the structure which will perform buffered input for us
   BinaryGraphStream stream(binary_input, 32 * 1024);
+  shutdown = false;
 
   // write the configuration to the config files
   write_configuration(config);
@@ -86,15 +89,35 @@ void perform_insertions(std::string binary_input, std::string output_file, sys_c
 
   auto start = std::chrono::steady_clock::now();
   std::thread querier(track_insertions, output_file, total, &g, start);
-
-  while (m--) {
-    g.update(stream.get_edge());
+  
+  if (timeout <= 0) {
+    // then just run the whole stream
+    while (m--) {
+      g.update(stream.get_edge());
+    }
+  } else {
+    // implement a timeout and stop the stream prematurely if necessary
+    std::cout << "insertion_mgr: Using a TIMEOUT of " << timeout << " minutes" << std::endl;
+    while (m > 0) {
+      long i = 0;
+      for (; i < m && i < 10000000; i++) {
+        g.update(stream.get_edge());
+      }
+      auto now = std::chrono::steady_clock::now();
+      if (std::chrono::duration<double, std::ratio<60>>(now - start).count() > timeout) {
+        total = total - m; // reduce total by number of unprocessed edges
+	std::cout << "Stream stopped short because of timeout after " << total << " insertions" << std::endl;
+	break;
+      }
+      m -= i;
+    }
   }
 
   std::cout << "Starting CC" << std::endl;
 
   uint64_t num_CC = g.connected_components().size();
-
+  
+  shutdown = true;
   querier.join();
   std::chrono::duration<double> runtime = g.flush_return - start;
   std::chrono::duration<double> CC_time = g.cc_alg_end - g.cc_alg_start;
