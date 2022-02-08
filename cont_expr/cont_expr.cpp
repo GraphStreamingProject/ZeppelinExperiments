@@ -18,7 +18,6 @@ void test_continuous(std::string input_file, unsigned samples) {
 
   size_t total_edges = static_cast<size_t>(n - 1) * n / 2;
   size_t updates_per_sample = m / samples;
-  std::vector<bool> adj(total_edges);
   unsigned long num_failure = 0;
   std::vector<double> flush_times (samples, 0.0);
   std::vector<double> cc_times (samples, 0.0);
@@ -40,12 +39,12 @@ void test_continuous(std::string input_file, unsigned samples) {
     std::cout << "Starting updates" << std::endl;
     for (unsigned long j = 0; j < updates_per_sample; j++) {
       GraphUpdate upd = stream.get_edge();
-      uint64_t edge_uid = MatGraphVerifier::get_uid(upd.first.first, upd.first.second);
       g.update(upd);
-      adj[edge_uid] = !adj[edge_uid];
+      verify.edge_update(upd.first.first, upd.first.second);
     }
     try {
-      g.set_verifier(std::make_unique<MatGraphVerifier>(n, adj));
+      verify.reset_cc_state();
+      g.set_verifier(std::make_unique<MatGraphVerifier>(verify));
       std::cout << "Running cc" << std::endl;
       auto start = std::chrono::steady_clock::now();
       auto res = g.connected_components(true);
@@ -68,10 +67,6 @@ void test_continuous(std::string input_file, unsigned samples) {
       num_failure++;
       std::cout << "CC #" << i << "failed with BadEdge" << std::endl;
     }
-    verify.reset_cc_state();
-    g.set_verifier(std::make_unique<MatGraphVerifier>(verify));
-    std::cout << "Running cc" << std::endl;
-    g.connected_components(true);
   }
   std::clog << n << ',' << num_failure << std::endl;
   std::cout << "Flush timings\n";
