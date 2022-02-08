@@ -5,21 +5,19 @@
 #include <graph.h>
 #include <vector>
 #include <mat_graph_verifier.h>
+#include <binary_graph_stream.h>
 
 void test_continuous(std::string input_file, unsigned samples) {
   // create input stream
-
-  std::ifstream in {input_file};
-  node_id_t n;
-  uint64_t  m;
-
-  in >> n >> m;
+  BinaryGraphStream stream {input_file, 32 * 1024 };
+  node_id_t n = stream.nodes();
+  uint64_t  m = stream.edges();
 
   Graph g{n};
 
   size_t total_edges = static_cast<size_t>(n - 1) * n / 2;
   size_t updates_per_sample = m / samples;
-//  std::vector<bool> adj(total_edges);
+  std::vector<bool> adj(total_edges);
   unsigned long num_failure = 0;
   std::vector<double> flush_times (samples, 0.0);
   std::vector<double> cc_times (samples, 0.0);
@@ -37,18 +35,16 @@ void test_continuous(std::string input_file, unsigned samples) {
     << empty_time << "\nFLush time: " << empty_flush << "\nCC time: "
     << empty_cc << std::endl;
 
-  node_id_t t,a,b;
   for (unsigned long i = 0; i < samples; i++) {
     std::cout << "Starting updates" << std::endl;
     for (unsigned long j = 0; j < updates_per_sample; j++) {
-      in >> t >> a >> b;
-//      GraphUpdate upd = {{a,b},t};
-//      uint64_t edge_uid = MatGraphVerifier::get_uid(upd.first.first, upd.first.second);
-      g.update({{a,b},INSERT});
-//      adj[edge_uid] = !adj[edge_uid];
+      GraphUpdate upd = stream.get_edge();
+      uint64_t edge_uid = MatGraphVerifier::get_uid(upd.first.first, upd.first.second);
+      g.update(upd);
+      adj[edge_uid] = !adj[edge_uid];
     }
     try {
-//      g.set_verifier(std::make_unique<MatGraphVerifier>(n, adj));
+      g.set_verifier(std::make_unique<MatGraphVerifier>(n, adj));
       std::cout << "Running cc" << std::endl;
       auto start = std::chrono::steady_clock::now();
       auto res = g.connected_components(true);
