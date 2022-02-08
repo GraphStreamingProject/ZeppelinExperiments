@@ -5,6 +5,7 @@
 #include <vector>
 #include <binary_graph_stream.h>
 
+// Same as cont_expr but using binary streams
 void test_continuous(std::string input_file, unsigned samples) {
   // create input stream
 

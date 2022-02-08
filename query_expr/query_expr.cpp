@@ -4,6 +4,7 @@
 
 #include "../util/configuration.h"
 #include "../util/insertion_mgr.h"
+#include <binary_graph_stream.h>
 #include <graph_zeppelin_common.h>
 
 int main(int argc, char** argv) {
@@ -16,8 +17,10 @@ int main(int argc, char** argv) {
   std::string input  = argv[1];
   int num_buffer_elems = std::stoi(argv[2]);
 
-  const node_id_t num_nodes = 131072;
-  // TODO: change standalone buffer size to ~100 elems
+  // create the structure which will perform buffered input for us
+  BinaryGraphStream stream(input, 32 * 1024);
+  node_id_t num_nodes = stream.nodes();
+
   double unrounded_gf = (42 * pow(log2(num_nodes), 2) /
         (log2(3) - 1)) / num_buffer_elems;
   std::cout << "Unrounded gutter factor: " << unrounded_gf << std::endl;
@@ -26,6 +29,6 @@ int main(int argc, char** argv) {
   sys_config conf {0, 0, gutter_factor};
 
   backup_configuration();
-  perform_continuous_insertions(input, conf);
+  perform_continuous_insertions(stream, conf);
   restore_configuration();
 }

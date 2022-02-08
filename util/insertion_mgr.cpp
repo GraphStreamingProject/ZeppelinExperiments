@@ -8,7 +8,6 @@
 #include <unistd.h>
 
 #include <graph.h>
-#include <binary_graph_stream.h>
 #include "configuration.h"
 #include "insertion_mgr.h"
 
@@ -120,11 +119,8 @@ void perform_insertions(std::string binary_input, std::string output_file, sys_c
   out.close();
 }
 
-void perform_continuous_insertions(std::string binary_input, sys_config config) {
-// create the structure which will perform buffered input for us
-  BinaryGraphStream stream(binary_input, 32 * 1024);
-
-// write the configuration to the config files
+void perform_continuous_insertions(BinaryGraphStream& stream, sys_config config) {
+  // write the configuration to the config files
   write_configuration(config);
 
   node_id_t num_nodes = stream.nodes();
@@ -139,8 +135,6 @@ void perform_continuous_insertions(std::string binary_input, sys_config config) 
   std::vector<double> cc_times (samples, 0.0);
   std::vector<double> tot_times (samples, 0.0);
   std::vector<double> insertion_times (samples, 0.0);
-
-  // TODO: one insertion/query cycle per sample (for-loop)
 
   for (int i = 0; i < samples; ++i) {
     auto start = std::chrono::steady_clock::now();
