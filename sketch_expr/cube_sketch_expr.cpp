@@ -8,6 +8,8 @@
 #include <vector>
 #include <chrono>
 
+const int seed = 0xDEADBEEF;
+
 // This test runs the sketching technique introduced by our paper
 // and compares it to the one given by AGM
 int main(int argc, char** argv) {
@@ -18,9 +20,9 @@ int main(int argc, char** argv) {
     exit(EXIT_FAILURE);
   }
 
-  srand(time(NULL));
+  srand(seed);
   const unsigned long n        = std::atol(argv[1]);
-  const unsigned long updates  = 100000; // 100,000 updates
+  const unsigned long updates  = 500000; // 500,000 updates
   std::cerr << "Number of nodes " << n << std::endl;
 
   vec_t *stream = new vec_t[updates];

@@ -34,7 +34,6 @@ public:
   friend bool operator!=(const int127& lhs, const int127& rhs);
   friend bool operator>(const int127& lhs, const int127& rhs);
   friend bool operator<=(const int127& lhs, const int127& rhs);
-  friend std::ostream & operator<<(std::ostream & os, const int127& value );
 
   friend int127 operator*(const int127& lhs, const long& rhs);
   friend bool operator!=(const int127& lhs, const long long int& rhs);

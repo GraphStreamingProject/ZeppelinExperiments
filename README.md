@@ -9,7 +9,7 @@ Experiments used in Graph Zeppelin paper. Paper submitted to SIGMOD 2022.
 ## Installation
 1. Clone this repository
 2. Create a `build` directory in the directory where you cloned this repository.
-3. Initialize cmake by running `cmake -DAUTODOWNLOAD:BOOL=ON ..` in the build dir.
+3. Initialize cmake by running `cmake ..` in the build dir.
 4. Build the experiments by running `cmake --build .` in the build dir.
 
 ## System Requirements

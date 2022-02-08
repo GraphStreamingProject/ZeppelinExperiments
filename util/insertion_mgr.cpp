@@ -1,7 +1,6 @@
 #include <fstream>
 #include <string>
 #include <chrono>
-#include <ctime>
 #include <sstream>
 #include <thread>
 #include <iostream>
@@ -10,6 +9,8 @@
 #include <graph.h>
 #include "configuration.h"
 #include "insertion_mgr.h"
+
+static bool shutdown = false;
 
 /*
  * Function which is run in a seperate thread and will query
@@ -59,7 +60,7 @@ void track_insertions(std::string output_file, uint64_t total, Graph *g, std::ch
       prev = now; // reset start time to right after query
     }
     
-    if (updates >= total)
+    if (updates >= total || shutdown)
       break;
 
     // display the progress
@@ -72,9 +73,10 @@ void track_insertions(std::string output_file, uint64_t total, Graph *g, std::ch
   return;
 }
 
-void perform_insertions(std::string binary_input, std::string output_file, sys_config config) {
+void perform_insertions(std::string binary_input, std::string output_file, sys_config config, long timeout) {
   // create the structure which will perform buffered input for us
   BinaryGraphStream stream(binary_input, 32 * 1024);
+  shutdown = false;
 
   // write the configuration to the config files
   write_configuration(config);
@@ -86,16 +88,35 @@ void perform_insertions(std::string binary_input, std::string output_file, sys_c
 
   auto start = std::chrono::steady_clock::now();
   std::thread querier(track_insertions, output_file, total, &g, start);
-
-  while (m--) {
-    g.update(stream.get_edge());
+  
+  if (timeout <= 0) {
+    // then just run the whole stream
+    while (m--) {
+      g.update(stream.get_edge());
+    }
+  } else {
+    // implement a timeout and stop the stream prematurely if necessary
+    std::cout << "insertion_mgr: Using a TIMEOUT of " << timeout << " minutes" << std::endl;
+    while (m > 0) {
+      long i = 0;
+      for (; i < m && i < 10000000; i++) {
+        g.update(stream.get_edge());
+      }
+      auto now = std::chrono::steady_clock::now();
+      if (std::chrono::duration<double, std::ratio<60>>(now - start).count() > timeout) {
+        total = total - m; // reduce total by number of unprocessed edges
+	std::cout << "Stream stopped short because of timeout after " << total << " insertions" << std::endl;
+	break;
+      }
+      m -= i;
+    }
   }
 
   std::cout << "Starting CC" << std::endl;
 
   uint64_t num_CC = g.connected_components().size();
-  auto end = std::chrono::steady_clock::now();
-
+  
+  shutdown = true;
   querier.join();
   long double time_taken = static_cast<std::chrono::duration<long double>>(g
         .cc_flush_end_time - start).count();
@@ -113,9 +134,9 @@ void perform_insertions(std::string binary_input, std::string output_file, sys_c
   // insertion rate measured in stream updates 
   // (not in the two sketch updates we process per stream update)
   float ins_per_sec = (((float)(total)) / runtime.count());
-  out << "Procesing " << total << " updates took " << time_taken << " seconds, " << ins_per_sec << " per second\n";
+  out << "Procesing " << total << " updates took " << runtime.count() << " seconds, " << ins_per_sec << " per second\n";
 
-  out << "Connected Components algorithm took " << CC_time << " and found " << num_CC << " CC\n";
+  out << "Connected Components algorithm took " << CC_time.count() << " and found " << num_CC << " CC\n";
   out.close();
 }
 
@@ -132,7 +153,9 @@ void perform_continuous_insertions(BinaryGraphStream& stream, sys_config config)
   const uint64_t upds_per_sample = m / samples;
   unsigned long num_failure = 0;
   std::vector<double> flush_times (samples, 0.0);
-  std::vector<double> cc_times (samples, 0.0);
+  std::vector<double> backup_times (samples, 0.0);
+  std::vector<double> cc_alg_times (samples, 0.0);
+  std::vector<double> cc_tot_times (samples, 0.0);
   std::vector<double> tot_times (samples, 0.0);
   std::vector<double> insertion_times (samples, 0.0);
 
@@ -146,27 +169,32 @@ void perform_continuous_insertions(BinaryGraphStream& stream, sys_config config)
       auto res = g.connected_components(true);
       auto end = std::chrono::steady_clock::now();
       std::cout << "Number CCs: " << res.size() << std::endl;
-      flush_times[i] = std::chrono::duration<double>(g.cc_flush_end_time -
-                                                     g.cc_flush_start_time).count();
-      cc_times[i] = std::chrono::duration<double>(g.cc_end_time -
-                                                  g.cc_start_time).count();
+      flush_times[i] = std::chrono::duration<double>(g.flush_return - g.flush_call).count();
+      backup_times[i] = std::chrono::duration<double>(g.create_backup_end - g.create_backup_start).count();
+      backup_times[i] += std::chrono::duration<double>(g.restore_backup_end - g.restore_backup_start).count();
+      cc_alg_times[i] = std::chrono::duration<double>(g.cc_alg_end - g.cc_alg_start).count();
+      cc_tot_times[i] = std::chrono::duration<double>(end - cc_start).count();
       tot_times[i] = std::chrono::duration<double>(end - start).count();
-      insertion_times[i] = std::chrono::duration<double>(g.cc_flush_end_time
-            - start).count();
+      insertion_times[i] = std::chrono::duration<double>(g.flush_return - start).count();
     } catch (const OutOfQueriesException& e) {
       num_failure++;
       std::cout << "CC #" << i << "failed with NoMoreQueries" << std::endl;
     }
   }
   std::clog << "Num failures: " << num_failure << std::endl;
+  std::cout << "CC Total timings\n";
+  for (unsigned i = 0; i < samples; ++i) {
+    std::cout << i << ": " << cc_tot_times[i] << " sec\n";
+  }
+  std::cout << "\n";
   std::cout << "Flush timings\n";
   for (unsigned i = 0; i < samples; ++i) {
     std::cout << i << ": " << flush_times[i] << " sec\n";
   }
   std::cout << "\n";
-  std::cout << "CC timings\n";
+  std::cout << "CC Algorithm timings\n";
   for (unsigned i = 0; i < samples; ++i) {
-    std::cout << i << ": " << cc_times[i] << " sec\n";
+    std::cout << i << ": " << cc_alg_times[i] << " sec\n";
   }
   std::cout << "\n";
   std::cout << "Total processing time\n";

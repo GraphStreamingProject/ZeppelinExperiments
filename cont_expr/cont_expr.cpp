@@ -16,6 +16,7 @@ void test_continuous(std::string input_file, unsigned samples) {
   in >> n >> m;
 
   Graph g{n};
+  MatGraphVerifier verify(n);
 
   size_t total_edges = static_cast<size_t>(n - 1) * n / 2;
   size_t updates_per_sample = m / samples;
@@ -71,6 +72,10 @@ void test_continuous(std::string input_file, unsigned samples) {
       num_failure++;
       std::cout << "CC #" << i << "failed with BadEdge" << std::endl;
     }
+    verify.reset_cc_state();
+    g.set_verifier(std::make_unique<MatGraphVerifier>(verify));
+    std::cout << "Running cc" << std::endl;
+    g.connected_components(true);
   }
   std::clog << n << ',' << num_failure << std::endl;
   std::cout << "Flush timings\n";

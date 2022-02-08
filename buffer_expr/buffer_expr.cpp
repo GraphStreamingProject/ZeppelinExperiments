@@ -6,25 +6,28 @@
 
 #include "../util/configuration.h"
 #include "../util/insertion_mgr.h"
+#include <binary_graph_stream.h>
 
 /**
  * Run the buffer size experiments
  * The gutter_factor is edited by this experiment
  */
 int main(int argc, char** argv) {
-  if (argc != 4) {
+  if (argc != 3) {
     std::cout << "Incorrect number of arguments. "
-                 "Expected three but got " << argc-1 << std::endl;
-    std::cout << "Arguments are: input_stream, output_file, num_nodes" << std::endl;
+                 "Expected two but got " << argc-1 << std::endl;
+    std::cout << "Arguments are: input_stream, output_file" << std::endl;
     exit(EXIT_FAILURE);
   }
 
   std::string input  = argv[1];
   std::string output = argv[2];
-  int num_nodes = std::stoi(argv[3]); // number of bytes it takes to represent a sketch
-  if (num_nodes <= 0 || num_nodes > 1000000) {
-    printf("Argument sketch_bytes out of range [1, 1 million]");
-    exit(EXIT_FAILURE);
+
+  // create a binary stream to get the number of nodes in the graph
+  node_id_t num_nodes;
+  {
+    BinaryGraphStream stream(input, 1024);
+    num_nodes = stream.nodes();
   }
 
   // backup the current configuration
@@ -56,7 +59,7 @@ int main(int argc, char** argv) {
 
     sys_config conf;
     conf.gutter_factor = size;
-    perform_insertions(input, output + "_" + std::to_string(size), conf);
+    perform_insertions(input, output + "_" + std::to_string(size), conf, 60);
   }
 
   // restore the configuration
