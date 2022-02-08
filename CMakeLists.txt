@@ -37,6 +37,11 @@ FetchContent_Declare(
     -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
 )
 
+find_package(Boost 1.66.0)
+if(NOT Boost_FOUND)
+ message("ERROR: Boost not found. AGM-sketching experiments will not be built. Please install boost 1.66.0 or higher")
+endif()
+
 FetchContent_MakeAvailable(GraphStreamingCC)
 
 # hack to re-use GraphStreamingCC boost installation by hardcoding BOOST_ROOT
@@ -90,7 +95,7 @@ target_link_libraries(parallel_experiment PRIVATE GraphStreamingCC)
 add_executable(buffersize_experiment
   util/configuration.cpp
   util/insertion_mgr.cpp
-  parallel_expr/parallel_expr.cpp
+  buffer_expr/buffer_expr.cpp
 )
 add_dependencies(buffersize_experiment GraphStreamingCC)
 target_link_libraries(buffersize_experiment PRIVATE GraphStreamingCC)
@@ -119,28 +124,30 @@ target_link_libraries(query_test PRIVATE GraphStreamingCC)
 # Three executables for the purpose of comparing the performance 
 # of CubeSketch with state of the art l0-sketching
 #########
-# AGM sketching using 64 bit types
-add_executable(agm_sketch_native
-  sketch_expr/agm_sketch_expr.cpp
-  sketch_expr/agm_sketching/src/bucket.cpp
-  sketch_expr/agm_sketching/src/int127.cpp
-  sketch_expr/agm_sketching/src/agm_sketch.cpp
-  sketch_expr/agm_sketching/src/update.cpp
-  sketch_expr/agm_sketching/src/util.cpp
-)
-target_link_libraries(agm_sketch_native PRIVATE xxhash)
-target_compile_definitions(agm_sketch_native PRIVATE USE_NATIVE_F)
+if(Boost_FOUND)
+  # AGM sketching using 64 bit types
+  add_executable(agm_sketch_native
+    sketch_expr/agm_sketch_expr.cpp
+    sketch_expr/agm_sketching/src/bucket.cpp
+    sketch_expr/agm_sketching/src/int127.cpp
+    sketch_expr/agm_sketching/src/agm_sketch.cpp
+    sketch_expr/agm_sketching/src/update.cpp
+    sketch_expr/agm_sketching/src/util.cpp
+  )
+  target_link_libraries(agm_sketch_native PRIVATE xxhash)
+  target_compile_definitions(agm_sketch_native PRIVATE USE_NATIVE_F)
 
-# AGM sketching using 128 bit types
-add_executable(agm_sketch
-  sketch_expr/agm_sketch_expr.cpp
-  sketch_expr/agm_sketching/src/bucket.cpp
-  sketch_expr/agm_sketching/src/int127.cpp
-  sketch_expr/agm_sketching/src/agm_sketch.cpp
-  sketch_expr/agm_sketching/src/update.cpp
-  sketch_expr/agm_sketching/src/util.cpp
-)
-target_link_libraries(agm_sketch PRIVATE xxhash)
+  # AGM sketching using 128 bit types
+  add_executable(agm_sketch
+    sketch_expr/agm_sketch_expr.cpp
+    sketch_expr/agm_sketching/src/bucket.cpp
+    sketch_expr/agm_sketching/src/int127.cpp
+    sketch_expr/agm_sketching/src/agm_sketch.cpp
+    sketch_expr/agm_sketching/src/update.cpp
+    sketch_expr/agm_sketching/src/util.cpp
+  )
+  target_link_libraries(agm_sketch PRIVATE xxhash)
+endif()
 
 # Sketch_experiment on CubeSketch
 add_executable(cube_sketch

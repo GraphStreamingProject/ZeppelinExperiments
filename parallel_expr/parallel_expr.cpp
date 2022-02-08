@@ -58,7 +58,7 @@ int main(int argc, char** argv) {
     sys_config conf;
     conf.group_size = group_size;
     conf.num_groups = groups;
-    perform_insertions(input, output + "_threads_exp_" + std::to_string(groups), conf);
+    perform_insertions(input, output + "_threads_exp_" + std::to_string(groups), conf, 60);
 
     if (groups == 1) groups = 0; // correct shifted thread numbers because starting at 1
   }

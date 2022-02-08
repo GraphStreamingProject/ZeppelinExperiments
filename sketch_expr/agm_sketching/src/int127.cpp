@@ -117,12 +117,6 @@ bool operator<=(const int127 &lhs, const int127 &rhs) {
   return lhs.toBoostInt128() <= rhs.toBoostInt128();
 }
 
-std::ostream &operator<<(std::ostream &os, const int127 &value) {
-  if (value.m_value & high_bitmask) os << "-";
-  os << (value.m_value & low_bitmask);
-  return os;
-}
-
 int127 operator*(const int127 &lhs, const long &rhs) {
   return {lhs.toBoostInt128() * rhs};
 }
