@@ -30,7 +30,7 @@ endif()
 FetchContent_Declare(
   GraphStreamingCC
   GIT_REPOSITORY      "https://github.com/GraphStreamingProject/GraphStreamingCC"
-  GIT_TAG             "cc_improve"
+  GIT_TAG             "time_hook"
   UPDATE_DISCONNECTED OFF
 
   CMAKE_CACHE_ARGS
@@ -43,6 +43,11 @@ if(NOT Boost_FOUND)
 endif()
 
 FetchContent_MakeAvailable(GraphStreamingCC)
+
+# hack to re-use GraphStreamingCC boost installation by hardcoding BOOST_ROOT
+set(BOOST_ROOT "${CMAKE_CURRENT_BINARY_DIR}/GraphStreamingCC/src/GraphStreamingCC-build/boost-src")
+find_package(Boost 1.66.0 REQUIRED)
+include_directories("${Boost_INCLUDE_DIR}")
 
 ###############################################################
 #########################  Utilities  #########################
@@ -57,6 +62,13 @@ add_executable(top_cleaner
 add_executable(top_max_finder
   util/max_finder.cpp
 )
+
+# stream_differ finds diffs between a given ascii-encoded stream and a given
+# binary-encoded stream
+add_executable(stream_differ
+  util/stream_differ.cpp)
+add_dependencies(stream_differ GraphStreamingCC)
+target_link_libraries(stream_differ PRIVATE GraphStreamingCC)
 
 ###############################################################
 ########################  Experiments  ########################
@@ -94,11 +106,17 @@ add_executable(cont_test
 add_dependencies(cont_test GraphStreamingCC)
 target_link_libraries(cont_test PRIVATE GraphStreamingVerifyCC)
 
-# Test query performance by running many queries during ingestion
+# Continuous testing with binary stream ingestion
+add_executable(binary_cont_test
+    query_expr/binary_cont_expr.cpp)
+add_dependencies(binary_cont_test GraphStreamingCC)
+target_link_libraries(binary_cont_test PRIVATE GraphStreamingCC)
+
+# Test query and insertion time multiple times throughout a stream
 add_executable(query_test
-  query_expr/query_expr.cpp
-  util/configuration.cpp
-)
+    query_expr/query_expr.cpp
+    util/insertion_mgr.cpp
+    util/configuration.cpp)
 add_dependencies(query_test GraphStreamingCC)
 target_link_libraries(query_test PRIVATE GraphStreamingCC)
 

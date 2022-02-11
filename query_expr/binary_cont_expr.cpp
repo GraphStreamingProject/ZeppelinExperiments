@@ -1,23 +1,21 @@
-#include <fstream>
 #include <unordered_map>
 #include <iostream>
 
 #include <graph.h>
 #include <vector>
-#include <mat_graph_verifier.h>
 #include <binary_graph_stream.h>
 
+// Same as cont_expr but using binary streams
 void test_continuous(std::string input_file, unsigned samples) {
   // create input stream
-  BinaryGraphStream stream {input_file, 32 * 1024 };
+
+  BinaryGraphStream stream {input_file, 32*1024};
   node_id_t n = stream.nodes();
   uint64_t  m = stream.edges();
+  size_t updates_per_sample = m / samples;
 
   Graph g{n};
-  MatGraphVerifier verify(n);
 
-  size_t total_edges = static_cast<size_t>(n - 1) * n / 2;
-  size_t updates_per_sample = m / samples;
   unsigned long num_failure = 0;
   std::vector<double> flush_times (samples, 0.0);
   std::vector<double> cc_times (samples, 0.0);
@@ -27,24 +25,20 @@ void test_continuous(std::string input_file, unsigned samples) {
   auto empty_start = std::chrono::steady_clock::now();
   auto empty_res = g.connected_components(true);
   double empty_time = std::chrono::duration<double>(std::chrono::steady_clock
-        ::now() - empty_start).count();
-  auto empty_flush = std::chrono::duration<double>(g.cont_cc_flush_end_time - g
-        .cont_cc_flush_start_time).count();
+                                                    ::now() - empty_start).count();
+  auto empty_flush = std::chrono::duration<double>(g.cc_flush_end_time - g.cc_flush_start_time).count();
   auto empty_cc = std::chrono::duration<double>(g.cc_end_time - g.cc_start_time).count();
   std::cout << "Empty graph\nNumber CCs: " << empty_res.size() << "\nTotal time: "
-    << empty_time << "\nFLush time: " << empty_flush << "\nCC time: "
-    << empty_cc << std::endl;
+            << empty_time << "\nFLush time: " << empty_flush << "\nCC time: "
+            << empty_cc << std::endl;
 
   for (unsigned long i = 0; i < samples; i++) {
     std::cout << "Starting updates" << std::endl;
     for (unsigned long j = 0; j < updates_per_sample; j++) {
       GraphUpdate upd = stream.get_edge();
       g.update(upd);
-      verify.edge_update(upd.first.first, upd.first.second);
     }
     try {
-      verify.reset_cc_state();
-      g.set_verifier(std::make_unique<MatGraphVerifier>(verify));
       std::cout << "Running cc" << std::endl;
       auto start = std::chrono::steady_clock::now();
       auto res = g.connected_components(true);
@@ -52,23 +46,17 @@ void test_continuous(std::string input_file, unsigned samples) {
       std::cout << "Number CCs: " << res.size();
       cc_times_with_return[i] = std::chrono::duration<double>
             (end - g.cc_start_time).count();
-      flush_times[i] = std::chrono::duration<double>(g.cont_cc_flush_end_time -
-            g.cont_cc_flush_start_time).count();
+      flush_times[i] = std::chrono::duration<double>(g.cc_flush_end_time -
+                                                     g.cc_flush_start_time).count();
       cc_times[i] = std::chrono::duration<double>(g.cc_end_time -
-            g.cc_start_time).count();
+                                                  g.cc_start_time).count();
       tot_times[i] = std::chrono::duration<double>(end - start).count();
     } catch (const OutOfQueriesException& e) {
       num_failure++;
       std::cout << "CC #" << i << "failed with NoMoreQueries" << std::endl;
-    } catch (const NotCCException& e) {
-      num_failure++;
-      std::cout << "CC #" << i << "failed with NotCC" << std::endl;
-    } catch (const BadEdgeException& e) {
-      num_failure++;
-      std::cout << "CC #" << i << "failed with BadEdge" << std::endl;
     }
   }
-  std::clog << n << ',' << num_failure << std::endl;
+  std::clog << "n: " << n << ", num_failure: " << num_failure << std::endl;
   std::cout << "Flush timings\n";
   for (unsigned i = 0; i < samples; ++i) {
     std::cout << i << ": " << flush_times[i] << " sec\n";

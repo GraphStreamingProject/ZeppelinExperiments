@@ -1,0 +1,17 @@
+Kron17 should give us examples of dense graphs with many connected components.
+If we don't get good results, here are some ideas for other types of graphs.
+
+---------- Manual generation ----------
+SPARSE MANY CCs
+1. Erdos-Renyi with ultra-low probability
+
+SPARSE FEW CCs
+1. Erdos-Renyi with low probability
+
+DENSE FEW CCs
+1. Kron17
+2. Erdos-Renyi with high probability
+
+DENSE MANY CCs
+1. Union many smaller high-probability Erdos-Renyi graphs
+2. Coprime graph using small primes, union larger primes
