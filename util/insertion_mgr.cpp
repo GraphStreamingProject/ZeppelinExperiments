@@ -119,7 +119,7 @@ void perform_insertions(std::string binary_input, std::string output_file, sys_c
   
   shutdown = true;
   querier.join();
-  std::chrono::duration<double> runtime = g.flush_return - start;
+  std::chrono::duration<double> runtime = g.flush_end - start;
   std::chrono::duration<double> CC_time = g.cc_alg_end - g.cc_alg_start;
 
   std::ofstream out{output_file,  std::ofstream::out | std::ofstream::app}; // open the outfile
