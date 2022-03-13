@@ -45,13 +45,11 @@ void perform_continuous_insertions(std::string binary_input, sys_config config) 
       auto end = std::chrono::steady_clock::now();
 
       std::cout << "Number CCs: " << res.size() << std::endl;
-      flush_times[i] = std::chrono::duration<double>(g.flush_return - g.flush_call).count();
-      backup_times[i] = std::chrono::duration<double>(g.create_backup_end - g.create_backup_start).count();
-      backup_times[i] += std::chrono::duration<double>(g.restore_backup_end - g.restore_backup_start).count();
+      flush_times[i] = std::chrono::duration<double>(g.flush_end - g.flush_start).count();
       cc_alg_times[i] = std::chrono::duration<double>(g.cc_alg_end - g.cc_alg_start).count();
       cc_tot_times[i] = std::chrono::duration<double>(end - cc_start).count();
       tot_times[i] = std::chrono::duration<double>(end - start).count();
-      insertion_times[i] = std::chrono::duration<double>(g.flush_return - start).count();
+      insertion_times[i] = std::chrono::duration<double>(g.flush_end - start).count();
 
       std::cout << i << ": " << cc_tot_times[i] << ", " << flush_times[i] << ", " << backup_times[i] << ", " << cc_alg_times[i] << ", " << tot_times[i] << ", " << insertion_times[i] << std::endl;
 
