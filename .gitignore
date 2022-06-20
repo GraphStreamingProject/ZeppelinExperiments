@@ -33,3 +33,7 @@
 
 # Build directory
 build/
+
+# CLion ignores
+/.idea/
+/cmake-build-debug/
