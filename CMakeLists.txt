@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS ON)
 
-project(StreamingCCExperiments)
+project(GraphZeppelinExperiments)
 
 # Make the default build type Release. If user or another
 # project sets a different value than use that
@@ -26,11 +26,11 @@ else()
   message(STATUS "${CMAKE_CXX_COMPILER_ID} not recognized, no flags added")
 endif()
 
-# Install GraphStreamingCC Project
+# Install GraphZeppelin Project
 FetchContent_Declare(
-  GraphStreamingCC
+  GraphZeppelin
 
-  GIT_REPOSITORY      https://github.com/GraphStreamingProject/GraphStreamingCC
+  GIT_REPOSITORY      https://github.com/GraphStreamingProject/GraphZeppelin
   GIT_TAG             main
 )
 
@@ -39,7 +39,7 @@ if(NOT Boost_FOUND)
  message("ERROR: Boost not found. AGM-sketching experiments will not be built. Please install boost 1.66.0 or higher")
 endif()
 
-FetchContent_MakeAvailable(GraphStreamingCC)
+FetchContent_MakeAvailable(GraphZeppelin)
 
 ###############################################################
 #########################  Utilities  #########################
@@ -64,8 +64,8 @@ add_executable(speed_experiment
   util/insertion_mgr.cpp
   speed_expr/speed_expr.cpp
 )
-add_dependencies(speed_experiment GraphStreamingCC)
-target_link_libraries(speed_experiment PRIVATE GraphStreamingCC)
+add_dependencies(speed_experiment GraphZeppelin)
+target_link_libraries(speed_experiment PRIVATE GraphZeppelin)
 
 # Test how insertion rate scales with additional threads
 add_executable(parallel_experiment
@@ -73,8 +73,8 @@ add_executable(parallel_experiment
   util/insertion_mgr.cpp
   parallel_expr/parallel_expr.cpp
 )
-add_dependencies(parallel_experiment GraphStreamingCC)
-target_link_libraries(parallel_experiment PRIVATE GraphStreamingCC)
+add_dependencies(parallel_experiment GraphZeppelin)
+target_link_libraries(parallel_experiment PRIVATE GraphZeppelin)
 
 # Test the impact of buffer size upon performace
 add_executable(buffersize_experiment
@@ -82,22 +82,22 @@ add_executable(buffersize_experiment
   util/insertion_mgr.cpp
   buffer_expr/buffer_expr.cpp
 )
-add_dependencies(buffersize_experiment GraphStreamingCC)
-target_link_libraries(buffersize_experiment PRIVATE GraphStreamingCC)
+add_dependencies(buffersize_experiment GraphZeppelin)
+target_link_libraries(buffersize_experiment PRIVATE GraphZeppelin)
 
 # Test correctness by running many insertions and many queries
 add_executable(cont_test
   cont_expr/cont_expr.cpp)
-add_dependencies(cont_test GraphStreamingCC)
-target_link_libraries(cont_test PRIVATE GraphStreamingVerifyCC)
+add_dependencies(cont_test GraphZeppelin)
+target_link_libraries(cont_test PRIVATE GraphZeppelinVerifyCC)
 
 # Test query performance by running many queries during ingestion
 add_executable(query_test
   query_expr/query_expr.cpp
   util/configuration.cpp
 )
-add_dependencies(query_test GraphStreamingCC)
-target_link_libraries(query_test PRIVATE GraphStreamingCC)
+add_dependencies(query_test GraphZeppelin)
+target_link_libraries(query_test PRIVATE GraphZeppelin)
 
 #########
 # Three executables for the purpose of comparing the performance 
@@ -132,5 +132,5 @@ endif()
 add_executable(cube_sketch
   sketch_expr/cube_sketch_expr.cpp
 )
-add_dependencies(cube_sketch GraphStreamingCC)
-target_link_libraries(cube_sketch PRIVATE GraphStreamingCC)
+add_dependencies(cube_sketch GraphZeppelin)
+target_link_libraries(cube_sketch PRIVATE GraphZeppelin)
