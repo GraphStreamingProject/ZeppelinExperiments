@@ -31,9 +31,23 @@
 *.out
 *.app
 
-# Build directory
-build/
+# Build
+/build
+/CMakeFiles
+*.cmake
+/compile_commands.json
+/Makefile
+/Cmake_Test
+/CMakeCache.txt
+.remote-sync.json
 
-# CLion ignores
+# CLion
 /.idea/
 /cmake-build-debug/
+/cmake-build-debug-coverage/
+
+# Our configuration file
+streaming.conf
+
+# Mac Files
+*.DS_Store
