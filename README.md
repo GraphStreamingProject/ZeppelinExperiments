@@ -11,7 +11,7 @@ Experiments used in Graph Zeppelin paper. Paper submitted to SIGMOD 2022.
 * Add R scripts code to repo and note dependencies
 
 ## System Requirements
-### GraphZeppelin
+### GraphZeppelin and Experiments
 * OS: Linux (tested on ubuntu-20 and ubuntu-18)
 * RAM: 64GB
 * Disk (SATA): 2 SSDs minimum 0.5 TB (we used SAMSUNG 870 EVO (1TB)) (one holding data can be somewhat slow)
