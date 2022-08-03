@@ -11,13 +11,20 @@ Experiments used in Graph Zeppelin paper. Paper submitted to SIGMOD 2022.
 * Add R scripts code to repo and note dependencies
 
 ## System Requirements
+### GraphZeppelin
 * OS: Linux (tested on ubuntu-20 and ubuntu-18)
 * RAM: 64GB
 * Disk (SATA): 2 SSDs minimum 0.5 TB (we used SAMSUNG 870 EVO (1TB)) (one holding data can be somewhat slow)
 * CPU: we used: Intel(R) Xeon(R) Gold 5220R CPU @ 2.20GHz (24 cores hyper threaded to 48)
 * C++ 14
 * cmake version 3.15 or higher
+
+### Additional requirements for comparison systems
+Aspen
 * CILK for Aspen?
+
+Terrace
+* ?
 
 Example EC2 instances: c5d.9xlarge or c5d.12xlarge
 
