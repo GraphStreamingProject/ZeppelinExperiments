@@ -51,3 +51,14 @@ streaming.conf
 
 # Mac Files
 *.DS_Store
+
+# Generated images
+*.png
+*.pdf
+
+# LaTeX log files etc
+*.log
+*.bbl
+*.aux
+*.synctex.gz
+*.blg

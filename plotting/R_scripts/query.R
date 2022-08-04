@@ -1,7 +1,7 @@
 library(tidyverse)
 library("scales")
 
-speed <- read.csv("/home/devd/Programming/git_stuff/stream_data/sigmod2021resub/query.csv")
+speed <- read.csv("query.csv")
 
 ggplot() +
   geom_line(data = speed, mapping = aes(x = percent, y = flush+cc, color = system, linetype =system), size = 0.5) +

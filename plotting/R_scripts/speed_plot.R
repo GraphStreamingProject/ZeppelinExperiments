@@ -1,7 +1,7 @@
 library(tidyverse)
 library("scales")
 
-speed <- read.csv("/home/devd/Programming/git_stuff/stream_data/sigmod2021resub/speed_data.csv")
+speed <- read.csv("speed_data.csv")
 
 ggplot() +
   geom_line(data = speed, mapping = aes(x = nodes, y = ingestion_rate/10^6, color = alg, linetype = alg), size = 0.5) +

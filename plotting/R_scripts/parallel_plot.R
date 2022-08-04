@@ -1,7 +1,7 @@
 library(tidyverse)
 library("scales")
 
-parallel <- read.csv("/home/devd/Programming/git_stuff/stream_data/sigmod2021resub/parallel_data.csv")
+parallel <- read.csv("parallel_data.csv")
 
 ggplot() +
   geom_line(data = parallel, mapping = aes(x = threads, y = insertion_rate), size = 0.5) +

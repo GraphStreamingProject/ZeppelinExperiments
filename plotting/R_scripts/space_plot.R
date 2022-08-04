@@ -2,7 +2,7 @@ library(tidyverse)
 library("scales")
 
 #size <- read.csv("/home/devd/Programming/git_stuff/stream_data/sigmod2021cam/space_data")
-size <- read.csv("/home/devd/Programming/git_stuff/stream_data/sigmod2021cam/space_data2.csv")
+size <- read.csv("space_data.csv")
 
 ggplot() +
   geom_line(data = size, mapping = aes(x = nodes, y = res+swap, color = alg, linetype=alg), size = 0.5) +
