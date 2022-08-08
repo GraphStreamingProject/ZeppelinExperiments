@@ -9,6 +9,7 @@ Experiments used in Graph Zeppelin paper. Paper submitted to SIGMOD 2022.
 * One big experiment bash file (robust and front-load quick experiments)
 * Format output of experiments to be in nice CSV format for R scripts
 * Add R scripts code to repo and note dependencies
+* Modifying top configuration -- Check Victor's email for instructions.
 
 ## System Requirements
 ### GraphZeppelin and Experiments
