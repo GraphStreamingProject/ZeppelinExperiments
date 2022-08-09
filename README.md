@@ -30,6 +30,45 @@ Terrace
 Example EC2 instances: c5d.9xlarge or c5d.12xlarge
 
 ## Installation
+### 1. Install cmake version 3.15+
+First Step:
+#### x86_64
+```
+wget https://github.com/Kitware/CMake/releases/download/v3.23.0-rc2/cmake-3.23.0-rc2-linux-x86_64.sh
+sudo mkdir /opt/cmake
+sudo sh cmake-3.23.0-rc2-linux-x86_64.sh --prefix=/opt/cmake
+```
+#### aarch64
+```
+wget https://github.com/Kitware/CMake/releases/download/v3.23.0-rc5/cmake-3.23.0-rc5-linux-aarch64.sh
+sudo mkdir /opt/cmake
+sudo sh cmake-3.23.0-rc5-linux-aarch64.sh --prefix=/opt/cmake
+```
+Second Step:
+```
+sudo ln -s /opt/cmake/bin/cmake /usr/local/bin/cmake
+```
+When running cmake .sh script enter y to license and n to install location.  
+These commands install cmake version 3.23 but any version >= 3.16 will work.
+
+### Setup cgroups
+We use `cgroups` to limit the amount of memory available to GraphZeppelin, Apsen, or Terrace. A Control Group is a linux kernel feature. The following steps create `cgroups` for limiting memory to 16 GiB and 8 GiB.
+
+```
+cd /sys/fs/cgroup/memory
+sudo mkdir 16GB ; sudo mkdir 8GB
+chown -R {USERNAME} 16GB ; chown -R {USERNAME} 8GB
+cd 16GB
+echo 1 > memory.oom_control
+echo 16G > memory.limit_in_bytes
+echo 16G > memory.soft_limit_in_bytes
+cd ../8GB
+echo 1 > memory.oom_control
+echo 8G > memory.limit_in_bytes
+echo 8G > memory.soft_limit_in_bytes
+```
+
+### Installing Experiments Repository
 1. Clone this repository
 2. Create a `build` directory in the directory where you cloned this repository.
 3. Initialize cmake by running `cmake ..` in the build dir.
