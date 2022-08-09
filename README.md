@@ -49,7 +49,7 @@ Second Step:
 sudo ln -s /opt/cmake/bin/cmake /usr/local/bin/cmake
 ```
 When running cmake .sh script enter y to license and n to install location.  
-These commands install cmake version 3.23 but any version >= 3.16 will work.
+These commands install cmake version 3.23 but any version >= 3.15 will work.
 
 ### Setup cgroups
 We use `cgroups` to limit the amount of memory available to GraphZeppelin, Apsen, or Terrace. A Control Group is a linux kernel feature. The following steps create `cgroups` for limiting memory to 16 GiB and 8 GiB.
