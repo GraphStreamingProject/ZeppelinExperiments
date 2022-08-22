@@ -74,18 +74,17 @@ void track_insertions(std::string output_file, uint64_t total, Graph *g, std::ch
   return;
 }
 
-void perform_insertions(std::string binary_input, std::string output_file, sys_config config, long timeout) {
+double perform_insertions(std::string binary_input, std::string output_file, sys_config config, long timeout) {
   // create the structure which will perform buffered input for us
   BinaryGraphStream stream(binary_input, 32 * 1024);
   shutdown = false;
 
-  // write the configuration to the config files
-  write_configuration(config);
+  auto graph_config = create_graph_config(config);
 
   node_id_t num_nodes = stream.nodes();
   long m              = stream.edges();
   long total          = m;
-  Graph g{num_nodes};
+  Graph g{num_nodes, graph_config};
 
   auto start = std::chrono::steady_clock::now();
   std::thread querier(track_insertions, output_file, total, &g, start);
@@ -134,4 +133,6 @@ void perform_insertions(std::string binary_input, std::string output_file, sys_c
 
   out << "Connected Components algorithm took " << CC_time.count() << " and found " << num_CC << " CC\n";
   out.close();
+
+  return ins_per_sec;
 }

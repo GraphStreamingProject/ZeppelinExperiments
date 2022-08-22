@@ -31,7 +31,7 @@ FetchContent_Declare(
   GraphZeppelin
 
   GIT_REPOSITORY      https://github.com/GraphStreamingProject/GraphZeppelin
-  GIT_TAG             main
+  GIT_TAG             onlyProgrammatic
 )
 
 find_package(Boost 1.66.0)
