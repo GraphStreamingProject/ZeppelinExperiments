@@ -60,7 +60,7 @@ int main(int argc, char** argv) {
     conf.num_groups = groups;
     ingestion_rates.push_back({
       groups,
-      perform_insertions(input, output + "_threads_exp_" + std::to_string(groups), conf, 60)
+      perform_insertions(input, output + "_threads_exp_" + std::to_string(groups), conf, 60).first.first
     });
 
     if (groups == 1) groups = 0; // correct shifted thread numbers because starting at 1

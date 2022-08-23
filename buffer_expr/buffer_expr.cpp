@@ -60,10 +60,10 @@ int main(int argc, char** argv) {
       sys_config conf;
       conf.gutter_factor = size;
       conf.use_tree = !in_mem;
-      auto ins_per_sec = perform_insertions(input, output + "_" + std::to_string(size), conf, 60);
+      auto ingestion_res = perform_insertions(input, output + "_" + std::to_string(size), conf, 60);
       csv_res.push_back({in_mem, {
         ((size > 0) ? updates_in_sketch * size : -updates_in_sketch / size),
-        ins_per_sec
+        ingestion_res.first.first
       }});
     }
   }
