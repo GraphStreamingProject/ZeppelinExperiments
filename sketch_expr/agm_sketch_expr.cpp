@@ -42,12 +42,17 @@ int main(int argc, char** argv) {
   auto end = std::chrono::steady_clock::now();
 
   std::chrono::duration<double> ins_time = end - start;
-  std::cout << "Time to update a sketch of length " << n 
-            << " with " << updates << " updates was: " 
-            << ins_time.count() << std::endl;
 
-  std::cout << "Updates per second: " << updates / ins_time.count() << std::endl;
-  std::cout << "Sketch is " << sketch.size() << " bytes\n";
+  // for posterity
+  // std::cout << "Time to update a sketch of length " << n 
+  //           << " with " << updates << " updates was: " 
+  //           << ins_time.count() << std::endl;
+
+  // std::cout << "Updates per second: " << updates / ins_time.count() << std::endl;
+  // std::cout << "Sketch is " << sketch.size() << " bytes\n";
+
+  // vectorlength,standard_updpsec,standard_size
+  std::cout << n << " " << updates / ins_time.count() << " " << sketch.size() << std::endl;
 
   delete[] stream;
 }

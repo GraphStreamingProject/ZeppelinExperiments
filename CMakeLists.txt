@@ -111,7 +111,16 @@ target_link_libraries(query_test PRIVATE GraphZeppelin)
 #########
 # Three executables for the purpose of comparing the performance 
 # of CubeSketch with state of the art l0-sketching
+# Another executable to combine results and calculate speedup/size reduction
 #########
+
+# Sketch_experiment on CubeSketch
+add_executable(cube_sketch
+  sketch_expr/cube_sketch_expr.cpp
+)
+add_dependencies(cube_sketch GraphZeppelin)
+target_link_libraries(cube_sketch PRIVATE GraphZeppelin)
+
 if(Boost_FOUND)
   # AGM sketching using 64 bit types
   add_executable(agm_sketch_native
@@ -135,11 +144,8 @@ if(Boost_FOUND)
     sketch_expr/agm_sketching/src/util.cpp
   )
   target_link_libraries(agm_sketch PRIVATE xxhash)
-endif()
 
-# Sketch_experiment on CubeSketch
-add_executable(cube_sketch
-  sketch_expr/cube_sketch_expr.cpp
-)
-add_dependencies(cube_sketch GraphZeppelin)
-target_link_libraries(cube_sketch PRIVATE GraphZeppelin)
+  add_executable(combine_sketch_expr_results
+    sketch_expr/combine_sketch_expr_results.cpp
+  )
+endif()
