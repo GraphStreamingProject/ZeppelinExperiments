@@ -14,7 +14,7 @@ do
 	mkdir unlim_results/test_`basename $input`
 
 	# run speed_experiment as seperate process without
-	./speed_runner $input unlim_results/test_`basename $input`/runtime_stats &
+	./speed_process_stream $input unlim_results/test_`basename $input`/runtime_stats &
 	pid=$!
 
 	#setup top logging

@@ -59,21 +59,21 @@ add_executable(top_max_finder
 ########################  Experiments  ########################
 ###############################################################
 # Test the speed and memory consumption of the algorithm
-add_executable(speed_runner
+add_executable(speed_process_stream
   util/configuration.cpp
   util/insertion_mgr.cpp
-  speed_expr/speed_runner.cpp
+  speed_expr/speed_process_stream.cpp
 )
-add_dependencies(speed_runner GraphZeppelin)
-target_link_libraries(speed_runner PRIVATE GraphZeppelin GraphZeppelinCommon)
+add_dependencies(speed_process_stream GraphZeppelin)
+target_link_libraries(speed_process_stream PRIVATE GraphZeppelin GraphZeppelinCommon)
 
 add_executable(speed_experiment
   util/configuration.cpp
   util/insertion_mgr.cpp
   util/shell_exec.cpp
-  speed_expr/speed_expr.cpp
+  speed_expr/speed_expr_manager.cpp
 )
-add_dependencies(speed_experiment GraphZeppelin speed_runner)
+add_dependencies(speed_experiment GraphZeppelin speed_process_stream)
 target_link_libraries(speed_experiment PRIVATE GraphZeppelin)
 
 # Test how insertion rate scales with additional threads

@@ -63,7 +63,7 @@ int main(int argc, char** argv) {
       auto ingestion_res = perform_insertions(input, output + "_" + std::to_string(size), conf, 60);
       csv_res.push_back({in_mem, {
         ((size > 0) ? updates_in_sketch * size : -updates_in_sketch / size),
-        ingestion_res.first.first
+        ingestion_res.ingestion_rate
       }});
     }
   }

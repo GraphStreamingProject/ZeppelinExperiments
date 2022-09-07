@@ -74,7 +74,7 @@ void track_insertions(std::string output_file, uint64_t total, Graph *g, std::ch
   return;
 }
 
-std::pair<std::pair<double, double>, node_id_t> perform_insertions(std::string binary_input, std::string output_file, sys_config config, long timeout) {
+InsertionData perform_insertions(std::string binary_input, std::string output_file, sys_config config, long timeout) {
   // create the structure which will perform buffered input for us
   BinaryGraphStream stream(binary_input, 32 * 1024);
   shutdown = false;
@@ -134,5 +134,5 @@ std::pair<std::pair<double, double>, node_id_t> perform_insertions(std::string b
   out << "Connected Components algorithm took " << CC_time.count() << " and found " << num_CC << " CC\n";
   out.close();
 
-  return {{ins_per_sec, CC_time.count()}, num_nodes};
+  return {ins_per_sec, CC_time.count(), num_nodes};
 }

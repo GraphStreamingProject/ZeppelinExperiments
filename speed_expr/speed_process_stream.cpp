@@ -21,7 +21,7 @@ int main(int argc, char** argv) {
 
   auto res = perform_insertions(input, "./TEMP_DUMP.txt", conf);
   std::ofstream out { output };
-  out << res.first.first << " " << res.first.second << " " << res.second << std::endl;
+  out << res.ingestion_rate << " " << res.cc_time << " " << res.num_nodes << std::endl;
 
   return 0;
 }

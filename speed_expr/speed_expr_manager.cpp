@@ -10,8 +10,8 @@ std::string cat(std::string filename) {
 
 int main(int argc, char** argv) {
   if (argc < 3) {
-    std::clog << "Correct usage is\n"
-      "\t/path/tp/speed_experiment csv_output_file input_file [input files+]" <<std::endl;
+    std::cerr << "Correct usage is\n"
+      "\t/path/to/speed_experiment csv_output_file input_file [input files+]" << std::endl;
     return 1;
   }
 
