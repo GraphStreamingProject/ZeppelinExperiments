@@ -1,5 +1,6 @@
 #include <string>
 #include <iostream>
+#include <fstream>
 
 #include "../util/configuration.h"
 #include "../util/insertion_mgr.h"
@@ -18,7 +19,9 @@ int main(int argc, char** argv) {
   // so an empty sys_config will suffice
   sys_config conf;
 
-  backup_configuration();
-  perform_insertions(input, output, conf);
-  restore_configuration();
+  auto res = perform_insertions(input, "./TEMP_DUMP.txt", conf);
+  std::ofstream out { output };
+  out << res.ingestion_rate << " " << res.cc_time << " " << res.num_nodes << std::endl;
+
+  return 0;
 }

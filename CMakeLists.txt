@@ -59,12 +59,21 @@ add_executable(top_max_finder
 ########################  Experiments  ########################
 ###############################################################
 # Test the speed and memory consumption of the algorithm
+add_executable(speed_process_stream
+  util/configuration.cpp
+  util/insertion_mgr.cpp
+  speed_expr/speed_process_stream.cpp
+)
+add_dependencies(speed_process_stream GraphZeppelin)
+target_link_libraries(speed_process_stream PRIVATE GraphZeppelin GraphZeppelinCommon)
+
 add_executable(speed_experiment
   util/configuration.cpp
   util/insertion_mgr.cpp
-  speed_expr/speed_expr.cpp
+  util/shell_exec.cpp
+  speed_expr/speed_expr_manager.cpp
 )
-add_dependencies(speed_experiment GraphZeppelin)
+add_dependencies(speed_experiment GraphZeppelin speed_process_stream)
 target_link_libraries(speed_experiment PRIVATE GraphZeppelin)
 
 # Test how insertion rate scales with additional threads
@@ -102,7 +111,16 @@ target_link_libraries(query_test PRIVATE GraphZeppelin)
 #########
 # Three executables for the purpose of comparing the performance 
 # of CubeSketch with state of the art l0-sketching
+# Another executable to combine results and calculate speedup/size reduction
 #########
+
+# Sketch_experiment on CubeSketch
+add_executable(cube_sketch
+  sketch_expr/cube_sketch_expr.cpp
+)
+add_dependencies(cube_sketch GraphZeppelin)
+target_link_libraries(cube_sketch PRIVATE GraphZeppelin)
+
 if(Boost_FOUND)
   # AGM sketching using 64 bit types
   add_executable(agm_sketch_native
@@ -126,11 +144,8 @@ if(Boost_FOUND)
     sketch_expr/agm_sketching/src/util.cpp
   )
   target_link_libraries(agm_sketch PRIVATE xxhash)
-endif()
 
-# Sketch_experiment on CubeSketch
-add_executable(cube_sketch
-  sketch_expr/cube_sketch_expr.cpp
-)
-add_dependencies(cube_sketch GraphZeppelin)
-target_link_libraries(cube_sketch PRIVATE GraphZeppelin)
+  add_executable(combine_sketch_expr_results
+    sketch_expr/combine_sketch_expr_results.cpp
+  )
+endif()
