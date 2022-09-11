@@ -65,3 +65,6 @@ streaming.conf
 *.aux
 *.synctex.gz
 *.blg
+
+# Generated csv files
+*.csv
