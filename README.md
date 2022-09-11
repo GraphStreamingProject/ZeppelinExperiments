@@ -20,9 +20,44 @@ The scripts that we provide in the repository use `numactl -i all` for better
 performance. However, all tests can also run directly without `numactl`.
 
 ### Others
-In addition to the above Aspen dependencies, we also need `g++ 7` to make our executables
+In addition to the above Aspen dependencies, we also need `g++ 7` and `jemalloc` to make our executables. We assume you've got `g++` on your machine from the GZ setup. Install `jemalloc` as follows:
+```
+wget https://github.com/jemalloc/jemalloc/archive/refs/tags/5.3.0.tar.gz
+tar -xzvf 5.3.0.tar.gz
+cd jemalloc-5.3.0
+./autogen.sh
+make
+sudo make install
+```
 
 ## Speed and Memory Test
+<div class="warning" style='background-color:#E9D8FD; color: #69337A; border-left: solid #805AD5 4px; border-radius: 4px; padding:0.7em;'>
+<span><p style='margin-top:1em; text-align:center'>
+<b>NOTE</b></p>
+<p style='margin-left:1em;'>
+   If building fails with <code>make: g++-7: Command not found</code> you may need to install or create a symlink to g++.<br/>
+      <code>
+         # check you have g++-7<br/>
+         which g++-7<br/>
+         # if there's no g++-7 install with:<br/>
+         sudo [package-manager] install g++-7<br/>
+         sudo ln -s /usr/bin/g++ /usr/bin/g++-7
+      </code> 
+</p>
+</p></span>
+</div>
+#
+<div class="warning" style='background-color:#E9D8FD; color: #69337A; border-left: solid #805AD5 4px; border-radius: 4px; padding:0.7em;'>
+<span><p style='margin-top:1em; text-align:center'>
+<b>NOTE</b></p>
+<p style='margin-left:1em;'>
+   If running the executable fails with <code>error while loading shared libraries: libjemalloc.so.2: cannot open shared object file: No such file or directory</code> make sure you have jemalloc installed and it's in your LD_LIBRARY_PATH<br/>
+      <code>
+         export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
+      </code> 
+</p>
+</p></span>
+</div>
 
 To build the executable for the speed and memory consumption test, run 
 `make ingestion_test`
