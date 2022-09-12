@@ -1,18 +1,23 @@
-Prior to building any executables, make sure the CILK flag environment
-variable is defined by running something like "export CILK=1" in the
-console you'll be building from.
+# Aspen
 
-//////////////// DEPENDENCIES ////////////////
+## Building Aspen
+### Dependencies
+GNU C++ compiler version 7.
+Installing gcc-7 is simple on ubuntu20: `sudo apt install gcc-7`  
+With ubuntu22, the process is a little more involved:
+```
+echo "deb [arch=amd64] http://archive.ubuntu.com/ubuntu focal main universe" | sudo tee -a /etc/apt/sources.list
+sudo apt update
+sudo apt install gcc-7
+```
 
-GNU C++ compiler version 7
+### Build Command
+`(export CILK=1 ; make -j ingestion_test continuous_query_test`
 
-//////////////// SPEED AND MEMORY TEST ////////////////
+## Aspen Experiments
 
-To build the executable for the speed and memory consumption test, run 
-"make ingestion_test"
-
-The command line arguments to the resulting "ingestion_test" executable are as
-follows:
+### Ingestion Test
+The command line arguments to the `ingestion_test` executable are as follows:
 
 1. Path to the (binary) stream file
 2. Update batch size. Unlike our system, Aspen is not designed to process updates at the granularity of a single edge. Instead,
@@ -24,16 +29,11 @@ follows:
 
 If you'd like to take a closer look at the actual source code of the
 speed and memory consumtion test, you may find it in
-./code/tools/ingestion_test.cpp.
+`code/tools/ingestion_test.cpp`.
 
 
-//////////////// CONTINUOUS QUERY TESTING ////////////////
-
-To build the executable for the continuous query testing experiment, run 
-"make continuous_query_test"
-
-The command line arguments to the resulting "cont_query" executable are as
-follows:
+### Continous Query Test
+The command line arguments to the `cont_query` executable are as follows:
 
 1. Path to the (binary) stream file
 2. Update batch size. Unlike our system, Aspen is not designed to process updates at the granularity of a single edge. Instead,
@@ -46,5 +46,5 @@ follows:
 
 If you'd like to take a closer look at the actual source code of the
 continuous query test, you may find it in 
-./code/tools/continuous_query_test.cpp
+`code/tools/continuous_query_test.cpp`
 
