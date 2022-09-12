@@ -7,12 +7,18 @@ Operating System: Ubuntu18.04, Ubuntu20.04
 `sudo apt install libssl-dev libz3-dev`
 #### OpenCilk
 Terrace uses the OpenCilk compiler v1.0. To install OpenCilk:
+##### Ubuntu-20.04
 ```
 wget https://github.com/OpenCilk/opencilk-project/releases/download/opencilk%2Fv1.0/OpenCilk-1.0-LLVM-10.0.1-Ubuntu-20.04-x86_64.sh
 sudo mkdir /opt/opencilk
 sudo sh OpenCilk-1.0-LLVM-10.0.1-Ubuntu-20.04-x86_64.sh --prefix=/opt/opencilk --exclude-subdir
 ```
-For ubuntu18.04, use `OpenCilk-1.0-LLVM-10.0.1-Ubuntu-18.04-x86_64.sh`
+##### Ubuntu-18.04
+```
+wget https://github.com/OpenCilk/opencilk-project/releases/download/opencilk%2Fv1.0/OpenCilk-1.0-LLVM-10.0.1-Ubuntu-18.04-x86_64.sh
+sudo mkdir /opt/opencilk
+sudo sh OpenCilk-1.0-LLVM-10.0.1-Ubuntu-18.04-x86_64.sh --prefix=/opt/opencilk --exclude-subdir
+```
 
 ### Build Command
 `(export CILK=1 ; export D=0 ; make -j ingestion_test continuous_query_test)`
