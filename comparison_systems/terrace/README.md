@@ -12,12 +12,16 @@ Terrace uses the OpenCilk compiler v1.0. To install OpenCilk:
 wget https://github.com/OpenCilk/opencilk-project/releases/download/opencilk%2Fv1.0/OpenCilk-1.0-LLVM-10.0.1-Ubuntu-20.04-x86_64.sh
 sudo mkdir /opt/opencilk
 sudo sh OpenCilk-1.0-LLVM-10.0.1-Ubuntu-20.04-x86_64.sh --prefix=/opt/opencilk --exclude-subdir
+echo "export PATH=/opt/opencilk/bin:$PATH" >> ~/.bashrc
+source ~/.bashrc
 ```
 ##### Ubuntu-18.04
 ```
 wget https://github.com/OpenCilk/opencilk-project/releases/download/opencilk%2Fv1.0/OpenCilk-1.0-LLVM-10.0.1-Ubuntu-18.04-x86_64.sh
 sudo mkdir /opt/opencilk
 sudo sh OpenCilk-1.0-LLVM-10.0.1-Ubuntu-18.04-x86_64.sh --prefix=/opt/opencilk --exclude-subdir
+echo "export PATH=/opt/opencilk/bin:$PATH" >> ~/.bashrc
+source ~/.bashrc
 ```
 
 ### Build Command
