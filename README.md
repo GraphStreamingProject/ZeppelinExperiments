@@ -11,6 +11,7 @@ Experiments used in Graph Zeppelin paper. Paper submitted to SIGMOD 2022.
 * ~Add R scripts code to repo and note dependencies~
 * Modifying top configuration -- Check Victor's email for instructions.
 * Update README with R installation instructions.
+* Use the 8GiB cgroup for query experiment?
 
 ## System Requirements
 ### GraphZeppelin and Experiments
