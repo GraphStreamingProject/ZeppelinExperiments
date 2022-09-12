@@ -44,7 +44,7 @@ speed and memory consumtion test, you may find it in
 `code/src/ingestion_test.cpp`.
 
 ### Continuous Query Experiment
-The command line arguments to the `cont_query` executable are as follows:
+The command line arguments to the `continuous_query_test` executable are as follows:
 
 1. Path to the (binary) stream file
 2. Update batch size. Unlike our system, Terrace is not designed to process updates at the granularity of a single edge. Instead,
