@@ -1,20 +1,25 @@
-Prior to building any executables, make sure the CILK flag environment
-variable is set by entering "export CILK=1" in the
-console you'll be building in.
+# Terrace
+## Building Terrace
+### System Requirements
+Operating System: Ubuntu18.04, Ubuntu20.04
+### Dependencies
+#### Packages
+`sudo apt install libssl-dev libz3-dev`
+#### OpenCilk
+Terrace uses the OpenCilk compiler v1.0. To install OpenCilk:
+```
+wget https://github.com/OpenCilk/opencilk-project/releases/download/opencilk%2Fv1.0/OpenCilk-1.0-LLVM-10.0.1-Ubuntu-20.04-x86_64.sh
+sudo mkdir /opt/opencilk
+sudo sh OpenCilk-1.0-LLVM-10.0.1-Ubuntu-20.04-x86_64.sh --prefix=/opt/opencilk --exclude-subdir
+```
+For ubuntu18.04, use `OpenCilk-1.0-LLVM-10.0.1-Ubuntu-18.04-x86_64.sh`
 
-//////////////// DEPENDENCIES ////////////////
+### Build Command
+`(export CILK=1 ; export D=0 ; make -j ingestion_test continuous_query_test)`
 
-OpenCilk compiler version 1.0+ (we used version 1.0)
-https://github.com/OpenCilk/opencilk-project
-After building the compiler, add the build/bin directory to your $PATH.
-
-//////////////// SPEED AND MEMORY TEST ////////////////
-
-To build the executable for the speed and memory consumption test, run 
-"make ingestion_test"
-
-The command line arguments to the resulting "ingestion_test" executable are as
-follows:
+## Running Experiments
+### Ingestion Experiment
+The command line arguments to the `ingestion_test` executable are as follows:
 
 1. Path to the (binary) stream file
 2. Update batch size. Unlike our system, Terrace is not designed to process updates at the granularity of a single edge. Instead,
@@ -26,16 +31,10 @@ follows:
 
 If you'd like to take a closer look at the actual source code of the
 speed and memory consumtion test, you may find it in
-./code/src/ingestion_test.cpp.
+`code/src/ingestion_test.cpp`.
 
-
-//////////////// CONTINUOUS QUERY TESTING ////////////////
-
-To build the executable for the continuous query testing experiment, run 
-"make continuous_query_test"
-
-The command line arguments to the resulting "cont_query" executable are as
-follows:
+### Continuous Query Experiment
+The command line arguments to the `cont_query` executable are as follows:
 
 1. Path to the (binary) stream file
 2. Update batch size. Unlike our system, Terrace is not designed to process updates at the granularity of a single edge. Instead,
@@ -48,5 +47,5 @@ follows:
 
 If you'd like to take a closer look at the actual source code of the
 continuous query test, you may find it in 
-./code/src/continuous_query_test.cpp
+`code/src/continuous_query_test.cpp`.
 
