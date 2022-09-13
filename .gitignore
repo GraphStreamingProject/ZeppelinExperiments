@@ -46,8 +46,25 @@
 /cmake-build-debug/
 /cmake-build-debug-coverage/
 
+# other IDEs
+/.vscode
+
 # Our configuration file
 streaming.conf
 
 # Mac Files
 *.DS_Store
+
+# Generated images
+*.png
+*.pdf
+
+# LaTeX log files etc
+*.log
+*.bbl
+*.aux
+*.synctex.gz
+*.blg
+
+# Generated csv files
+*.csv

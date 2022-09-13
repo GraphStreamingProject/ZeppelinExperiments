@@ -8,17 +8,17 @@
 #include <graph_zeppelin_common.h>
 #include <binary_graph_stream.h>
 
-void perform_continuous_insertions(std::string binary_input, sys_config config) {
+void perform_continuous_insertions(std::string binary_input, std::string csv_out, sys_config config) {
 // create the structure which will perform buffered input for us
   BinaryGraphStream stream(binary_input, 32 * 1024);
 
 // write the configuration to the config files
-  write_configuration(config);
+  auto graph_config = create_graph_config(config);
 
   node_id_t num_nodes = stream.nodes();
   uint64_t m = stream.edges();
   uint64_t total = m;
-  Graph g{num_nodes};
+  Graph g{num_nodes, graph_config};
 
   const int samples = 10;
   const uint64_t upds_per_sample = m / samples;
@@ -89,17 +89,26 @@ void perform_continuous_insertions(std::string binary_input, sys_config config) 
     total_ingestion_time += insertion_times[i];
   }
   std::cout << "\nIngestion rate: " << (double) total / total_ingestion_time << " sec" << std::endl;
+
+  std::ofstream csv {csv_out};
+  csv << "system,percent,flush,cc" << std::endl;
+  for (int i = 0; i < samples; ++i) {
+    csv << "gz," << 100/samples*(i + 1) << "," << flush_times[i] << "," << cc_alg_times[i] << std::endl;
+  }
+  csv.close();
+  
 }
 
 int main(int argc, char** argv) {
-  if (argc != 3) {
+  if (argc != 4) {
     std::cout << "Incorrect number of arguments. "
                  "Expected one but got " << argc-1 << std::endl;
-    std::cout << "Arguments are: input_stream num_buffer_elems" << std::endl;
+    std::cout << "Arguments are: input_stream csv_output_file num_buffer_elems" << std::endl;
     exit(EXIT_FAILURE);
   }
   std::string input  = argv[1];
   int num_buffer_elems = std::stoi(argv[2]);
+  std::string csv_out = argv[3];
 
   const node_id_t num_nodes = 131072;
   // TODO: change standalone buffer size to ~100 elems
@@ -108,11 +117,8 @@ int main(int argc, char** argv) {
   std::cout << "Unrounded gutter factor: " << unrounded_gf << std::endl;
   int gutter_factor = -1*((int) unrounded_gf);
   // so an empty sys_config will suffice
-  sys_config conf {0, 0, gutter_factor};
+  sys_config conf {0, 0, gutter_factor, false, true};
 //  sys_config conf;
   
-  
-  backup_configuration();
-  perform_continuous_insertions(input, conf);
-  restore_configuration();
+  perform_continuous_insertions(input, csv_out, conf);
 }

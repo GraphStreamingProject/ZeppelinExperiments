@@ -13,15 +13,16 @@
  * The gutter_factor is edited by this experiment
  */
 int main(int argc, char** argv) {
-  if (argc != 3) {
+  if (argc != 4) {
     std::cout << "Incorrect number of arguments. "
                  "Expected two but got " << argc-1 << std::endl;
-    std::cout << "Arguments are: input_stream, output_file" << std::endl;
+    std::cout << "Arguments are: input_stream, output_file, csv_output_file" << std::endl;
     exit(EXIT_FAILURE);
   }
 
-  std::string input  = argv[1];
-  std::string output = argv[2];
+  std::string input       = argv[1];
+  std::string output      = argv[2];
+  std::string csv_outfile = argv[3];
 
   // create a binary stream to get the number of nodes in the graph
   node_id_t num_nodes;
@@ -29,9 +30,6 @@ int main(int argc, char** argv) {
     BinaryGraphStream stream(input, 1024);
     num_nodes = stream.nodes();
   }
-
-  // backup the current configuration
-  backup_configuration();
 
   // Calculate the number of updates per sketch sized buffer
   int updates_in_sketch = 42 * pow(log2(num_nodes), 2) / (log2(3) - 1); 
@@ -54,14 +52,27 @@ int main(int argc, char** argv) {
   printf("\n");
 
   // Group Size Experiment
-  for (int size : sizes) {
-    printf("Running experiment, buffer size factor %i\n", size);
+  std::vector<std::pair<bool, std::pair<int, double>>> csv_res;
+  for (int in_mem = 0; in_mem < 2; ++in_mem) {
+    for (int size : sizes) {
+      printf("Running experiment, buffer size factor %i\n", size);
 
-    sys_config conf;
-    conf.gutter_factor = size;
-    perform_insertions(input, output + "_" + std::to_string(size), conf, 60);
+      sys_config conf;
+      conf.gutter_factor = size;
+      conf.use_tree = !in_mem;
+      auto ingestion_res = perform_insertions(input, output + "_" + std::to_string(size), conf, 60);
+      csv_res.push_back({in_mem, {
+        ((size > 0) ? updates_in_sketch * size : -updates_in_sketch / size),
+        ingestion_res.ingestion_rate
+      }});
+    }
   }
 
-  // restore the configuration
-  restore_configuration();
+  std::ofstream csv {csv_outfile};
+  csv << "mem,buffer_size,percent_buffer_size,ingestion_rate" << "\n";
+  std::sort(csv_res.begin(), csv_res.end());
+  for (const auto& p : csv_res) {
+    csv << (p.first ? "yes" : "no") << p.second.first << ","
+        << (double)p.second.first / updates_in_sketch << "," << p.second.second << "\n";
+  }
 }
