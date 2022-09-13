@@ -2,13 +2,27 @@
 
 ## Building Aspen
 ### Dependencies
-GNU C++ compiler version 7.
+GNU C++ compiler version 7
+
 Installing gcc-7 is simple on ubuntu20: `sudo apt install gcc-7`  
 With ubuntu22, the process is a little more involved:
 ```
 echo "deb [arch=amd64] http://archive.ubuntu.com/ubuntu focal main universe" | sudo tee -a /etc/apt/sources.list
 sudo apt update
 sudo apt install gcc-7
+```
+
+`jemalloc` malloc implementation
+
+Check if you have an existing installation of `jemalloc` with `which jemalloc-config`. If it returns and error, install with:
+```
+wget https://github.com/jemalloc/jemalloc/archive/refs/tags/5.3.0.tar.gz
+tar -xzvf 5.3.0.tar.gz
+cd jemalloc-5.3.0
+./autogen.sh
+make
+sudo make install
+export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
 ```
 
 ### Build Command
