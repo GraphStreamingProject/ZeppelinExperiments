@@ -166,5 +166,8 @@ int main (int argc, char * argv[])
 	s.graph.print_compression_stats();
 	vg.release_version(std::move(s));
  
+	std::ofstream out { "./intermediate_out.txt" };
+	out << ingest_time_secs << " " << CC_time_secs << " " << num_nodes << std::endl;
+
 	return 0;
 }
