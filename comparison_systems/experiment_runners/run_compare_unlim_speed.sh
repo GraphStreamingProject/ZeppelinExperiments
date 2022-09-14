@@ -2,14 +2,16 @@
 mkdir unlim_results_aspen 2> /dev/null
 mkdir unlim_results_terrace 2> /dev/null
 
+timeout=$1
+shift 1
+
 for input in $@
 do
-	echo "Processing input file: $input"
-
 	mkdir unlim_results_aspen/test_`basename $input` 2> /dev/null
 
+	echo "ASPEN: $input"
 	# run aspen speed experiment with memory limitation
-	./aspen_ingest_expr $input 100000 100000 unlim_results_aspen/test_`basename $input`/runtime_stats &
+	./aspen_ingest_expr $input 100000 100000 $timeout unlim_results_aspen/test_`basename $input`/runtime_stats &
 	pid=$!
 
 	#setup top logging
@@ -27,7 +29,8 @@ do
 
 	# run terrace speed experiment with memory limitation
 	if [[ `basename $input` != "kron_18_stream_binary" ]]; then
-		./terrace_ingest_expr $input 100000 100000 unlim_results_terrace/test_`basename $input`/runtime_stats &
+		echo "TERRACE: $input"
+		./terrace_ingest_expr $input 100000 100000 $timeout unlim_results_terrace/test_`basename $input`/runtime_stats &
 		pid=$!
 
 		#setup top logging

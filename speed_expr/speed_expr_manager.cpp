@@ -11,21 +11,23 @@ std::string cat(std::string filename) {
 }
 
 int main(int argc, char** argv) {
-  if (argc < 4) {
+  if (argc < 5) {
     std::cerr << "Correct usage is\n"
-      "\t/path/to/speed_experiment compare_sys[yes/no] csv_output_directory [input files+]" 
+      "\t/path/to/speed_experiment compare_sys[yes/no] timeout_hrs csv_output_directory [input files+]" 
       << std::endl;
     return 1;
   }
 
   // Parse Arguments
-  std::string arg_str = argv[3];
-  for (int i=4; i<argc; ++i) {
+  std::string arg_str = argv[4];
+  for (int i=5; i<argc; ++i) {
     arg_str += " ";
     arg_str += argv[i];
   }
-  std::string csv_out_dir = argv[2];
   std::string compare_sys = argv[1];
+  std::string timeout_hrs = argv[2];
+  std::string csv_out_dir = argv[3];
+
   bool aspen_terrace = false;
   if (compare_sys == "yes") {
     std::cout << "Running GraphZeppelin, Apsen, and Terrace speed experiments" << std::endl;
@@ -73,10 +75,14 @@ int main(int argc, char** argv) {
   /******************************************************************
   |                       run unlim exprs                           |
   |*****************************************************************/
+  std::cout << "/-------------------------------------------------\\" << std::endl;
+  std::cout << "|    RUNNING SPEED EXPERIMENT: NO MEMORY LIMIT    |" << std::endl;
+  std::cout << "\\-------------------------------------------------/" << std::endl;
+
   shell_exec(curr_dir + "/run_unlim_speed_expr.sh no " + arg_str);
   shell_exec(curr_dir + "/run_unlim_speed_expr.sh yes " + arg_str);
   if (aspen_terrace)
-    shell_exec(curr_dir + "/../comparison_systems/experiment_runners/run_compare_unlim_speed.sh " + arg_str);
+    shell_exec(curr_dir + "/../comparison_systems/experiment_runners/run_compare_unlim_speed.sh " + timeout_hrs + " " + arg_str);
   
   // now process them
   unlim_speed_csv << "alg,nodes,ingestion_rate\n";
@@ -100,7 +106,7 @@ int main(int argc, char** argv) {
       result_dir = "unlim_results_terrace";
       system_name = "terrace_lim";
     }
-    for (int i=3; i<argc; ++i) {
+    for (int i=4; i<argc; ++i) {
       std::string test_name = argv[i];
       size_t pos = test_name.find_last_of("\\/");
       test_name = test_name.substr(pos+1);
@@ -130,10 +136,13 @@ int main(int argc, char** argv) {
   /******************************************************************
   |                       run 16 GiB exprs                          |
   |*****************************************************************/
+  std::cout << "/-------------------------------------------------\\" << std::endl;
+  std::cout << "|  RUNNING SPEED EXPERIMENT: 16 GiB MEMORY LIMIT  |" << std::endl;
+  std::cout << "\\-------------------------------------------------/" << std::endl;
   shell_exec(curr_dir + "/run_lim_speed_expr.sh no " + arg_str);
   shell_exec(curr_dir + "/run_lim_speed_expr.sh yes " + arg_str);
   if (aspen_terrace)
-    shell_exec(curr_dir + "/../comparison_systems/experiment_runners/run_compare_lim_speed.sh " + arg_str);
+    shell_exec(curr_dir + "/../comparison_systems/experiment_runners/run_compare_lim_speed.sh " + timeout_hrs + " " + arg_str);
 
   lim_speed_csv << "alg,nodes,ingestion_rate\n";
   // now process them
@@ -154,7 +163,7 @@ int main(int argc, char** argv) {
       result_dir = "speed_results_terrace";
       system_name = "terrace_lim";
     }
-    for (int i=3; i<argc; ++i) {
+    for (int i=4; i<argc; ++i) {
       std::string test_name = argv[i];
       size_t pos = test_name.find_last_of("\\/");
       test_name = test_name.substr(pos+1);

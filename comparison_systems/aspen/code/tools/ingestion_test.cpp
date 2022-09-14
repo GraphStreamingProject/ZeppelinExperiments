@@ -14,10 +14,10 @@
 
 int main (int argc, char * argv[])
 {
-  if (argc != 5)
+  if (argc != 6)
   {
     std::cout << "Incorrect number of arguments!" << std::endl;
-    std::cout << "Arguments are: stream_file, batch_size, file_buffer_size, output_file" << std::endl;
+    std::cout << "Arguments are: stream_file, batch_size, file_buffer_size, timeout_hrs, output_file" << std::endl;
     exit(EXIT_FAILURE);
   }
   unsigned long buff_size;
@@ -25,9 +25,16 @@ int main (int argc, char * argv[])
 
   BufferedEdgeInput buff_in{argv[1], buff_size};
 
-  std::ofstream out_file(argv[4]);
+  std::ofstream out_file(argv[5]);
   if (!out_file) {
     std::cout << "ERROR: Could not open output file!" << std::endl;
+    exit(EXIT_FAILURE);
+  }
+
+  size_t timeout_sec = 3600 * std::atoi(argv[4]);
+
+  if (timeout_sec < 3600 || timeout_sec > 24 * 3600) {
+    std::cout << "ERROR: timeout out of range! [1,24] hours." << std::endl;
     exit(EXIT_FAILURE);
   }
 
@@ -70,15 +77,14 @@ int main (int argc, char * argv[])
 
       prev_log_time = steady_clock::now();
 
-      
-      // Record compression stats 
-      std::cout << i / hundredth << "% :\n";
-      auto s = vg.acquire_version();
-      std::cout << "Number of nodes: " << s.graph.num_vertices() << "\n";
-      std::cout << "Number of edges: " << s.graph.num_edges() << "\n";
-      s.graph.print_compression_stats();
-      vg.release_version(std::move(s));
-      std::cout << "\n\n\n\n";
+      // print progress
+      std::cout << "  " << i / hundredth << "%\r"; fflush(stdout);
+
+      if (time_so_far_secs + log_interval_secs >= timeout_sec) {
+        std::cout << "TIMEOUT: exiting early after: " << i << " insertions" << std::endl;
+        num_updates = i;
+        break;
+      }
     }
     else log_count++;
 
@@ -150,13 +156,6 @@ int main (int argc, char * argv[])
   
   auto CC_time_secs = (duration<double, std::ratio<1, 1>>(
       CC_end_time - CC_start_time)).count();
-      
-  // Final record of compression stats    
-  std::cout << "100% :\n";
-  std::cout << "Number of nodes: " << s.graph.num_vertices() << "\n";
-  std::cout << "Number of edges: " << s.graph.num_edges() << "\n";  
-  s.graph.print_compression_stats();
-  vg.release_version(std::move(s));
 
   out_file << updates_per_second << " " << CC_time_secs << " " << num_nodes << std::endl;
 
