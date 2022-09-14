@@ -1,12 +1,12 @@
 TARGETS=graph_bm_weighted graph_bm continuous_query_test ingestion_test test_terrace graph_bm_no_update test_graphcontainer test_btree test_pma
 
-#ifdef D
+ifdef D
 	DEBUG=-g -DDEBUG_MODE
 	OPT=
-#else
-#	DEBUG=
-#	OPT=-Ofast -DNDEBUG
-#endif
+else
+	DEBUG=
+	OPT=-Ofast -DNDEBUG
+endif
 
 ifdef NH
 	ARCH=

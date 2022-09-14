@@ -68,3 +68,7 @@ streaming.conf
 
 # Generated csv files
 *.csv
+
+# Terrace and Aspen exe files
+*ingestion_test
+*continuous_query_test

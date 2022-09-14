@@ -47,7 +47,7 @@ speed and memory consumtion test, you may find it in
 
 
 ### Continous Query Test
-The command line arguments to the `cont_query` executable are as follows:
+The command line arguments to the `continuous_query_test` executable are as follows:
 
 1. Path to the (binary) stream file
 2. Update batch size. Unlike our system, Aspen is not designed to process updates at the granularity of a single edge. Instead,

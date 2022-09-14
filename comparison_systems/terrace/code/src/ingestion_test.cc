@@ -22,7 +22,13 @@ int main (int argc, char * argv[])
 	sscanf(argv[3], "%lu", &update_buffer_size);
 
 	BufferedEdgeInput buff_in{argv[1], update_buffer_size};
-		
+
+	std::ofstream out_file{argv[4]};
+	if(!out_file) {
+		std::cout << "ERROR: Could not open output file!" << std::endl;
+    exit(EXIT_FAILURE);
+	}
+
 	unsigned long num_nodes = buff_in.num_nodes;
 	unsigned long num_updates = buff_in.num_edges;
 
@@ -43,7 +49,6 @@ int main (int argc, char * argv[])
 	std::tuple<uint32_t, uint32_t, uint8_t> update;
 	unsigned long insert_buffer_count = 0;
 	unsigned long log_count = 0;	
-        ofstream time_log_file{argv[4]};
 	unsigned long hundredth = round (num_updates / 100);
 	double time_so_far_secs = 0;
 	auto ingest_start_time = steady_clock::now();
@@ -57,12 +62,6 @@ int main (int argc, char * argv[])
 			auto log_interval_secs = (duration<double, std::ratio<1, 1>>(new_log_time - prev_log_time)).count();
         		auto updates_per_second = log_count / log_interval_secs;
 			time_so_far_secs += log_interval_secs;
-
-			time_log_file << i / hundredth << "% :\n"; 
-        		time_log_file << "Updates per second since last entry: " << updates_per_second << "\n";
-        		time_log_file << "Time since last entry: " << log_interval_secs << "\n";
-        		time_log_file << "Total runtime so far: " << time_so_far_secs << "\n\n";
-			time_log_file.flush();
 			log_count = 0;
 
 			prev_log_time = steady_clock::now();
@@ -136,11 +135,6 @@ int main (int argc, char * argv[])
 	auto CC_time_secs = (duration<double, std::ratio<1, 1>>(
 			CC_end_time - CC_start_time)).count();
 
-	time_log_file << "Updates per second: " << updates_per_second
-		<< "\n";
-       	time_log_file << "Ingestion time: " << ingest_time_secs << "\n";	
-	time_log_file << "Total runtime: " 
-		<< ingest_time_secs + CC_time_secs;
-
+	out_file << updates_per_second  << " " << CC_time_secs << " " << num_nodes << std::endl;
 	return 0;
 }
