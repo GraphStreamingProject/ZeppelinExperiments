@@ -25,6 +25,8 @@ echo "export PATH=/opt/opencilk/bin:$PATH" >> ~/.bashrc
 source ~/.bashrc
 ```
 
+You are done setting up Terrace, return to [README.md](README.md). Supplementary information is below.
+
 ## Running Experiments
 ### Ingestion Experiment
 The command line arguments to the `ingestion_test` executable are as follows:
