@@ -1,9 +1,8 @@
 # Aspen
 
-## Building Aspen
-### Dependencies
+## Aspen Dependencies
 GNU C++ compiler version 7
-
+`gcc-7` should be the default compiler for ubuntu18
 Installing gcc-7 is simple on ubuntu20: `sudo apt install gcc-7`  
 With ubuntu22, the process is a little more involved:
 ```
@@ -24,9 +23,6 @@ make
 sudo make install
 export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
 ```
-
-### Build Command
-`(export CILK=1 ; make -j ingestion_test continuous_query_test`
 
 ## Aspen Experiments
 
