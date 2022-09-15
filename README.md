@@ -30,7 +30,12 @@ Terrace
 Example EC2 instances: c5d.9xlarge or c5d.12xlarge
 
 ## Installation
-### 1. Install cmake version 3.15+
+### 1. General Packages
+```
+sudo apt install build-essential git r-base libboost-all-dev
+```
+
+### 2. Install cmake version 3.15+
 First Step:
 #### x86_64
 ```
@@ -51,40 +56,30 @@ sudo ln -s /opt/cmake/bin/cmake /usr/local/bin/cmake
 When running cmake .sh script enter y to license and n to install location.  
 These commands install cmake version 3.23 but any version >= 3.15 will work.
 
-### Setup cgroups
+### 3. Setup cgroups
 We use `cgroups` to limit the amount of memory available to GraphZeppelin, Apsen, or Terrace. A Control Group is a linux kernel feature. The following steps create `cgroups` for limiting memory to 16 GiB and 8 GiB.
 
 ```
 cd /sys/fs/cgroup/memory
-sudo mkdir 16GB ; sudo mkdir 8GB
-chown -R {USERNAME} 16GB ; chown -R {USERNAME} 8GB
-cd 16GB
+sudo mkdir 16_GB 12_GB 8_GB
+chown -R {YOUR USERNAME} 16_GB 12_GB 8_GB
+cd 16_GB
 echo 1 > memory.oom_control
 echo 16G > memory.limit_in_bytes
 echo 16G > memory.soft_limit_in_bytes
-cd ../8GB
+cd ../12_GB
+echo 1 > memory.oom_control
+echo 12G > memory.limit_in_bytes
+echo 12G > memory.soft_limit_in_bytes
+cd ../8_GB
 echo 1 > memory.oom_control
 echo 8G > memory.limit_in_bytes
 echo 8G > memory.soft_limit_in_bytes
 ```
 
-### Installing Experiments Repository
-1. Clone this repository
-2. Create a `build` directory in the directory where you cloned this repository.
-3. Initialize cmake by running `cmake ..` in the build dir.
-4. Build the experiments by running `cmake --build .` in the build dir.
-5. (somehow specify the storage disk and the swap+guttertree disk)
-6. (Run some script to download data and do setup)
+### 4. Other systems
+Follow the dependency/installation instructions for [Aspen](comparison_systems/aspen/README.md) and [Terrace](comparison_systems/terrace/README.md)
 
 ## Running Experiments
-(Run the global experiments bash script)
-### Speed and Size Experiment
-
-### Parallel Experiment
-
-### Buffer Size Experiment
-
-### Correctness Experiment
-
-### Sketch Speed and Size Experiment
+Once the Installation steps have been completed, experiments can be run with `./run.sh`.
 
