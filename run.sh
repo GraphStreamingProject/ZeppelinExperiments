@@ -115,24 +115,15 @@ for dataset in "${dataset_files[@]}"; do
 done
 
 runcmd mkdir -p buffer_expr_results
-for dataset in "${dataset_files[@]}"; do
-  runcmd ./buffersize_experiment "datasets/kron_17_stream_binary" "buffer_expr_results/bexpr_out.txt" "buffer_expr_results/buffer_csv"
-done
+runcmd ./buffersize_experiment "datasets/kron_17_stream_binary" "buffer_expr_results/bexpr_out.txt" "buffer_expr_results/buffer_csv"
 
 runcmd mkdir -p parallel_expr_results
-for dataset in "${dataset_files[@]}"; do
-  runcmd ./parallel_experiment "datasets/kron_17_stream_binary" "parallel_expr_results/pexpr_out.txt" "parallel_expr_results/parallel_csv" 46
-done
+runcmd ./parallel_experiment "datasets/kron_17_stream_binary" "parallel_expr_results/pexpr_out.txt" "parallel_expr_results/parallel_csv" 46
 
 runcmd mkdir -p query_expr_results
-for dataset in "${dataset_files[@]}"; do
-  runcmd ./query_test "$dataset" "TODO: num_buffer_elems"
-done
+runcmd ./query_test "datasets/kron_17_stream_binary" "query_expr_results/query_csv" 100
 
-runcmd ../sketch_expr/run_sketch_expr.sh
-
-runcmd ../speed_expr/run_experiments.sh "${dataset_files[@]}"
-
-runcmd ../speed_expr/run_unlim_experiments.sh "${dataset_files[@]}"
+runcmd mkdir -p sketch_expr_results
+runcmd ../sketch_expr/run_sketch_expr.sh && runcmd ./combine_sketch_expr_results sketch_expr_results/agm_results sketch_expr_results/cube_results
 
 echo 'Finished running experiments'
