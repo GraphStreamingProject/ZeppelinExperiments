@@ -90,7 +90,7 @@ int main(int argc, char** argv) {
   mem_usage_csv << "alg,nodes,res,swap,disk,total_no_disk\n";
   std::string result_dir;
   std::string system_name;
-  for (int s = 0; s < (aspen_terrace? 4 : 2); s++) {
+  for (int s = 0; s < (aspen_terrace? 3 : 2); s++) {
     if (s == 0) {
       result_dir = "unlim_results";
       system_name = "stream_mem";
@@ -101,11 +101,11 @@ int main(int argc, char** argv) {
     }
     else if (s == 2) {
       result_dir = "unlim_results_aspen";
-      system_name = "aspen_ulim_e3";
+      system_name = "aspen_top";
     }
-    else {
+		else {
       result_dir = "unlim_results_terrace";
-      system_name = "terrace_lim";
+      system_name = "terrace";
     }
     for (int i=4; i<argc; ++i) {
       std::string test_name = argv[i];
@@ -128,9 +128,9 @@ int main(int argc, char** argv) {
       res /= GiB;
       swap = swap == 0? 0 : swap/GiB;
 
-      unlim_speed_csv << system_name << "," << num_nodes << "," << ins_sec << "\n";
-      mem_usage_csv << system_name << "," << num_nodes << "," << res << "," << swap << ",0," << res + swap
-                    << "," << res+swap << "\n";
+      if (s != 3) unlim_speed_csv << system_name << "," << num_nodes << "," << ins_sec << "\n";
+      if (s != 1) 
+        mem_usage_csv << system_name << "," << num_nodes << "," << res << "," << swap << ",0," << res + swap << "," << res+swap << "\n";
     }
   }
 

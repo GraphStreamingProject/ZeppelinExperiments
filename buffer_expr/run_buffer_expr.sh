@@ -13,7 +13,7 @@ echo "|  RUNNING BUFFERING EXPERIMENT: 8 GIB MEM LIMIT  |"
 echo "\\-------------------------------------------------/"
 cgexec -g memory:8_GB ./buffersize_experiment $kron17_loc no delme disk_buffer.csv
 
-echo "mem,buffer_size,percent_buffer_size,ingestion_rate\n" > $csv_dir/buffer_expr.csv
+echo "mem,buffer_size,percent_buffer_size,ingestion_rate" > $csv_dir/buffer_expr.csv
 cat in_mem_buffer.csv >> $csv_dir/buffer_expr.csv
 cat disk_buffer.csv >> $csv_dir/buffer_expr.csv
 

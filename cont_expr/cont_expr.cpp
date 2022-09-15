@@ -67,6 +67,14 @@ int main(int argc, char** argv) {
       << " sample each. Total failures: " << tot_failures << std::endl;
 
   std::ofstream out {argv[4]};
-  out << input_file.substr(input_file.find_last_of("\\/")+1) << ",";
-  out << runs*samples << "," << tot_failures << std::endl;
+	std::string stream_name = input_file.substr(input_file.find_last_of("\\/")+1);
+  size_t pos = 0;
+  while(true) {
+    pos = stream_name.find("_", pos);
+    if (pos == std::string::npos) break;
+    stream_name.replace(pos, 1, "\\_");
+		pos += 2;
+  }
+
+  out << stream_name << "," << runs*samples << "," << tot_failures << std::endl;
 }

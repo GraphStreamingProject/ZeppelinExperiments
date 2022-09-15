@@ -149,9 +149,13 @@ runcmd cd build
 runcmd cmake ..
 runcmd make -j
 
-if ! ln -s $GZ_disk_loc 'graphzeppelin_disk_link'; then
-  echo "ERROR! Could not create symbolic link! GraphZeppelin may not be as efficient without it!"
-  sleep 5
+if [ ! -d $dataset_disk_str ]; then
+	if ! ln -s $GZ_disk_loc 'graphzeppelin_disk_link'; then
+    echo "ERROR! Could not create symbolic link! GraphZeppelin may not be as efficient without it!"
+	  echo "Falling back to directory in build"
+    mkdir graphzeppelin_disk_link
+    sleep 5
+  fi
 fi
 
 echo 'Finished running CMake build'
@@ -186,37 +190,44 @@ echo $kron_17_dataset
 
 runcmd mkdir $csv_directory 2> /dev/null
 
-runcmd ../sketch_expr/run_sketch_expr.sh $csv_directory
+#runcmd ../sketch_expr/run_sketch_expr.sh $csv_directory
 
-runcmd ./speed_experiment yes $aspen_terrace_timeout $csv_directory ${kron_datasets[@]}
+#runcmd ./speed_experiment yes $aspen_terrace_timeout $csv_directory ${kron_datasets[@]}
 
-runcmd ./query_experiment yes $csv_directory $kron_17_dataset
+#runcmd ./query_experiment yes $csv_directory $kron_17_dataset
 
-runcmd ../buffer_expr/run_buffer_expr.sh $kron_17_dataset $csv_directory
+#runcmd ../buffer_expr/run_buffer_expr.sh $kron_17_dataset $csv_directory
 
-runcmd ./parallel_experiment $kron_17_dataset delme "$csv_directory/parallel_expr.csv" 46
+#runcmd ./parallel_experiment $kron_17_dataset delme "$csv_directory/parallel_expr.csv" 46
 
-runcmd ../cont_expr/run_correctness_test.sh $cont_expr_samples $cont_expr_runs $csv_directory ${corr_datasets[@]}
+#runcmd ../cont_expr/run_correctness_test.sh $cont_expr_samples $cont_expr_runs $csv_directory ${corr_datasets[@]}
 
 echo 'Finished running experiments'
 
-# Get rid of top configuration
-rm ~/.config/procps/toprc
+# Get rid of top configuration and temporary files
+rm -f ~/.config/procps/toprc
+rm -f delme*
+rm -f temp*
+rm -f TEMP*
+rm -fr speed_results*
+rm -fr speed_gutter_results
+rm -fr unlim_*
 
 # Plotting code here
 echo 'Copying csv data to plotting directory'
-cp $csv_directory/parallel_expr.csv plotting/R_scripts/parallel_data.csv
-cp $csv_directory/buffer_expr.csv plotting/R_scripts/parallel_data3.csv
-cp $csv_directory/unlim_query_expr.csv plotting/R_scripts/query.csv
-cp $csv_directory/lim_query_expr.csv plotting/R_scripts/query_disk.csv
-cp $csv_directory/mem_usage.csv plotting/R_scripts/space_data.csv
-cp $csv_directory/lim_speed_expr.csv plotting/R_scripts/speed_data.csv
-cp $csv_directory/unlim_speed_expr.csv plotting/R_scripts/speed_data_unlim.csv
+cp $csv_directory/parallel_expr.csv ../plotting/R_scripts/parallel_data.csv
+cp $csv_directory/buffer_expr.csv ../plotting/R_scripts/parallel_data3.csv
+cp $csv_directory/unlim_query_expr.csv ../plotting/R_scripts/query.csv
+cp $csv_directory/lim_query_expr.csv ../plotting/R_scripts/query_disk.csv
+cp $csv_directory/mem_usage.csv ../plotting/R_scripts/space_data.csv
+cp $csv_directory/lim_speed_expr.csv ../plotting/R_scripts/speed_data.csv
+cp $csv_directory/unlim_speed_expr.csv ../plotting/R_scripts/speed_data_unlim.csv
 
-cp $csv_directory/correctness.csv plotting/latex_tables/correct.csv
-cp $csv_directory/sketch_space.csv plotting/latex_tables/l0size.csv
-cp $csv_directory/sketch_speed.csv plotting/latex_tables/l0speed.csv
+cp $csv_directory/correctness.csv ../plotting/latex_tables/correct.csv
+cp $csv_directory/sketch_space.csv ../plotting/latex_tables/l0size.csv
+cp $csv_directory/sketch_speed.csv ../plotting/latex_tables/l0speed.csv
 
 echo 'Create plots and tables'
 cd ../plotting
 ./plot.sh
+
