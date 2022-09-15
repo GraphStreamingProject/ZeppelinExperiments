@@ -180,15 +180,15 @@ echo ${kron_datasets[3]}
 
 runcmd mkdir $csv_directory 2> /dev/null
 
-runcmd ../sketch_expr/run_sketch_expr.sh $csv_directory
+# runcmd ../sketch_expr/run_sketch_expr.sh $csv_directory
 
 runcmd ./speed_experiment yes $aspen_terrace_timeout $csv_directory ${kron_datasets[@]}
 
-runcmd ./query_experiment yes $csv_directory kron_17_dataset
+runcmd ./query_experiment yes $csv_directory $kron_17_dataset
 
-runcmd ../buffer_expr/run_buffer_expr.sh kron_17_dataset $csv_directory
+runcmd ../buffer_expr/run_buffer_expr.sh $kron_17_dataset $csv_directory
 
-runcmd ./parallel_experiment kron_17_dataset delme "$csv_directory/parallel_expr.csv" 46
+runcmd ./parallel_experiment $kron_17_dataset delme "$csv_directory/parallel_expr.csv" 46
 
 runcmd ../cont_expr/run_correctness_test.sh $cont_expr_samples $cont_expr_runs $csv_directory ${corr_datasets[@]}
 
