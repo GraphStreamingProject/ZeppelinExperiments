@@ -18,5 +18,6 @@ GraphConfiguration create_graph_config(struct sys_config _conf) {
   }
   config.gutter_sys(_conf.use_tree ? GUTTERTREE : STANDALONE);
   config.backup_in_mem(_conf.backup_mem);
+  config.disk_dir("graphzeppelin_disk_link"); // a symbolic link that will be populated by run.sh
   return config;
 }

@@ -149,6 +149,11 @@ runcmd cd build
 runcmd cmake ..
 runcmd cmake --build .
 
+if ! ln -s $GZ_disk_loc 'graphzeppelin_disk_link'; then
+  echo "ERROR! Could not create symbolic link! GraphZeppelin may not be as efficient without it!"
+  sleep 5
+fi
+
 echo 'Finished running CMake build'
 
 echo 'Building Aspen and Terrace!'
