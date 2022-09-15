@@ -2,7 +2,7 @@
 
 function runcmd {
   echo "Running command $@"
-#  "$@"
+  "$@"
 }
 
 
