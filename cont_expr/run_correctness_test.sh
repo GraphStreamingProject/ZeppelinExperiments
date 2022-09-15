@@ -10,6 +10,11 @@ shift 1
 csv_dir=$1
 shift 1
 
+
+echo "/-------------------------------------------------\\"
+echo "|          RUNNING CORRECTNESS EXPERIMENT         |"
+echo "\\-------------------------------------------------/"
+
 echo "dataset,total_samples,failures" > $csv_dir/correctness.csv
 
 for input in $@

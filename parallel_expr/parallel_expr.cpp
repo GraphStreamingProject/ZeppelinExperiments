@@ -19,6 +19,11 @@ int main(int argc, char** argv) {
     exit(EXIT_FAILURE);
   }
 
+
+  std::cout << "/-------------------------------------------------\\" << std::endl;
+  std::cout << "|       RUNNING PARALLEL SCALE-OUT EXPERIMENT     |" << std::endl;
+  std::cout << "\\-------------------------------------------------/" << std::endl;
+
   std::string input  = argv[1];
   std::string output = argv[2];
   std::string csv_file = argv[3];
@@ -31,7 +36,7 @@ int main(int argc, char** argv) {
   // Num Threads Experiment
   printf("Running num_threads experiment\n");
   const int group_size = 1;
-  const int inc = 4;
+  const int inc = 8;
 
   std::vector<std::pair<int,double>> ingestion_rates;
   for (int groups = 1; groups <= max_thr + (max_thr % inc); groups += inc) {

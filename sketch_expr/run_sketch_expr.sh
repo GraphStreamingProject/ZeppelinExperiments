@@ -1,4 +1,8 @@
 
+echo "/-------------------------------------------------\\"
+echo "|     RUNNING SKETCH SPEED AND SIZE EXPERIMENT    |"
+echo "\\-------------------------------------------------/"
+
 csv_dir=$1
 
 mkdir sketch_expr_results 2> /dev/null
