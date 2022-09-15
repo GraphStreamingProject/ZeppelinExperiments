@@ -105,8 +105,8 @@ InsertionData perform_insertions(std::string binary_input, std::string output_fi
       auto now = std::chrono::steady_clock::now();
       if (std::chrono::duration<double, std::ratio<60>>(now - start).count() > timeout) {
         total = total - m; // reduce total by number of unprocessed edges
-	std::cout << "Stream stopped short because of timeout after " << total << " insertions" << std::endl;
-	break;
+        std::cout << "Stream stopped short because of timeout after " << total << " insertions" << std::endl;
+        break;
       }
       m -= i;
     }

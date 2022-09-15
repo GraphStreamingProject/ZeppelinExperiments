@@ -47,10 +47,10 @@ unsigned test_continuous(std::string input_file, unsigned samples) {
 }
 
 int main(int argc, char** argv) {
-  if (argc != 4) {
+  if (argc != 5) {
     std::cout << "Incorrect number of arguments. "
-                 "Expected three but got " << argc-1 << std::endl;
-    std::cout << "Arguments are: input_stream, samples, runs" << std::endl;
+                 "Expected four but got " << argc-1 << std::endl;
+    std::cout << "Arguments are: input_stream, samples, runs, output_file" << std::endl;
     exit(EXIT_FAILURE);
   }
 
@@ -60,9 +60,13 @@ int main(int argc, char** argv) {
 
   unsigned tot_failures = 0;
   for (unsigned i = 0; i < runs; i++) {
-    std::cout << "run: " << i << std::endl;
+    std::cout << "run: " << i << "/" << runs << std::endl;
     tot_failures += test_continuous(input_file, samples);
   }
   std::cout << "Did " << runs << " runs, with " << samples
       << " sample each. Total failures: " << tot_failures << std::endl;
+
+  std::ofstream out {argv[4]};
+  out << input_file.substr(input_file.find_last_of("\\/")+1) << ",";
+  out << runs*samples << "," << tot_failures << std::endl;
 }

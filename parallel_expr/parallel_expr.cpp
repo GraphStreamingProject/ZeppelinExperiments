@@ -24,7 +24,7 @@ int main(int argc, char** argv) {
   std::string csv_file = argv[3];
   int max_thr = std::stoi(argv[4]);
   if (max_thr <= 0 || max_thr > 100) {
-    printf("Argument CPU cores invalid. Out of range [1,100");
+    printf("Argument CPU cores invalid. Out of range [1,100]");
     exit(EXIT_FAILURE);
   }
 
@@ -41,9 +41,11 @@ int main(int argc, char** argv) {
     sys_config conf;
     conf.group_size = group_size;
     conf.num_groups = groups;
+    conf.gutter_factor = -4;
+
     ingestion_rates.push_back({
       groups,
-      perform_insertions(input, output + "_threads_exp_" + std::to_string(groups), conf, 60).ingestion_rate
+      perform_insertions(input, output + "_threads_exp_" + std::to_string(groups), conf, 50).ingestion_rate
     });
 
     if (groups == 1) groups = 0; // correct shifted thread numbers because starting at 1

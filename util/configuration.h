@@ -9,8 +9,8 @@ struct sys_config {
   int num_groups    = 0;
   int group_size    = 0;
   int gutter_factor = 0;
-  bool use_tree     = 0;
-  bool backup_mem   = 0;
+  bool use_tree     = false;
+  bool backup_mem   = true;
 };
 
 // function which modifies the configuration files

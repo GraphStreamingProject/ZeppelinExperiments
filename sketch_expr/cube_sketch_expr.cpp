@@ -23,7 +23,7 @@ int main(int argc, char** argv) {
   srand(seed);
   const unsigned long n        = std::atol(argv[1]);
   const unsigned long updates  = 500000; // 500,000 updates
-  std::cerr << "Number of nodes " << n << std::endl;
+  std::cerr << "Size of vector = " << n << std::endl;
 
   vec_t *stream = new vec_t[updates];
 
