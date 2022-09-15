@@ -2,15 +2,25 @@
 
 function runcmd {
   echo "Running command $@"
-  "$@"
+#  "$@"
 }
 
-echo 'Specify parameters for experiments'
-# TODO: cont_test: samples, runs
-# TODO: parallel_experiment: max_threads
-# TODO: query_test: num_buffer_elems
 
-echo 'Select datasets to download'
+full_expr_msg='Our full experiments take a significant amount of time, and in the interest of time, this script can run a limited set of experiments. '
+full_expr_msg+='The kron 18 graph is a 161GB dataset, and not all experiments process it. '
+full_expr_msg+='The limited set of experiments omits kron 18. '
+full_expr_msg+='The full 10 repetitions of continuous correctness testing takes over 24 hours. '
+full_expr_msg+='The limited set of experiments only does 1 run. '
+full_expr_msg+='Would you like to run the full set of experiments? (N/Y)'
+
+declare -i full_expr=-1
+while (( $full_expr == -1 )); do
+  read -r -p "$full_expr_msg" full_expr_input
+  case "$full_expr_input" in
+    'N'|'n') full_expr=0;;
+    'Y'|'y') full_expr=1;;
+  esac
+done
 
 datasets=(
   'kron13'
@@ -56,49 +66,22 @@ dataset_links=(
   'https://graphzeppelin-datasets.s3.amazonaws.com/google_plus_stream_binary'
   'https://graphzeppelin-datasets.s3.amazonaws.com/web_uk_stream_binary'
 )
-declare -a selected
-while true; do
-  # Print menu
-  declare -i i
-  for ((i = 0; i < ${#datasets[@]}; i++)); do
-    selstr="${selected[$i]:+*}"
-    selstr="${selstr:- }"
-    echo "${selstr} $(($i + 1))) ${datasets[$i]} ${dataset_sizes[$i]}"
-  done
-  echo 'Enter number to toggle selection, or "done" to continue'
 
-  read -a sel_change
+declare -a all_datasets
+declare -a kron_datasets
+declare -i cont_expr_samples=100
+declare -i cont_expr_runs
+if (( $full_expr == 1 )); then
+  all_datasets=(1 2 3 4 5 6 7 8 9)
+  kron_datasets=(1 2 3 4 5)
+  cont_expr_runs=10
+else
+  all_datasets=(1 2 3 4 6 7 8 9)
+  kron_datasets=(1 2 3 4)
+  cont_expr_runs=1
+fi
 
-  # If done, check that a dataset has been selected and proceed
-  if [[ "${sel_change[*]}" == 'done' ]]; then
-    declare -i all_unselected=1
-    for ((i = 0; i < ${#datasets[@]}; i++)); do
-      if [[ -n "${selected[$i]}" ]]; then
-        all_unselected=0
-        break
-      fi
-    done
-    if (( all_unselected )); then
-      echo 'At least one dataset must be selected'
-    else
-      break
-    fi
-  fi
 
-  # Toggle specified selections
-  for sel in "${sel_change[@]}"; do
-    if [[ "$sel" =~ ^[0-9]+$ ]]; then
-      declare -i sel_idx
-      sel_idx=$((10#$sel - 1))
-      if (( 0 <= $sel_idx && $sel_idx < ${#datasets[@]} )); then
-        sel_val=${selected[$sel_idx]:+0}
-        sel_val=${sel_val:-01}
-        sel_val=${sel_val:1}
-        selected[$sel_idx]=$sel_val
-      fi
-    fi
-  done
-done
 
 echo 'Running CMake build'
 
@@ -112,29 +95,33 @@ echo 'Finished running CMake build'
 echo 'Downloading datasets'
 
 runcmd mkdir -p datasets
-for ((i = 0; i < ${#datasets[@]}; i++)); do
-  if [[ -n "${selected[$i]}" ]]; then
-    runcmd wget -O "datasets/${dataset_filenames[$i]}" "${dataset_links[$i]}"
-  fi
+for dataset in "${all_datasets[@]}"; do
+  runcmd wget -O "datasets/${dataset_filenames[$dataset]}" "${dataset_links[$dataset]}"
 done
 
 echo 'Finished downloading datasets'
 
-dataset_files=(datasets/*)
 echo 'Running experiments'
-runcmd mkdir -p buffer_expr_results
-for dataset in "${dataset_files[@]}"; do
-  runcmd ./buffersize_experiment "$dataset" "buffer_expr_results/${dataset##*/}.out"
+
+runcmd mkdir -p speed_expr_results
+for dataset in "${kron_datasets[@]}"; do
+  dataset_filename="${dataset_filenames[$dataset]}"
+  runcmd ./speed_experiment "speed_expr_results/$dataset_filename.csv" "datasets/$dataset_filename"
 done
 
 runcmd mkdir -p cont_expr_results
 for dataset in "${dataset_files[@]}"; do
-  runcmd ./cont_test "$dataset" "TODO: samples" "TODO: runs"
+  runcmd ./cont_test "$dataset" "$cont_expr_samples" "$cont_expr_runs"
+done
+
+runcmd mkdir -p buffer_expr_results
+for dataset in "${dataset_files[@]}"; do
+  runcmd ./buffersize_experiment "datasets/kron_17_stream_binary" "buffer_expr_results/bexpr_out.txt" "buffer_expr_results/buffer_csv"
 done
 
 runcmd mkdir -p parallel_expr_results
 for dataset in "${dataset_files[@]}"; do
-  runcmd ./parallel_experiment "$dataset" "parallel_expr_results/${dataset##/}.out" "TODO: threads"
+  runcmd ./parallel_experiment "datasets/kron_17_stream_binary" "parallel_expr_results/pexpr_out.txt" "parallel_expr_results/parallel_csv" 46
 done
 
 runcmd mkdir -p query_expr_results
