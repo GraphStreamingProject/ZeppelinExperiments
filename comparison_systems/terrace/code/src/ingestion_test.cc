@@ -36,6 +36,8 @@ int main (int argc, char * argv[])
     exit(EXIT_FAILURE);
   }
 
+  std::cout << "Setting timout at " << timeout_sec << " seconds" << std::endl;
+
   unsigned long num_nodes = buff_in.num_nodes;
   unsigned long num_updates = buff_in.num_edges;
 
