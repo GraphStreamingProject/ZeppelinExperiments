@@ -59,7 +59,21 @@ echo 8G > memory.limit_in_bytes
 echo 8G > memory.soft_limit_in_bytes
 ```
 
-### 4. Other systems
+### 4. Create a swapfile
+We placed our swapfile on the same disk that held GraphZeppelin's on-disk data-structures. You can create a swapfile as follows:
+
+First define where the swapfile will be located.
+`export SWAP_LOC=/path/to/swapfile`
+
+Then copy and paste the following:
+```
+sudo fallocate -l 150G $SWAP_LOC
+sudo chmod 600 $SWAP_LOC
+sudo mkswap $SWAP_LOC
+sudo swapon $SWAP_LOC
+```
+
+### 5. Other systems
 Follow the dependency/installation instructions for [Aspen](comparison_systems/aspen/README.md) and [Terrace](comparison_systems/terrace/README.md)
 
 ## Running Experiments
