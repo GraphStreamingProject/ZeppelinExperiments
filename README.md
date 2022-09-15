@@ -1,16 +1,6 @@
 # ZeppelinExperiments
 Experiments used in Graph Zeppelin paper. Paper submitted to SIGMOD 2022.
 
-# TODOs
-* How do we provide our kron graphs for reviewers to run? -- automated get and place in right spot on SSD
-* Aspen and Terrace code and build instructions -- can we have cmake do this? Other installation scripts
-* ~Expand installation instructions a little bit to include installing cmake etc.~
-* ~Setup instructions for cgroup~
-* One big experiment bash file (robust and front-load quick experiments)
-* Format output of experiments to be in nice CSV format for R scripts
-* ~Add R scripts code to repo and note dependencies~
-* Modifying top configuration -- Check Victor's email for instructions.
-
 ## System Requirements
 ### GraphZeppelin and Experiments
 * OS: Linux (tested on ubuntu-20 and ubuntu-18)
