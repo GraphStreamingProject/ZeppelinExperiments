@@ -161,5 +161,5 @@ int main (int argc, char * argv[])
 
   out_file << updates_per_second << " " << CC_time_secs << " " << num_nodes << std::endl;
 
-  return 0;
+  exit(EXIT_SUCCESS);
 }

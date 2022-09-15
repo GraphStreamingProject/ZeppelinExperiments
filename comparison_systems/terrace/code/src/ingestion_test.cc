@@ -154,5 +154,6 @@ int main (int argc, char * argv[])
       CC_end_time - CC_start_time)).count();
 
   out_file << updates_per_second  << " " << CC_time_secs << " " << num_nodes << std::endl;
-  return 0;
+	std::cout << "EXITING" << std::endl;
+  exit(EXIT_SUCCESS);
 }
