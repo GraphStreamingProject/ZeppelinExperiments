@@ -2,7 +2,7 @@
 
 ## Aspen Dependencies
 GNU C++ compiler version 7
-`gcc-7` should be the default compiler for ubuntu18
+`gcc-7` should be the default compiler for ubuntu18  
 Installing gcc-7 is simple on ubuntu20: `sudo apt install gcc-7`  
 With ubuntu22, the process is a little more involved:
 ```
@@ -13,7 +13,7 @@ sudo apt install gcc-7
 
 `jemalloc` malloc implementation
 
-Check if you have an existing installation of `jemalloc` with `which jemalloc-config`. If it returns and error, install with:
+Check if you have an existing installation of `jemalloc` with `which jemalloc-config`. If it returns an error, install with:
 ```
 wget https://github.com/jemalloc/jemalloc/archive/refs/tags/5.3.0.tar.gz
 tar -xzvf 5.3.0.tar.gz
