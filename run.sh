@@ -147,7 +147,7 @@ echo 'Running CMake build'
 runcmd mkdir -p build
 runcmd cd build
 runcmd cmake ..
-runcmd cmake --build .
+runcmd make -j
 
 if ! ln -s $GZ_disk_loc 'graphzeppelin_disk_link'; then
   echo "ERROR! Could not create symbolic link! GraphZeppelin may not be as efficient without it!"
@@ -203,5 +203,20 @@ echo 'Finished running experiments'
 # Get rid of top configuration
 rm ~/.config/procps/toprc
 
-# TODO: Put plotting code here
-# Rscript R_scripts/install.R
+# Plotting code here
+echo 'Copying csv data to plotting directory'
+cp $csv_directory/parallel_expr.csv plotting/R_scripts/parallel_data.csv
+cp $csv_directory/buffer_expr.csv plotting/R_scripts/parallel_data3.csv
+cp $csv_directory/unlim_query_expr.csv plotting/R_scripts/query.csv
+cp $csv_directory/lim_query_expr.csv plotting/R_scripts/query_disk.csv
+cp $csv_directory/mem_usage.csv plotting/R_scripts/space_data.csv
+cp $csv_directory/lim_speed_expr.csv plotting/R_scripts/speed_data.csv
+cp $csv_directory/unlim_speed_expr.csv plotting/R_scripts/speed_data_unlim.csv
+
+cp $csv_directory/correctness.csv plotting/latex_tables/correct.csv
+cp $csv_directory/sketch_space.csv plotting/latex_tables/l0size.csv
+cp $csv_directory/sketch_speed.csv plotting/latex_tables/l0speed.csv
+
+echo 'Create plots and tables'
+cd ../plotting
+./plot.sh
