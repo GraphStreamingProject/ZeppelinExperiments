@@ -15,7 +15,6 @@ Example EC2 instances: c5d.9xlarge or c5d.12xlarge
 ### 1. General Packages
 ```
 sudo apt install build-essential git r-base libboost-all-dev
-sudo Rscript plotting/R_scripts/install.R
 ```
 
 ### 2. Install cmake version 3.15+
@@ -72,6 +71,11 @@ sudo fallocate -l 150G $SWAP_LOC
 sudo chmod 600 $SWAP_LOC
 sudo mkswap $SWAP_LOC
 sudo swapon $SWAP_LOC
+```
+### 5. Clone repo and install R dependencies
+R dependencies:
+```
+sudo Rscript plotting/R_scripts/install.R
 ```
 
 ### 5. Other systems
