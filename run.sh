@@ -123,6 +123,12 @@ all_datasets=()  # every dataset
 kron_datasets=() # datasets for speed experiments (all kron graphs)
 corr_datasets=() # datasets for correctness tests
 
+kron_17_dataset=${kron_datasets[3]}
+if (( $full_expr == 2 )); then
+  # DEBUGGING
+  kron_17_dataset=${kron_datasets[0]}
+fi
+
 for idx in "${all_idx[@]}"; do
   all_datasets+=(${dataset_filenames[$idx]})
 done
@@ -170,15 +176,19 @@ echo 'Finished downloading datasets'
 
 echo 'Running experiments'
 
+echo ${kron_datasets[3]}
+
+runcmd mkdir $csv_directory 2> /dev/null
+
 runcmd ../sketch_expr/run_sketch_expr.sh $csv_directory
 
 runcmd ./speed_experiment yes $aspen_terrace_timeout $csv_directory ${kron_datasets[@]}
 
-runcmd ./query_experiment yes $csv_directory ${kron_datasets[3]}
+runcmd ./query_experiment yes $csv_directory kron_17_dataset
 
-runcmd ../buffer_expr/run_buffer_expr.sh ${kron_datasets[3]} $csv_directory
+runcmd ../buffer_expr/run_buffer_expr.sh kron_17_dataset $csv_directory
 
-runcmd ./parallel_experiment ${kron_datasets[3]} delme "$csv_directory/parallel_expr.csv" 46
+runcmd ./parallel_experiment kron_17_dataset delme "$csv_directory/parallel_expr.csv" 46
 
 runcmd ../cont_expr/run_correctness_test.sh $cont_expr_samples $cont_expr_runs $csv_directory ${corr_datasets[@]}
 
