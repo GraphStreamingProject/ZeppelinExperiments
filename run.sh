@@ -52,6 +52,7 @@ echo $GZ_disk_loc
 echo ""
 
 # Setup toprc
+mkdir -p ~/.config/procps 2> /dev/null
 cp toprc ~/.config/procps/toprc
 
 datasets=(
@@ -123,12 +124,6 @@ all_datasets=()  # every dataset
 kron_datasets=() # datasets for speed experiments (all kron graphs)
 corr_datasets=() # datasets for correctness tests
 
-kron_17_dataset=${kron_datasets[3]}
-if (( $full_expr == 2 )); then
-  # DEBUGGING
-  kron_17_dataset=${kron_datasets[0]}
-fi
-
 for idx in "${all_idx[@]}"; do
   all_datasets+=(${dataset_filenames[$idx]})
 done
@@ -140,6 +135,12 @@ done
 for idx in "${corr_idx[@]}"; do
   corr_datasets+=($dataset_disk_loc/${dataset_filenames[$idx]})
 done
+
+kron_17_dataset="${kron_datasets[3]}"
+if (( $full_expr == 2 )); then
+  # DEBUGGING
+  kron_17_dataset="${kron_datasets[0]}"
+fi
 
 echo 'Running CMake build'
 
@@ -176,11 +177,11 @@ echo 'Finished downloading datasets'
 
 echo 'Running experiments'
 
-echo ${kron_datasets[3]}
+echo $kron_17_dataset
 
 runcmd mkdir $csv_directory 2> /dev/null
 
-# runcmd ../sketch_expr/run_sketch_expr.sh $csv_directory
+runcmd ../sketch_expr/run_sketch_expr.sh $csv_directory
 
 runcmd ./speed_experiment yes $aspen_terrace_timeout $csv_directory ${kron_datasets[@]}
 
