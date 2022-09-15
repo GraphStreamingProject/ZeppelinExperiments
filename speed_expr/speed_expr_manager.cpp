@@ -46,23 +46,24 @@ int main(int argc, char** argv) {
   }
   else {
     std::cout << "Could not parse: " << compare_sys << " expected 'yes' or 'no'" << std::endl;
+    exit(EXIT_FAILURE);
   }
   std::cout << std::endl;
 
   // Open CSV Files
-  std::ofstream unlim_speed_csv { csv_out_dir + "/unlim_speed_expr.csv" };
+  std::ofstream unlim_speed_csv { csv_out_dir + "/unlim_speed_expr.csv", std::fstream::trunc | std::fstream::out};
   if (!unlim_speed_csv) {
     std::cout << "Could not open csv output file: " << csv_out_dir + "/unlim_speed_expr.csv" << std::endl;
     exit(EXIT_FAILURE);
   }
 
-  std::ofstream lim_speed_csv { csv_out_dir + "/lim_speed_expr.csv" };
-  if (!unlim_speed_csv) {
+  std::ofstream lim_speed_csv { csv_out_dir + "/lim_speed_expr.csv", std::fstream::trunc | std::fstream::out};
+  if (!lim_speed_csv) {
     std::cout << "Could not open csv output file: " << csv_out_dir + "/lim_speed_expr.csv" << std::endl;
     exit(EXIT_FAILURE);
   }
 
-  std::ofstream mem_usage_csv {csv_out_dir + "/mem_usage.csv"};
+  std::ofstream mem_usage_csv {csv_out_dir + "/mem_usage.csv", std::fstream::trunc | std::fstream::out};
   if (!mem_usage_csv) {
     std::cout << "Could not open csv output file: " << csv_out_dir + "/mem_usage.csv" << std::endl;
     exit(EXIT_FAILURE);

@@ -78,7 +78,7 @@ int main (int argc, char * argv[])
       prev_log_time = steady_clock::now();
 
       // print progress
-      std::cout << "  " << i / hundredth << "%\r"; fflush(stdout);
+      std::cout << "  " << i / hundredth << "% " << time_so_far_secs << "\r"; fflush(stdout);
 
       if (time_so_far_secs + log_interval_secs >= timeout_sec) {
         std::cout << "TIMEOUT: exiting early after: " << i << " insertions" << std::endl;
