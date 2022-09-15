@@ -79,7 +79,7 @@ int main(int argc, char** argv) {
   auto csv_str_asp = cat("temp_asp.csv");
   auto csv_str_ter = cat("temp_ter.csv");
 
-  lim_query_csv << csv_str_gz << csv_str_asp << csv_str_ter;
+  unlim_query_csv << csv_str_gz << csv_str_asp << csv_str_ter;
 
   /******************************************************************
   |                       run 16 GiB exprs                          |

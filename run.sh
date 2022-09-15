@@ -138,7 +138,7 @@ done
 
 kron_17_dataset="${kron_datasets[3]}"
 if (( $full_expr == 2 )); then
-  # DEBUGGING
+  # DEBUGGING -- force to kron13
   kron_17_dataset="${kron_datasets[0]}"
 fi
 
@@ -199,4 +199,4 @@ echo 'Finished running experiments'
 rm ~/.config/procps/toprc
 
 # TODO: Put plotting code here
-
+# Rscript R_scripts/install.R
