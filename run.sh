@@ -72,58 +72,73 @@ declare -a kron_datasets
 declare -i cont_expr_samples=100
 declare -i cont_expr_runs
 if (( $full_expr == 1 )); then
-  all_datasets=(1 2 3 4 5 6 7 8 9)
-  kron_datasets=(1 2 3 4 5)
+  all_datasets=(0 1 2 3 4 5 6 7 8)
+  kron_datasets=(0 1 2 3 4)
   cont_expr_runs=10
 else
-  all_datasets=(1 2 3 4 6 7 8 9)
-  kron_datasets=(1 2 3 4)
+  all_datasets=(0 1 2 3 5 6 7 8)
+  kron_datasets=(0 1 2 3)
   cont_expr_runs=1
 fi
 
+script_path="$(dirname -- "$(readlink -f -- "$0")")"
 
-
-echo 'Running CMake build'
-
+echo 'Building GraphZeppelin'
+runcmd cd "$script_path"
 runcmd mkdir -p build
 runcmd cd build
 runcmd cmake ..
 runcmd cmake --build .
+echo 'Finished building GraphZeppelin'
 
-echo 'Finished running CMake build'
+
+echo 'Building Aspen'
+runcmd cd "$script_path/comparison_systems/aspen/code"
+runcmd export CILK=1
+runcmd make -j ingestion_test continuous_query_test
+echo 'Finished building Aspen'
+
+echo 'Building Terrace'
+runcmd cd "$script_path/comparison_systems/aspen/code"
+runcmd export CILK=1
+runcmd export D=1
+runcmd make -j ingestion_test continuous_query_test
+echo 'Finished building Terrace'
 
 echo 'Downloading datasets'
-
+runcmd cd "$script_path"
 runcmd mkdir -p datasets
 for dataset in "${all_datasets[@]}"; do
   runcmd wget -O "datasets/${dataset_filenames[$dataset]}" "${dataset_links[$dataset]}"
 done
-
 echo 'Finished downloading datasets'
 
 echo 'Running experiments'
-
+runcmd cd "$script_path"
+runcmd mkdir -p results
+runcmd cd "$script_path/results"
 runcmd mkdir -p speed_expr_results
 for dataset in "${kron_datasets[@]}"; do
   dataset_filename="${dataset_filenames[$dataset]}"
-  runcmd ./speed_experiment "speed_expr_results/$dataset_filename.csv" "datasets/$dataset_filename"
+  runcmd "$script_path/build/speed_experiment" "speed_expr_results/$dataset_filename.csv" "$script_path/datasets/$dataset_filename"
 done
 
 runcmd mkdir -p cont_expr_results
-for dataset in "${dataset_files[@]}"; do
-  runcmd ./cont_test "$dataset" "$cont_expr_samples" "$cont_expr_runs"
+for dataset in "${all_datasets[@]}"; do
+  dataset_filename="${dataset_filenames[$dataset]}"
+  runcmd "$script_path/build/cont_test" "$script_path/datasets/$dataset_filename" "$cont_expr_samples" "$cont_expr_runs"
 done
 
 runcmd mkdir -p buffer_expr_results
-runcmd ./buffersize_experiment "datasets/kron_17_stream_binary" "buffer_expr_results/bexpr_out.txt" "buffer_expr_results/buffer_csv"
+runcmd "$script_path/build/buffersize_experiment" "$script_path/datasets/kron_17_stream_binary" "buffer_expr_results/bexpr_out.txt" "buffer_expr_results/buffer_csv"
 
 runcmd mkdir -p parallel_expr_results
-runcmd ./parallel_experiment "datasets/kron_17_stream_binary" "parallel_expr_results/pexpr_out.txt" "parallel_expr_results/parallel_csv" 46
+runcmd "$script_path/build/parallel_experiment" "$script_path/datasets/kron_17_stream_binary" "parallel_expr_results/pexpr_out.txt" "parallel_expr_results/parallel_csv" 46
 
 runcmd mkdir -p query_expr_results
-runcmd ./query_test "datasets/kron_17_stream_binary" "query_expr_results/query_csv" 100
+runcmd "$script_path/build/query_test" "$script_path/datasets/kron_17_stream_binary" "query_expr_results/query_csv" 100
 
 runcmd mkdir -p sketch_expr_results
-runcmd ../sketch_expr/run_sketch_expr.sh && runcmd ./combine_sketch_expr_results sketch_expr_results/agm_results sketch_expr_results/cube_results
+runcmd "$script_path/sketch_expr/run_sketch_expr.sh" && runcmd "$script_path/build/combine_sketch_expr_results" sketch_expr_results/agm_results sketch_expr_results/cube_results
 
 echo 'Finished running experiments'
