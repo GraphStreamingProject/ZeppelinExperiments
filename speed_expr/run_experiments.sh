@@ -14,7 +14,7 @@ do
 	mkdir speed_results/test_`basename $input`
 
 	# run speed_experiment as seperate process with memory limitation
-	cgexec -g memory:16_GB ./speed_experiment $input speed_results/test_`basename $input`/runtime_stats &
+	cgexec -g memory:16_GB ./speed_process_stream $input speed_results/test_`basename $input`/runtime_stats &
 	pid=$!
 
 	#setup top logging
