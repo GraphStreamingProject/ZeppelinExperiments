@@ -29,7 +29,7 @@ echo "cube sketch experiments ..."
 ./cube_sketch 100000000000 >> sketch_expr_results/cube_results
 ./cube_sketch 1000000000000 >> sketch_expr_results/cube_results
 
-./combine_sketch_expr_results sketch_expr_results/agm_results sketch_expr_results/cube_results $csv_dir/sketch_space.csv $csv_dir/sketch_size.csv
+./combine_sketch_expr_results sketch_expr_results/agm_results sketch_expr_results/cube_results $csv_dir/sketch_space.csv $csv_dir/sketch_speed.csv
 
 # get rid of sketch expr results
 rm -r sketch_expr_results
