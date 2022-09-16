@@ -1,16 +1,6 @@
 # ZeppelinExperiments
 Experiments used in Graph Zeppelin paper. Paper submitted to SIGMOD 2022.
 
-# TODOs
-* How do we provide our kron graphs for reviewers to run? -- automated get and place in right spot on SSD
-* Aspen and Terrace code and build instructions -- can we have cmake do this? Other installation scripts
-* ~Expand installation instructions a little bit to include installing cmake etc.~
-* ~Setup instructions for cgroup~
-* One big experiment bash file (robust and front-load quick experiments)
-* Format output of experiments to be in nice CSV format for R scripts
-* ~Add R scripts code to repo and note dependencies~
-* Modifying top configuration -- Check Victor's email for instructions.
-
 ## System Requirements
 ### GraphZeppelin and Experiments
 * OS: Linux (tested on ubuntu-20 and ubuntu-18)
@@ -19,18 +9,15 @@ Experiments used in Graph Zeppelin paper. Paper submitted to SIGMOD 2022.
 * CPU: we used: Intel(R) Xeon(R) Gold 5220R CPU @ 2.20GHz (24 cores hyper threaded to 48)
 * C++ 14
 * cmake version 3.15 or higher
-
-### Additional requirements for comparison systems
-Aspen
-* CILK for Aspen?
-
-Terrace
-* ?
-
 Example EC2 instances: c5d.9xlarge or c5d.12xlarge
 
 ## Installation
-### 1. Install cmake version 3.15+
+### 1. General Packages
+```
+sudo apt install build-essential git r-base libboost-all-dev xexlive-latex-base texlive-pictures texlive-science
+```
+
+### 2. Install cmake version 3.15+
 First Step:
 #### x86_64
 ```
@@ -51,40 +38,49 @@ sudo ln -s /opt/cmake/bin/cmake /usr/local/bin/cmake
 When running cmake .sh script enter y to license and n to install location.  
 These commands install cmake version 3.23 but any version >= 3.15 will work.
 
-### Setup cgroups
+### 3. Setup cgroups
 We use `cgroups` to limit the amount of memory available to GraphZeppelin, Apsen, or Terrace. A Control Group is a linux kernel feature. The following steps create `cgroups` for limiting memory to 16 GiB and 8 GiB.
 
 ```
 cd /sys/fs/cgroup/memory
-sudo mkdir 16GB ; sudo mkdir 8GB
-chown -R {USERNAME} 16GB ; chown -R {USERNAME} 8GB
-cd 16GB
+sudo mkdir 16_GB 12_GB 8_GB
+chown -R {YOUR USERNAME} 16_GB 12_GB 8_GB
+cd 16_GB
 echo 1 > memory.oom_control
 echo 16G > memory.limit_in_bytes
 echo 16G > memory.soft_limit_in_bytes
-cd ../8GB
+cd ../12_GB
+echo 1 > memory.oom_control
+echo 12G > memory.limit_in_bytes
+echo 12G > memory.soft_limit_in_bytes
+cd ../8_GB
 echo 1 > memory.oom_control
 echo 8G > memory.limit_in_bytes
 echo 8G > memory.soft_limit_in_bytes
 ```
 
-### Installing Experiments Repository
-1. Clone this repository
-2. Create a `build` directory in the directory where you cloned this repository.
-3. Initialize cmake by running `cmake ..` in the build dir.
-4. Build the experiments by running `cmake --build .` in the build dir.
-5. (somehow specify the storage disk and the swap+guttertree disk)
-6. (Run some script to download data and do setup)
+### 4. Create a swapfile
+We placed our swapfile on the same disk that held GraphZeppelin's on-disk data-structures. You can create a swapfile as follows:
+
+First define where the swapfile will be located.
+`export SWAP_LOC=/path/to/swapfile`
+
+Then copy and paste the following:
+```
+sudo fallocate -l 150G $SWAP_LOC
+sudo chmod 600 $SWAP_LOC
+sudo mkswap $SWAP_LOC
+sudo swapon $SWAP_LOC
+```
+### 5. Clone repo and install R dependencies
+R dependencies:
+```
+sudo Rscript plotting/R_scripts/install.R
+```
+
+### 5. Other systems
+Follow the dependency/installation instructions for [Aspen](comparison_systems/aspen/README.md) and [Terrace](comparison_systems/terrace/README.md)
 
 ## Running Experiments
-(Run the global experiments bash script)
-### Speed and Size Experiment
-
-### Parallel Experiment
-
-### Buffer Size Experiment
-
-### Correctness Experiment
-
-### Sketch Speed and Size Experiment
+Once the Installation steps have been completed, experiments can be run with `./run.sh`.
 

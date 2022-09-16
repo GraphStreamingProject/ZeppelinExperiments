@@ -31,7 +31,7 @@ FetchContent_Declare(
   GraphZeppelin
 
   GIT_REPOSITORY      https://github.com/GraphStreamingProject/GraphZeppelin
-  GIT_TAG             main
+  GIT_TAG             v1.0.0
 )
 
 find_package(Boost 1.66.0)
@@ -101,12 +101,20 @@ add_dependencies(cont_test GraphZeppelin)
 target_link_libraries(cont_test PRIVATE GraphZeppelinVerifyCC)
 
 # Test query performance by running many queries during ingestion
-add_executable(query_test
+add_executable(one_query_expr
   query_expr/query_expr.cpp
   util/configuration.cpp
 )
-add_dependencies(query_test GraphZeppelin)
-target_link_libraries(query_test PRIVATE GraphZeppelin)
+add_dependencies(one_query_expr GraphZeppelin)
+target_link_libraries(one_query_expr PRIVATE GraphZeppelin)
+
+# Executable for managing query experiment
+add_executable(query_experiment
+  query_expr/query_expr_manager.cpp
+  util/shell_exec.cpp
+)
+add_dependencies(query_experiment GraphZeppelin)
+target_link_libraries(query_experiment PRIVATE GraphZeppelin)
 
 #########
 # Three executables for the purpose of comparing the performance 

@@ -47,10 +47,10 @@ unsigned test_continuous(std::string input_file, unsigned samples) {
 }
 
 int main(int argc, char** argv) {
-  if (argc != 4) {
+  if (argc != 5) {
     std::cout << "Incorrect number of arguments. "
-                 "Expected three but got " << argc-1 << std::endl;
-    std::cout << "Arguments are: input_stream, samples, runs" << std::endl;
+                 "Expected four but got " << argc-1 << std::endl;
+    std::cout << "Arguments are: input_stream, samples, runs, output_file" << std::endl;
     exit(EXIT_FAILURE);
   }
 
@@ -60,9 +60,21 @@ int main(int argc, char** argv) {
 
   unsigned tot_failures = 0;
   for (unsigned i = 0; i < runs; i++) {
-    std::cout << "run: " << i << std::endl;
+    std::cout << "run: " << i << "/" << runs << std::endl;
     tot_failures += test_continuous(input_file, samples);
   }
   std::cout << "Did " << runs << " runs, with " << samples
       << " sample each. Total failures: " << tot_failures << std::endl;
+
+  std::ofstream out {argv[4]};
+	std::string stream_name = input_file.substr(input_file.find_last_of("\\/")+1);
+  size_t pos = 0;
+  while(true) {
+    pos = stream_name.find("_", pos);
+    if (pos == std::string::npos) break;
+    stream_name.replace(pos, 1, "\\_");
+		pos += 2;
+  }
+
+  out << stream_name << "," << runs*samples << "," << tot_failures << std::endl;
 }

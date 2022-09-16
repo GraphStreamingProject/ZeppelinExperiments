@@ -1,7 +1,8 @@
 # Terrace
-## Building Terrace
+## Terrace setup
 ### System Requirements
-Operating System: Ubuntu18.04, Ubuntu20.04
+Operating System: Ubuntu18.04, Ubuntu20.04  
+For Ubuntu22.04 you will likely have to build `OpenCilk v1.0` from source.
 ### Dependencies
 #### Packages
 `sudo apt install libssl-dev libz3-dev`
@@ -24,8 +25,7 @@ echo "export PATH=/opt/opencilk/bin:$PATH" >> ~/.bashrc
 source ~/.bashrc
 ```
 
-### Build Command
-`(export CILK=1 ; export D=0 ; make -j ingestion_test continuous_query_test)`
+You are done setting up Terrace, return to [README.md](README.md). Supplementary information is below.
 
 ## Running Experiments
 ### Ingestion Experiment

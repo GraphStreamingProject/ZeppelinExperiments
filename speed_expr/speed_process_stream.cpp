@@ -6,18 +6,30 @@
 #include "../util/insertion_mgr.h"
 
 int main(int argc, char** argv) {
-  if (argc != 3) {
+  if (argc != 4) {
     std::cout << "Incorrect number of arguments. "
-                 "Expected two but got " << argc-1 << std::endl;
-    std::cout << "Arguments are: input_stream, output_file" << std::endl;
+                 "Expected three but got " << argc-1 << std::endl;
+    std::cout << "Arguments are: input_stream, output_file, use_tree[yes/no]" << std::endl;
     exit(EXIT_FAILURE);
   }
-  std::string input  = argv[1];
-  std::string output = argv[2];
+  std::string input    = argv[1];
+  std::string output   = argv[2];
+  std::string tree_str = argv[3];
 
-  // speed experiment does not involve changing parameters
-  // so an empty sys_config will suffice
+  bool tree = true;
+  if (tree_str == "no") tree = false;
+  else if (tree_str != "yes") {
+    std::cout << "Could not parse: " << tree_str << std::endl;
+  }
+
+  // set configuration for this test
   sys_config conf;
+  conf.num_groups = 46;
+  conf.use_tree = tree;
+  if(tree)
+    conf.gutter_factor = 1;
+  else
+    conf.gutter_factor = -2;
 
   auto res = perform_insertions(input, "./TEMP_DUMP.txt", conf);
   std::ofstream out { output };

@@ -1,9 +1,8 @@
 # Aspen
 
-## Building Aspen
-### Dependencies
+## Aspen Dependencies
 GNU C++ compiler version 7
-
+`gcc-7` should be the default compiler for ubuntu18  
 Installing gcc-7 is simple on ubuntu20: `sudo apt install gcc-7`  
 With ubuntu22, the process is a little more involved:
 ```
@@ -14,7 +13,7 @@ sudo apt install gcc-7
 
 `jemalloc` malloc implementation
 
-Check if you have an existing installation of `jemalloc` with `which jemalloc-config`. If it returns and error, install with:
+Check if you have an existing installation of `jemalloc` with `which jemalloc-config`. If it returns an error, install with:
 ```
 wget https://github.com/jemalloc/jemalloc/archive/refs/tags/5.3.0.tar.gz
 tar -xzvf 5.3.0.tar.gz
@@ -25,8 +24,7 @@ sudo make install
 export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
 ```
 
-### Build Command
-`(export CILK=1 ; make -j ingestion_test continuous_query_test`
+You are done setting up Aspen, return to [README.md](README.md). Supplementary information is below.
 
 ## Aspen Experiments
 
@@ -47,7 +45,7 @@ speed and memory consumtion test, you may find it in
 
 
 ### Continous Query Test
-The command line arguments to the `cont_query` executable are as follows:
+The command line arguments to the `continuous_query_test` executable are as follows:
 
 1. Path to the (binary) stream file
 2. Update batch size. Unlike our system, Aspen is not designed to process updates at the granularity of a single edge. Instead,

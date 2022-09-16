@@ -9,10 +9,8 @@
 #include <binary_graph_stream.h>
 
 void perform_continuous_insertions(std::string binary_input, std::string csv_out, sys_config config) {
-// create the structure which will perform buffered input for us
   BinaryGraphStream stream(binary_input, 32 * 1024);
 
-// write the configuration to the config files
   auto graph_config = create_graph_config(config);
 
   node_id_t num_nodes = stream.nodes();
@@ -103,22 +101,29 @@ int main(int argc, char** argv) {
   if (argc != 4) {
     std::cout << "Incorrect number of arguments. "
                  "Expected one but got " << argc-1 << std::endl;
-    std::cout << "Arguments are: input_stream csv_output_file num_buffer_elems" << std::endl;
+    std::cout << "Arguments are: input_stream csv_output_file in_ram[yes/no]" << std::endl;
     exit(EXIT_FAILURE);
   }
   std::string input  = argv[1];
-  int num_buffer_elems = std::stoi(argv[2]);
-  std::string csv_out = argv[3];
+  std::string csv_out = argv[2];
+  std::string in_ram  = argv[3];
+  bool backup_in_ram = false;
+  int gutter_factor = -10;
 
-  const node_id_t num_nodes = 131072;
-  // TODO: change standalone buffer size to ~100 elems
-  double unrounded_gf = (42 * pow(log2(num_nodes), 2) /
-        (log2(3) - 1)) / num_buffer_elems;
-  std::cout << "Unrounded gutter factor: " << unrounded_gf << std::endl;
-  int gutter_factor = -1*((int) unrounded_gf);
-  // so an empty sys_config will suffice
-  sys_config conf {0, 0, gutter_factor, false, true};
-//  sys_config conf;
+  if (in_ram == "yes") {
+    backup_in_ram = true;
+    const node_id_t num_nodes = 131072;
+    double unrounded_gf = (42 * pow(log2(num_nodes), 2) /
+          (log2(3) - 1)) / 100;
+    gutter_factor = -1*((int) unrounded_gf);
+  }
+  else if (in_ram != "no") {
+    std::cout << "ERROR: in_ram needs to be 'yes' or 'no'" << std::endl;
+    exit(EXIT_FAILURE);
+  }
+
+  // sys_config
+  sys_config conf {46, 0, gutter_factor, false, backup_in_ram};
   
   perform_continuous_insertions(input, csv_out, conf);
 }
