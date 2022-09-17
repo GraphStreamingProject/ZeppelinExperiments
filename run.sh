@@ -93,7 +93,7 @@ dataset_link_dir='https://graphzeppelin-datasets.s3.amazonaws.com'
 csv_directory=csv_files
 
 # This option is ONLY for debugging this script. Causes all experiments to be run only upon kron13
-full_expr=2
+# full_expr=2
 
 corr_idx=(3 5 6 7 8)
 declare -a all_idx
@@ -188,17 +188,17 @@ echo $kron_17_dataset
 
 runcmd mkdir $csv_directory 2> /dev/null
 
-# runcmd ../sketch_expr/run_sketch_expr.sh $csv_directory
+runcmd ../sketch_expr/run_sketch_expr.sh $csv_directory
 
 runcmd ./speed_experiment yes $aspen_terrace_timeout $csv_directory ${kron_datasets[@]}
 
-# runcmd ./query_experiment yes $csv_directory $kron_17_dataset $aspen_terrace_timeout
+runcmd ./query_experiment yes $csv_directory $kron_17_dataset $aspen_terrace_timeout
 
-# runcmd ../buffer_expr/run_buffer_expr.sh $kron_17_dataset $csv_directory
+runcmd ../buffer_expr/run_buffer_expr.sh $kron_17_dataset $csv_directory
 
-# runcmd ./parallel_experiment $kron_17_dataset delme "$csv_directory/parallel_expr.csv" 46
+runcmd ./parallel_experiment $kron_17_dataset delme "$csv_directory/parallel_expr.csv" 46
 
-# runcmd ../cont_expr/run_correctness_test.sh $cont_expr_samples $cont_expr_runs $csv_directory ${corr_datasets[@]}
+runcmd ../cont_expr/run_correctness_test.sh $cont_expr_samples $cont_expr_runs $csv_directory ${corr_datasets[@]}
 
 echo 'Finished running experiments'
 
