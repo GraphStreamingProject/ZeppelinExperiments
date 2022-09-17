@@ -1,21 +1,21 @@
 #!/bin/bash
 cd R_scripts
 Rscript parallel_plot.R
-mv parallel.png ../parallel.png
+mv parallel.png ../latex/images/parallel.png
 Rscript parallel_plot3.R
-mv parallel3.png ../parallel3.png
+mv parallel3.png ../latex/images/parallel3.png
 Rscript query.R
-mv query.png ../query.png
+mv query.png ../latex/images/query.png
 Rscript query_disk.R
-mv query_disk.png ../query_disk.png
+mv query_disk.png ../latex/images/query_disk.png
 Rscript space_plot.R
-mv size.png ../size.png
+mv size.png ../latex/images/size.png
 Rscript speed_plot.R
-mv speed.png ../speed.png
+mv speed.png ../latex/images/speed.png
 Rscript speed_plot2.R
-mv speed_unlim.png ../speed_unlim.png
+mv speed_unlim.png ../latex/images/speed_unlim.png
 
-cd ../latex_tables
+cd ../latex
 pdflatex -synctex=1 -shell-escape -interaction=nonstopmode main.tex
-mv main.pdf ../l0tables.pdf
+mv main.pdf ../../figures.pdf
 

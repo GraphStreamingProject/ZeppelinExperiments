@@ -1,6 +1,6 @@
 
 echo "/-------------------------------------------------\\"
-echo "|     RUNNING SKETCH SPEED AND SIZE EXPERIMENT    |"
+echo "|  RUNNING SKETCH SPEED AND SIZE EXPERIMENT (1/9) |"
 echo "\\-------------------------------------------------/"
 
 csv_dir=$1

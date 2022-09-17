@@ -77,7 +77,7 @@ int main(int argc, char** argv) {
   |                       run unlim exprs                           |
   |*****************************************************************/
   std::cout << "/-------------------------------------------------\\" << std::endl;
-  std::cout << "|    RUNNING SPEED EXPERIMENT: NO MEMORY LIMIT    |" << std::endl;
+  std::cout << "|   RUNNING SPEED EXPERIMENT: NO MEM LIMIT (2/9)  |" << std::endl;
   std::cout << "\\-------------------------------------------------/" << std::endl;
 
   shell_exec(curr_dir + "/run_unlim_speed_expr.sh no " + arg_str);
@@ -90,7 +90,7 @@ int main(int argc, char** argv) {
   mem_usage_csv << "alg,nodes,res,swap,disk,total_no_disk\n";
   std::string result_dir;
   std::string system_name;
-  for (int s = 0; s < (aspen_terrace? 3 : 2); s++) {
+  for (int s = 0; s < (aspen_terrace? 4 : 2); s++) {
     if (s == 0) {
       result_dir = "unlim_results";
       system_name = "stream_mem";
@@ -138,7 +138,7 @@ int main(int argc, char** argv) {
   |                       run 16 GiB exprs                          |
   |*****************************************************************/
   std::cout << "/-------------------------------------------------\\" << std::endl;
-  std::cout << "|  RUNNING SPEED EXPERIMENT: 16 GiB MEMORY LIMIT  |" << std::endl;
+  std::cout << "|  RUNNING SPEED EXPERIMENT: 16G MEM LIMIT (3/9)  |" << std::endl;
   std::cout << "\\-------------------------------------------------/" << std::endl;
   shell_exec(curr_dir + "/run_lim_speed_expr.sh no " + arg_str);
   shell_exec(curr_dir + "/run_lim_speed_expr.sh yes " + arg_str);

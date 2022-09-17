@@ -9,7 +9,8 @@ for input in "$@"
 do
 	mkdir speed_results_aspen/test_`basename $input` 2> /dev/null
 
-	echo "ASPEN: $input"
+	echo "ASPEN:"
+	echo "stream: $input"
 	# run aspen speed experiment with memory limitation
 	cgexec -g memory:16_GB ./aspen_ingest_expr $input 100000 100000 $timeout speed_results_aspen/test_`basename $input`/runtime_stats &
 	pid=$!
@@ -29,7 +30,8 @@ do
 
 	# run terrace speed experiment with memory limitation
 	if [[ `basename $input` != "kron_18_stream_binary" ]]; then
-		echo "TERRACE: $input"
+		echo "TERRACE:"
+		echo "stream: $input"
 		cgexec -g memory:16_GB ./terrace_ingest_expr $input 100000 100000 $timeout speed_results_terrace/test_`basename $input`/runtime_stats &
 		pid=$!
 

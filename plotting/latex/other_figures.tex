@@ -1,0 +1,55 @@
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.7]{images/speed.png}
+\end{center} 
+\caption{GraphZeppelin is faster than Aspen and Terrace, especially when the systems memory requirements exceed 16GB.
+}
+\end{figure}
+
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.7]{images/size.png}
+\end{center} 
+\caption{GraphZeppelin is asymptotically smaller than Aspen and Terrace. This plot shows the cross-over point.
+}
+\end{figure}
+
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.7]{images/speed_unlim.png}
+\end{center} 
+\caption{Even when all data fits within RAM, GraphZeppelin outpaces Aspen and Terrace on our tested datasets.
+}
+\end{figure}
+
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.7]{images/parallel.png}
+\end{center} 
+\caption{GraphZeppelin is highly parallel.
+}
+\end{figure}
+
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.7]{images/parallel3.png}
+\end{center} 
+\caption{GraphZeppelin relies upon buffering to achieve high performance.
+}
+\end{figure}
+
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.7]{images/query.png}
+\end{center} 
+\caption{GraphZeppelin has a constant query time. The query time of Aspen and Terrace scales with the number of edges. When the graph is sparse, Aspen's and Terrace's queries are fastest. When the graph is dense, GraphZeppelin has the fastest queries.
+}
+\end{figure}
+
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.7]{images/query_disk.png}
+\end{center} 
+\caption{When the data-structure spills onto disk, GraphZeppelin's queries remain efficient.
+}
+\end{figure}
