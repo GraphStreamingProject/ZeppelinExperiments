@@ -14,7 +14,7 @@ Example EC2 instances: c5d.9xlarge or c5d.12xlarge
 ## Installation
 ### 1. General Packages
 ```
-sudo apt install build-essential git r-base cgroup-tools libboost-all-dev xexlive-latex-base texlive-pictures texlive-science
+sudo apt install build-essential git r-base cgroup-tools libboost-all-dev texlive-latex-base texlive-pictures texlive-science libxml2-dev libcurl4-openssl-dev
 ```
 
 ### 2. Install cmake version 3.15+
