@@ -11,19 +11,18 @@ std::string cat(std::string filename) {
 }
 
 int main(int argc, char** argv) {
-  if (argc < 4) {
+  if (argc < 5) {
     std::cerr << "Correct usage is\n"
-      "\t/path/to/query_experiment compare_sys[yes/no] csv_output_directory path/to/kron17" 
+      "\t/path/to/query_experiment compare_sys[yes/no] csv_output_directory path/to/kron17 timeout" 
       << std::endl;
     return 1;
   }
 
   // Parse Arguments
-  
   std::string compare_sys = argv[1];
   std::string csv_out_dir = argv[2];
   std::string kron_17_loc = argv[3];
-
+  std::string timeout     = argv[4];
   bool aspen_terrace = false;
   if (compare_sys == "yes") {
     std::cout << "Running GraphZeppelin, Apsen, and Terrace query experiments" << std::endl;
@@ -67,12 +66,12 @@ int main(int argc, char** argv) {
   |                       run unlim query exprs                     |
   |*****************************************************************/
   std::cout << "/-------------------------------------------------\\" << std::endl;
-  std::cout << "|    RUNNING QUERY EXPERIMENT: NO MEMORY LIMIT    |" << std::endl;
+  std::cout << "|   RUNNING QUERY EXPERIMENT: NO MEM LIMIT (4/9)  |" << std::endl;
   std::cout << "\\-------------------------------------------------/" << std::endl;
 
   shell_exec(curr_dir + "/../build/one_query_expr " + kron_17_loc + " temp_gz.csv yes");
   if (aspen_terrace)
-    shell_exec(curr_dir + "/../comparison_systems/experiment_runners/run_compare_unlim_query.sh " + kron_17_loc);
+    shell_exec(curr_dir + "/../comparison_systems/experiment_runners/run_compare_unlim_query.sh " + kron_17_loc + " " + timeout);
   
   // now process results
   auto csv_str_gz = cat("temp_gz.csv");
@@ -85,11 +84,11 @@ int main(int argc, char** argv) {
   |                       run 16 GiB exprs                          |
   |*****************************************************************/
   std::cout << "/-------------------------------------------------\\" << std::endl;
-  std::cout << "|  RUNNING QUERY EXPERIMENT: 12 GiB MEMORY LIMIT  |" << std::endl;
+  std::cout << "|  RUNNING QUERY EXPERIMENT: 12G MEM LIMIT (5/9)  |" << std::endl;
   std::cout << "\\-------------------------------------------------/" << std::endl;
   shell_exec("cgexec -g memory:12_GB " + curr_dir + "/../build/one_query_expr " + kron_17_loc + " temp_gz.csv no");
   if (aspen_terrace)
-    shell_exec(curr_dir + "/../comparison_systems/experiment_runners/run_compare_lim_query.sh " + kron_17_loc);
+    shell_exec(curr_dir + "/../comparison_systems/experiment_runners/run_compare_lim_query.sh " + kron_17_loc + " " + timeout);
 
   // now process results
   csv_str_gz = cat("temp_gz.csv");

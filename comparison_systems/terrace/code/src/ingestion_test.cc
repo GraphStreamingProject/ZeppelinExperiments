@@ -60,11 +60,34 @@ int main (int argc, char * argv[])
   unsigned long log_count = 0;  
   unsigned long hundredth = round (num_updates / 100);
   double time_so_far_secs = 0;
-  auto ingest_start_time = steady_clock::now();
-  auto prev_log_time = steady_clock::now();
+  auto start_time = steady_clock::now();
+  auto prev_log_time = start_time;
+  auto last_print_time = start_time;
+  std::cout << "Percent\tSeconds\tIns/sec" << std::endl;
+
   for (unsigned long i = 0; i < num_updates; i++)
   {
-    if (log_count == hundredth)
+    if (i % 1000000 == 999999) {
+      // print status and check for timeout
+      auto now = steady_clock::now();
+      double secs_so_far = duration<double>(now - start_time).count();
+      double secs_since_print = duration<double>(now - last_print_time).count();
+      double ingestion_rate = 1000000 / secs_since_print;
+      last_print_time = now;
+
+      std::cout << " " << round(((double)i) / num_updates * 100) 
+                << "%\t" << round(secs_so_far) 
+                << "\t" << round(ingestion_rate) << "                \r";
+      fflush(stdout);
+
+      if (secs_so_far >= timeout_sec) {
+        std::cout << "TIMEOUT: exiting early after: " << i << " insertions" << std::endl;
+        num_updates = i;
+        break;
+      }
+    }
+
+    if (log_count >= hundredth)
     {
       auto new_log_time = steady_clock::now();
       
@@ -74,15 +97,6 @@ int main (int argc, char * argv[])
       log_count = 0;
 
       prev_log_time = steady_clock::now();
-
-      // print progress
-      std::cout << "  " << i / hundredth << "% " << time_so_far_secs << "\r"; fflush(stdout);
-
-      if (time_so_far_secs + log_interval_secs >= timeout_sec) {
-        std::cout << "TIMEOUT: exiting early after: " << i << " insertions" << std::endl;
-        num_updates = i;
-        break;
-      }
     }
     else log_count++;
 
@@ -147,7 +161,7 @@ int main (int argc, char * argv[])
   free(edges);
 
   auto ingest_time_secs = (duration<double, std::ratio<1, 1>>(
-    ingest_end_time - ingest_start_time)).count();
+    ingest_end_time - start_time)).count();
   auto updates_per_second = num_updates / ingest_time_secs;
   
   auto CC_time_secs = (duration<double, std::ratio<1, 1>>(

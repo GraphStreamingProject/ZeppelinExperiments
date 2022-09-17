@@ -16,10 +16,10 @@
 
 int main (int argc, char * argv[])
 {
-  if (argc != 6)
+  if (argc != 7)
   {
     std::cout << "Incorrect number of arguments!" << std::endl;
-    std::cout << "Arguments are: stream_file, batch_size, file_buffer_size, output_file, num_queries" << std::endl;
+    std::cout << "Arguments are: stream_file, batch_size, file_buffer_size, timeout_hrs, output_file, num_queries" << std::endl;
     exit(EXIT_FAILURE);
   }
 
@@ -27,6 +27,15 @@ int main (int argc, char * argv[])
   sscanf(argv[3], "%lu", &buff_size);
 
   BufferedEdgeInput buff_in{argv[1], buff_size};
+
+  size_t timeout_sec = 3600 * std::atoi(argv[4]);
+
+  if (timeout_sec < 3600 || timeout_sec > 24 * 3600) {
+    std::cout << "ERROR: timeout out of range! [1,24] hours." << std::endl;
+    exit(EXIT_FAILURE);
+  }
+
+  std::cout << "Setting timeout at " << timeout_sec << " seconds" << std::endl;
 
   unsigned long num_nodes = buff_in.num_nodes;
   unsigned long num_updates = buff_in.num_edges;
@@ -48,7 +57,7 @@ int main (int argc, char * argv[])
   edge e1, e2;
   std::tuple<uintV, uintV, uint8_t> update;
   unsigned long log_count = 0;
-  ofstream query_file{argv[4]};
+  ofstream query_file{argv[5]};
   int query_percent = 10;
 
   if (!query_file) {
@@ -57,13 +66,34 @@ int main (int argc, char * argv[])
   }
 
   unsigned long query_interval;
-  sscanf(argv[5], "%lu", &query_interval);
+  sscanf(argv[6], "%lu", &query_interval);
         query_interval = round(num_updates / query_interval); 
-        
+
+  std::cout << "Percent\tSeconds\tIns/sec" << std::endl;
   auto start_time = steady_clock::now();
+  auto last_print_time = start_time;
   for (unsigned long i = 0; i < num_updates; i++)
   {
-    if (log_count == query_interval)
+    if (i % 1000000 == 999999) {
+      // print status and check for timeout
+      auto now = steady_clock::now();
+      double secs_so_far = duration<double>(now - start_time).count();
+      double secs_since_print = duration<double>(now - last_print_time).count();
+      double ingestion_rate = 1000000 / secs_since_print;
+      last_print_time = now;
+
+      std::cout << " " << round(((double)i) / num_updates * 100) 
+                << "%\t" << round(secs_so_far) 
+                << "\t" << round(ingestion_rate) << "                \r";
+      fflush(stdout);
+
+      if (secs_so_far >= timeout_sec) {
+        std::cout << "TIMEOUT: exiting early after: " << i << " insertions" << std::endl;
+        num_updates = i;
+        break;
+      }
+    }
+    if (log_count >= query_interval)
     {     
       auto CC_start_time = steady_clock::now();
       auto s = vg.acquire_version();
@@ -73,8 +103,7 @@ int main (int argc, char * argv[])
       auto CC_time_secs = (duration<double, std::ratio<1, 1>>(
         CC_end_time - CC_start_time)).count();
 
-      query_file << "asp," << query_percent << ",0," << CC_time_secs << "\n";
-      std::cout << "  " << query_percent << "%\r"; fflush(stdout);
+      query_file << "aspen_top," << query_percent << ",0," << CC_time_secs << "\n";
       query_percent += 10;
       query_file.flush();
 
@@ -144,7 +173,7 @@ int main (int argc, char * argv[])
   vg.release_version(std::move(s));
   auto CC_time_secs = (duration<double, std::ratio<1, 1>>(
       CC_end_time - CC_start_time)).count();  
-  query_file << "asp,100,0," << CC_time_secs << "\n";
+  query_file << "aspen_top,100,0," << CC_time_secs << "\n";
   
   auto end_time = steady_clock::now();
 

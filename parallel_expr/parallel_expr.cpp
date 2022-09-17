@@ -21,7 +21,7 @@ int main(int argc, char** argv) {
 
 
   std::cout << "/-------------------------------------------------\\" << std::endl;
-  std::cout << "|       RUNNING PARALLEL SCALE-OUT EXPERIMENT     |" << std::endl;
+  std::cout << "|   RUNNING PARALLEL SCALE-OUT EXPERIMENT (8/9)   |" << std::endl;
   std::cout << "\\-------------------------------------------------/" << std::endl;
 
   std::string input  = argv[1];
@@ -50,7 +50,7 @@ int main(int argc, char** argv) {
 
     ingestion_rates.push_back({
       groups,
-      perform_insertions(input, output + "_threads_exp_" + std::to_string(groups), conf, 50).ingestion_rate
+      perform_insertions(input, output + "_threads_exp_" + std::to_string(groups), conf, 45).ingestion_rate
     });
 
     if (groups == 1) groups = 0; // correct shifted thread numbers because starting at 1

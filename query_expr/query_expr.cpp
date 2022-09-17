@@ -91,7 +91,7 @@ void perform_continuous_insertions(std::string binary_input, std::string csv_out
   std::ofstream csv {csv_out};
   csv << "system,percent,flush,cc" << std::endl;
   for (int i = 0; i < samples; ++i) {
-    csv << "gz," << 100/samples*(i + 1) << "," << flush_times[i] << "," << cc_alg_times[i] << std::endl;
+    csv << "stream_mem," << 100/samples*(i + 1) << "," << flush_times[i] << "," << cc_alg_times[i] << std::endl;
   }
   csv.close();
   

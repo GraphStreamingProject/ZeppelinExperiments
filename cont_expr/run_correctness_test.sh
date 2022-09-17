@@ -12,7 +12,7 @@ shift 1
 
 
 echo "/-------------------------------------------------\\"
-echo "|          RUNNING CORRECTNESS EXPERIMENT         |"
+echo "|       RUNNING CORRECTNESS EXPERIMENT (9/9)      |"
 echo "\\-------------------------------------------------/"
 
 echo "dataset,total_samples,failures" > $csv_dir/correctness.csv
