@@ -1,0 +1,12 @@
+\begin{figure}
+\begin{center}
+\begin{tabular}{ |c|c|c| }\hline
+    Dataset & Total Samples & Number of Failures \\\hline% specify table head
+    \csvreader[late after line = \\\hline]{correct.csv}{dataset=\data, total_samples=\samples, failures=\fails}%
+    {\data  & \samples &  \fails}% specify your coloumns here
+\end{tabular}
+\end{center} 
+\caption{ \sysname does not suffer probabilistic failures whp. (This table not included in paper)
+}
+\label{fig:correctness}
+\end{figure}
