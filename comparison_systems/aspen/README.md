@@ -24,7 +24,7 @@ sudo make install
 export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
 ```
 
-You are done setting up Aspen, return to [README.md](README.md). Supplementary information is below.
+You are done setting up Aspen, return to [GraphZeppelin Instructions](/README.md). Supplementary information is below.
 
 ## Aspen Experiments
 
