@@ -130,7 +130,7 @@ int main(int argc, char** argv) {
 
       if (s != 3) unlim_speed_csv << system_name << "," << num_nodes << "," << ins_sec << "\n";
       if (s != 1) 
-        mem_usage_csv << system_name << "," << num_nodes << "," << res << "," << swap << ",0," << res + swap << "," << res+swap << "\n";
+        mem_usage_csv << system_name << "," << num_nodes << "," << res << "," << swap << ",0," << res + swap << "\n";
     }
   }
 

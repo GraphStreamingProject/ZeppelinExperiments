@@ -50,7 +50,7 @@ int main(int argc, char** argv) {
 
     ingestion_rates.push_back({
       groups,
-      perform_insertions(input, output + "_threads_exp_" + std::to_string(groups), conf, 45).ingestion_rate
+      perform_insertions(input, output + "_threads_exp_" + std::to_string(groups), conf, 35).ingestion_rate
     });
 
     if (groups == 1) groups = 0; // correct shifted thread numbers because starting at 1

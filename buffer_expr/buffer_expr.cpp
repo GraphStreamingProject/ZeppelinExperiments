@@ -43,7 +43,7 @@ int main(int argc, char** argv) {
   int updates_in_sketch = 42 * pow(log2(num_nodes), 2) / (log2(3) - 1);
   std::cout << updates_in_sketch << std::endl;
 
-  std::vector<int> sizes{2, 1, -2, -4, -6, -10};
+  std::vector<int> sizes{2, 1, -2, -4, -8};
 
   // assert that we also check 1000, 250, and 1 updates per buffer
   std::vector<int> upds_sizes{1000, 250, 1};
@@ -69,7 +69,7 @@ int main(int argc, char** argv) {
     conf.num_groups = 46;
     conf.gutter_factor = size;
     conf.use_tree = false;
-    auto ingestion_res = perform_insertions(input, output + "_" + std::to_string(size), conf, 45);
+    auto ingestion_res = perform_insertions(input, output + "_" + std::to_string(size), conf, 35);
     csv_res.push_back({in_mem, {
       ((size > 0) ? updates_in_sketch * size : -updates_in_sketch / size),
       ingestion_res.ingestion_rate
