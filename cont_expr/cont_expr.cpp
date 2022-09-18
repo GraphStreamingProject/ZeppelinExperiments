@@ -1,6 +1,7 @@
 #include <fstream>
 #include <unordered_map>
 #include <iostream>
+#include <thread>
 
 #include <graph.h>
 #include <mat_graph_verifier.h>
@@ -13,7 +14,9 @@ unsigned test_continuous(std::string input_file, unsigned samples) {
   node_id_t n = stream.nodes();
   uint64_t  m = stream.edges();
 
-  Graph g{n};
+  auto conf = GraphConfiguration().num_groups(std::thread::hardware_concurrency() - 1);
+
+  Graph g{n, conf};
   MatGraphVerifier verify(n);
 
   size_t total_edges = static_cast<size_t>(n - 1) * n / 2;

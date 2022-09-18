@@ -2,6 +2,7 @@
 #include <iostream>
 #include <cmath>
 #include <vector>
+#include <thread>
 
 #include "../util/configuration.h"
 #include "../util/insertion_mgr.h"
@@ -123,7 +124,7 @@ int main(int argc, char** argv) {
   }
 
   // sys_config
-  sys_config conf {46, 0, gutter_factor, false, backup_in_ram};
+  sys_config conf {std::thread::hardware_concurrency() - 1, 0, gutter_factor, false, backup_in_ram};
   
   perform_continuous_insertions(input, csv_out, conf);
 }

@@ -1,6 +1,7 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include <thread>
 
 #include "../util/configuration.h"
 #include "../util/insertion_mgr.h"
@@ -24,7 +25,7 @@ int main(int argc, char** argv) {
 
   // set configuration for this test
   sys_config conf;
-  conf.num_groups = 46;
+  conf.num_groups = std::thread::hardware_concurrency() - 1;
   conf.use_tree = tree;
   if(tree)
     conf.gutter_factor = 1;
