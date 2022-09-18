@@ -25,7 +25,7 @@ echo "export PATH=/opt/opencilk/bin:$PATH" >> ~/.bashrc
 source ~/.bashrc
 ```
 
-You are done setting up Terrace, return to [README.md](README.md). Supplementary information is below.
+You are done setting up Terrace, return to [GraphZeppelin Instructions](/README.md). Supplementary information is below.
 
 ## Running Experiments
 ### Ingestion Experiment
