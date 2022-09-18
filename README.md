@@ -9,6 +9,7 @@ Experiments used in Graph Zeppelin paper. Paper submitted to SIGMOD 2022.
 * CPU: we used: Intel(R) Xeon(R) Gold 5220R CPU @ 2.20GHz (24 cores hyper threaded to 48)
 * C++ 14
 * cmake version 3.15 or higher
+
 Example EC2 instances: c5d.9xlarge or c5d.12xlarge
 
 ## Installation
