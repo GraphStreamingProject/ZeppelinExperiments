@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <vector>
 #include <cmath>
+#include <thread>
 
 #include "../util/configuration.h"
 #include "../util/insertion_mgr.h"
