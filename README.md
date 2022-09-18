@@ -45,7 +45,7 @@ We use `cgroups` to limit the amount of memory available to GraphZeppelin, Apsen
 ```
 cd /sys/fs/cgroup/memory
 sudo mkdir 16_GB 12_GB 8_GB
-chown -R {YOUR USERNAME} 16_GB 12_GB 8_GB
+sudo chown -R {YOUR USERNAME} 16_GB 12_GB 8_GB
 cd 16_GB
 echo 1 > memory.oom_control
 echo 16G > memory.limit_in_bytes
