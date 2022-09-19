@@ -2,6 +2,8 @@
 mkdir speed_results_aspen 2> /dev/null
 mkdir speed_results_terrace 2> /dev/null
 
+set -u
+
 timeout=$1
 shift 1
 

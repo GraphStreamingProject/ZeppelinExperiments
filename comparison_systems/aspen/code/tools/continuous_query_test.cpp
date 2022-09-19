@@ -182,5 +182,5 @@ int main (int argc, char * argv[])
   auto updates_per_second = num_updates / runtime_secs;
   std::cout << "Updates per second: " << updates_per_second << "\n";
   
-  return 0;
+  exit(EXIT_SUCCESS);
 }

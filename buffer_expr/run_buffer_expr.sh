@@ -1,5 +1,7 @@
 #! /bin/bash
 
+set -u
+
 kron17_loc=$1
 csv_dir=$2
 
