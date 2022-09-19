@@ -13,15 +13,8 @@ sudo apt install gcc-7
 
 `jemalloc` malloc implementation
 
-Check if you have an existing installation of `jemalloc` with `which jemalloc-config`. If it returns an error, install with:
 ```
-wget https://github.com/jemalloc/jemalloc/archive/refs/tags/5.3.0.tar.gz
-tar -xzvf 5.3.0.tar.gz
-cd jemalloc-5.3.0
-./autogen.sh
-make
-sudo make install
-export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
+sudo apt install libjemalloc-dev
 ```
 
 You are done setting up Aspen, return to [README.md](README.md). Supplementary information is below.

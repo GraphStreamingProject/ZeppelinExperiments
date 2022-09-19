@@ -1,4 +1,5 @@
 #! /bin/bash
+set -u
 
 # run the experiments from the build dir as follows
 # /path/to/run_unlim_speed_expr.sh use_guttertree[yes/no] input_files[input_files+]

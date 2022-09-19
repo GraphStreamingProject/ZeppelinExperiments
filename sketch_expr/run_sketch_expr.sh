@@ -1,3 +1,4 @@
+set -u
 
 echo "/-------------------------------------------------\\"
 echo "|  RUNNING SKETCH SPEED AND SIZE EXPERIMENT (1/9) |"

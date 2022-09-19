@@ -147,13 +147,14 @@ echo 'Running CMake build'
 runcmd mkdir -p build
 runcmd cd build
 runcmd cmake ..
+if [[ $? -ne 0 ]]; then
+  echo "ERROR: Non-zero exit code from 'cmake ..' when making GraphZeppelin"
+  exit
+fi
 runcmd make -j
-
-if ! ln -f -s $GZ_disk_loc 'graphzeppelin_disk_link'; then
-  echo "ERROR! Could not create symbolic link! GraphZeppelin may not be as efficient without it!"
-  echo "Falling back to directory in build"
-  mkdir graphzeppelin_disk_link
-  sleep 5
+if [[ $? -ne 0 ]]; then
+  echo "ERROR: Non-zero exit code from 'make -j' when making GraphZeppelin"
+  exit
 fi
 
 echo 'Finished running CMake build'
@@ -161,18 +162,37 @@ echo 'Finished running CMake build'
 echo 'Building Aspen and Terrace!'
 cd ../comparison_systems/aspen/code
 (export CILK=1 ; make -j ingestion_test continuous_query_test)
+if [[ $? -ne 0 ]]; then
+  echo "ERROR: Non-zero exit code from 'make -j' when making Aspen"
+  exit
+fi
 cd -
 
 cd ../comparison_systems/terrace/code
 (export CILK=1 ; make -j ingestion_test continuous_query_test)
+if [[ $? -ne 0 ]]; then
+  echo "ERROR: Non-zero exit code from 'make -j' when making Terrace"
+  exit
+fi
 cd -
 
-cp ../comparison_systems/terrace/code/ingestion_test terrace_ingest_expr
-cp ../comparison_systems/terrace/code/continuous_query_test terrace_query_expr
-cp ../comparison_systems/aspen/code/ingestion_test aspen_ingest_expr
+cp ../comparison_systems/terrace/code/ingestion_test terrace_ingest_expr &&
+cp ../comparison_systems/terrace/code/continuous_query_test terrace_query_expr &&
+cp ../comparison_systems/aspen/code/ingestion_test aspen_ingest_expr &&
 cp ../comparison_systems/aspen/code/continuous_query_test aspen_query_expr
+if [[ $? -ne 0 ]]; then
+  echo "ERROR: Non-zero exit code when copying Aspen/Terrace executables to build directory"
+  exit
+fi
 
 echo 'Finished building Aspen and Terrace'
+
+if ! ln -f -s $GZ_disk_loc 'graphzeppelin_disk_link'; then
+  echo "ERROR! Could not create symbolic link! GraphZeppelin may not be as efficient without it!"
+  echo "Falling back to directory in build"
+  mkdir graphzeppelin_disk_link
+  sleep 5
+fi
 
 echo 'Downloading datasets'
 

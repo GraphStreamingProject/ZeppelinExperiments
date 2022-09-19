@@ -1,3 +1,4 @@
+set -u
 
 kron17_loc=$1
 timeout=$2

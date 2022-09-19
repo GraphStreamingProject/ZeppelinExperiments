@@ -1,4 +1,5 @@
 #! /bin/bash
+set -u
 
 # USAGE ./run_correctnes_test.sh num_samples num_runs csv_directory input_files[+]
 

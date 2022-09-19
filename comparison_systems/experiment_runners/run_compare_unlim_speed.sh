@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 mkdir unlim_results_aspen 2> /dev/null
 mkdir unlim_results_terrace 2> /dev/null
+set -u
 
 timeout=$1
 shift 1
