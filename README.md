@@ -86,3 +86,10 @@ Follow the dependency/installation instructions for [Aspen](comparison_systems/a
 ## Running Experiments
 Once the Installation steps have been completed, experiments can be run with `./run.sh`.
 
+Be ready to supply two on disk locations for data storage (datasets and GraphZeppelin's own data-structures). Ideally these two locations will be on seperate disks.
+
+### Experiment Options
+We give two options for how to run our experiments: `limited` or `full`. The limited experiments run fewer iterations of some of our experiments and use more aggressive timeouts. The full experiments run all experiments used in our paper with the 24hr timeouts we used.
+
+Limited experiments runtime: roughly 48 hours.  
+Full experiments runtime: roughly 4-5 days.
