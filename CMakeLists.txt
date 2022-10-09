@@ -34,7 +34,7 @@ FetchContent_Declare(
   GIT_TAG             v1.0.0
 )
 
-find_package(Boost 1.66.0)
+find_package(Boost 1.53.0)
 if(NOT Boost_FOUND)
  message("ERROR: Boost not found. AGM-sketching experiments will not be built. Please install boost 1.66.0 or higher")
 endif()
