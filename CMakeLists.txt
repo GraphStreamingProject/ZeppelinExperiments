@@ -34,9 +34,9 @@ FetchContent_Declare(
   GIT_TAG             v1.0.0
 )
 
-find_package(Boost 1.53.0)
+find_package(Boost 1.62.0)
 if(NOT Boost_FOUND)
- message("ERROR: Boost not found. AGM-sketching experiments will not be built. Please install boost 1.53.0 or higher")
+ message("ERROR: Boost not found. AGM-sketching experiments will not be built. Please install boost 1.62.0 or higher")
 endif()
 
 FetchContent_MakeAvailable(GraphZeppelin)
