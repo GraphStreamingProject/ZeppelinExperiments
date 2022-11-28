@@ -65,9 +65,10 @@ int main (int argc, char * argv[])
   auto last_print_time = start_time;
   std::cout << "Percent\tSeconds\tIns/sec" << std::endl;
 
+  size_t status_idx = 0;
   for (unsigned long i = 0; i < num_updates; i++)
   {
-    if (i % 1000000 == 999999) {
+    if (++status_idx >= 100000) {
       // print status and check for timeout
       auto now = steady_clock::now();
       double secs_so_far = duration<double>(now - start_time).count();
@@ -81,10 +82,12 @@ int main (int argc, char * argv[])
       fflush(stdout);
 
       if (secs_so_far >= timeout_sec) {
+        std::cout << std::endl;
         std::cout << "TIMEOUT: exiting early after: " << i << " insertions" << std::endl;
         num_updates = i;
         break;
       }
+      status_idx = 0;
     }
 
     if (log_count >= hundredth)
@@ -168,6 +171,5 @@ int main (int argc, char * argv[])
       CC_end_time - CC_start_time)).count();
 
   out_file << updates_per_second  << " " << CC_time_secs << " " << num_nodes << std::endl;
-	std::cout << "EXITING" << std::endl;
   exit(EXIT_SUCCESS);
 }
