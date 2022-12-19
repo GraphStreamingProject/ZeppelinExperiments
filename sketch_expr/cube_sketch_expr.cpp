@@ -22,7 +22,7 @@ int main(int argc, char** argv) {
 
   srand(seed);
   const unsigned long n        = std::atol(argv[1]);
-  const unsigned long updates  = 500000; // 500,000 updates
+  const unsigned long updates  = 10000000; // 10,000,000 updates
   std::cerr << "Size of vector = " << n << std::endl;
 
   vec_t *stream = new vec_t[updates];
