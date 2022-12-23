@@ -68,14 +68,15 @@ int main (int argc, char * argv[])
   std::cout << "Percent\tSeconds\tIns/sec" << std::endl;
 
   size_t status_idx = 0;
+  const size_t status_interval = 100000;
   for (unsigned long i = 0; i < num_updates; i++)
   {
-    if (++status_idx >= 100000) {
+    if (++status_idx >= status_interval) {
       // print status and check for timeout
       auto now = steady_clock::now();
       double secs_so_far = duration<double>(now - start_time).count();
       double secs_since_print = duration<double>(now - last_print_time).count();
-      double ingestion_rate = 1000000 / secs_since_print;
+      double ingestion_rate = status_interval / secs_since_print;
       last_print_time = now;
 
       std::cout << " " << round(((double)i) / num_updates * 100) 
