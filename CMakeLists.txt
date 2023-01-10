@@ -108,6 +108,14 @@ add_executable(one_query_expr
 add_dependencies(one_query_expr GraphZeppelin)
 target_link_libraries(one_query_expr PRIVATE GraphZeppelin)
 
+# Executable for bursty query
+add_executable(bursty_query
+  query_expr/bursty_queries.cpp
+  util/configuration.cpp
+)
+add_dependencies(bursty_query GraphZeppelin)
+target_link_libraries(bursty_query PRIVATE GraphZeppelin)
+
 # Executable for managing query experiment
 add_executable(query_experiment
   query_expr/query_expr_manager.cpp
