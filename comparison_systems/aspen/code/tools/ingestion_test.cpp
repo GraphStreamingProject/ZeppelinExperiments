@@ -27,7 +27,13 @@ int main (int argc, char * argv[])
 
   std::ofstream out_file(argv[5]);
   if (!out_file) {
-    std::cout << "ERROR: Could not open output file!" << std::endl;
+    std::cout << "ERROR: Could not open output file!: " << argv[5] << std::endl;
+    exit(EXIT_FAILURE);
+  }
+
+  std::ofstream log_file(std::string(argv[5]) + ".log");
+  if (!log_file) {
+    std::cout << "ERROR: Could not open log file!: " << argv[5] << ".log" << std::endl;
     exit(EXIT_FAILURE);
   }
 
@@ -59,17 +65,21 @@ int main (int argc, char * argv[])
   bool is_delete;
   edge e1, e2;
   std::tuple<uintV, uintV, uint8_t> update;
-  unsigned long log_count = 0;
-  unsigned long hundredth = round (num_updates / 100);
+  size_t log_count = 0;
+  size_t hundredth = round (num_updates / 100);
   double time_so_far_secs = 0;
   auto start_time = steady_clock::now();
   auto prev_log_time = start_time;
   auto last_print_time = start_time;
   std::cout << "Percent\tSeconds\tIns/sec" << std::endl;
 
+  std::string log_percent = "percent";
+  std::string log_time = "time";
+  std::string log_rate = "rate";
+
   size_t status_idx = 0;
   const size_t status_interval = 100000;
-  for (unsigned long i = 0; i < num_updates; i++)
+  for (size_t i = 0; i < num_updates; i++)
   {
     if (++status_idx >= status_interval) {
       // print status and check for timeout
@@ -91,20 +101,20 @@ int main (int argc, char * argv[])
       }
       status_idx = 0;
     }
-    if (log_count >= hundredth)
-    {
+    if (log_count++ >= hundredth) {
       // Record ingestion progress
-
       auto new_log_time = steady_clock::now();
 
       auto log_interval_secs = (duration<double, std::ratio<1, 1>>(new_log_time - prev_log_time)).count();
       auto updates_per_second = log_count / log_interval_secs;
       time_so_far_secs += log_interval_secs;
-      log_count = 0;
+      log_percent += "," + std::to_string((i+1) / hundredth);
+      log_time += "," + std::to_string(log_interval_secs);
+      log_rate += "," + std::to_string((size_t) updates_per_second);
 
+      log_count = 0;
       prev_log_time = steady_clock::now();
     }
-    else log_count++;
 
     buff_in.get_edge(update);
     e1 = std::make_tuple(std::get<0>(update), 
@@ -176,6 +186,11 @@ int main (int argc, char * argv[])
       CC_end_time - CC_start_time)).count();
 
   out_file << updates_per_second << " " << CC_time_secs << " " << num_nodes << std::endl;
+
+  // write to the log
+  log_file << log_percent << std::endl;
+  log_file << log_time << std::endl;
+  log_file << log_rate << std::endl;
 
   exit(EXIT_SUCCESS);
 }
