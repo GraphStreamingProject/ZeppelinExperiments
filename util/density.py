@@ -9,18 +9,23 @@ def main():
     print("USAGE: density.py <filename>");
   count = 0;
   current_edges = 0;
-  with open(sys.argv[1], 'r') as stream:
-    [nodes, length] = [int(x) for x in stream.readline().split(' ')]
+  with open(sys.argv[1], 'rb') as stream:
+    nodes = int.from_bytes(stream.read(4), "little");
+    length = int.from_bytes(stream.read(8), "little");
     updates_per = length // 1000;
-    print(updates_per)
-    for line in stream.readlines():
-      if (int(line.split(' ')[0]) == 0):
+    print("Updates per print: " + str(updates_per))
+    for i in range(length):
+      which = int.from_bytes(stream.read(1), "little");
+      if (which == 0):
         current_edges += 1;
-      else:
+      elif (which == 1):
         current_edges -= 1;
+      else:
+        print("ERROR BAD WHICH = " + str(which))
       if (count % updates_per == 0):
         print(str(count) + " " + density(current_edges, nodes));
       count += 1
+      stream.read(8); # discard the actual update
 
     print(str(count) + " " + density(current_edges, nodes));
   
