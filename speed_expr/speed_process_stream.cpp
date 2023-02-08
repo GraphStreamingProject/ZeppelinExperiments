@@ -5,6 +5,11 @@
 
 #include "../util/configuration.h"
 #include "../util/insertion_mgr.h"
+#include "../util/shell_exec.h"
+
+static std::string cat(std::string filename) {
+  return shell_exec("cat " + filename, true);
+}
 
 int main(int argc, char** argv) {
   if (argc != 4) {
@@ -16,6 +21,12 @@ int main(int argc, char** argv) {
   std::string input    = argv[1];
   std::string output   = argv[2];
   std::string tree_str = argv[3];
+
+  std::ofstream out { output };
+  if (!out) {
+    std::cerr << "ERROR: could not open output file: " << output << std::endl;
+    exit(EXIT_FAILURE);
+  }
 
   bool tree = true;
   if (tree_str == "no") tree = false;
@@ -32,8 +43,7 @@ int main(int argc, char** argv) {
   else
     conf.gutter_factor = -2;
 
-  auto res = perform_insertions(input, "./TEMP_DUMP.txt", conf);
-  std::ofstream out { output };
+  auto res = perform_insertions(input, output + ".log", conf);
   out << res.ingestion_rate << " " << res.cc_time << " " << res.num_nodes << std::endl;
 
   return 0;

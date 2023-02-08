@@ -124,11 +124,11 @@ add_executable(query_experiment
 add_dependencies(query_experiment GraphZeppelin)
 target_link_libraries(query_experiment PRIVATE GraphZeppelin)
 
-#########
-# Three executables for the purpose of comparing the performance 
-# of CubeSketch with state of the art l0-sketching
-# Another executable to combine results and calculate speedup/size reduction
-#########
+#################################################################################
+#           Executables for the purpose of comparing the performance            #
+#                of CubeSketch with state of the art l0-sketching               #
+#   Another executable to combine results and calculate speedup/size reduction  #
+#################################################################################
 
 # Sketch_experiment on CubeSketch
 add_executable(cube_sketch
@@ -136,6 +136,13 @@ add_executable(cube_sketch
 )
 add_dependencies(cube_sketch GraphZeppelin)
 target_link_libraries(cube_sketch PRIVATE GraphZeppelin)
+
+# Sketch query experiment on CubeSketch
+add_executable(cube_sketch_query
+  sketch_expr/cube_sketch_query_expr.cpp
+)
+add_dependencies(cube_sketch_query GraphZeppelin)
+target_link_libraries(cube_sketch_query PRIVATE GraphZeppelin)
 
 if(Boost_FOUND)
   # AGM sketching using 64 bit types
@@ -160,6 +167,29 @@ if(Boost_FOUND)
     sketch_expr/agm_sketching/src/util.cpp
   )
   target_link_libraries(agm_sketch PRIVATE xxhash)
+
+  # AGM Sketching with 64 bit types. Query experiment
+  add_executable(agm_query_native
+    sketch_expr/agm_sketch_query_expr.cpp
+    sketch_expr/agm_sketching/src/bucket.cpp
+    sketch_expr/agm_sketching/src/int127.cpp
+    sketch_expr/agm_sketching/src/agm_sketch.cpp
+    sketch_expr/agm_sketching/src/update.cpp
+    sketch_expr/agm_sketching/src/util.cpp
+  )
+  target_link_libraries(agm_query_native PRIVATE xxhash)
+  target_compile_definitions(agm_query_native PRIVATE USE_NATIVE_F)
+
+  # AGM Sketching with 128 bit types. Query experiment
+  add_executable(agm_query
+    sketch_expr/agm_sketch_query_expr.cpp
+    sketch_expr/agm_sketching/src/bucket.cpp
+    sketch_expr/agm_sketching/src/int127.cpp
+    sketch_expr/agm_sketching/src/agm_sketch.cpp
+    sketch_expr/agm_sketching/src/update.cpp
+    sketch_expr/agm_sketching/src/util.cpp
+  )
+  target_link_libraries(agm_query PRIVATE xxhash)
 
   add_executable(combine_sketch_expr_results
     sketch_expr/combine_sketch_expr_results.cpp

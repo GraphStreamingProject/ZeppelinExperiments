@@ -5,6 +5,7 @@
 #include <thread>
 #include <iostream>
 #include <unistd.h>
+#include <string>
 
 #include <graph.h>
 #include <binary_graph_stream.h>
@@ -29,15 +30,19 @@ void track_insertions(std::string output_file, uint64_t total, Graph *g, std::ch
     exit(EXIT_FAILURE);
   }
 
+  std::string percent = "percent";
+  std::string time = "time";
+  std::string rate = "rate";
+
   printf("Insertions\n");
   printf("Progress:                    | 0%%\r"); fflush(stdout);
   std::chrono::steady_clock::time_point start = start_time;
   std::chrono::steady_clock::time_point prev  = start_time;
   uint64_t prev_updates = 0;
-  int percent = 0;
+  int pcnt = 0;
 
   while(true) {
-    sleep(5);
+    sleep(1);
     uint64_t updates = g->num_updates;
     std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
     std::chrono::duration<double> total_diff = now - start;
@@ -47,17 +52,21 @@ void track_insertions(std::string output_file, uint64_t total, Graph *g, std::ch
     uint64_t upd_delta = updates - prev_updates;
     // divide insertions per second by 2 because each edge is split into two updates
     // we care about edges per second not about stream updates
-    int ins_per_sec = (((float)(upd_delta)) / cur_diff.count()) / 2;
+    size_t ins_per_sec = (((double)(upd_delta)) / cur_diff.count()) / 2;
 
-    int amount = upd_delta / (total * .01);
-    if (amount > 1) {
-      percent += amount;
-      out << percent << "% :\n";
-      out << "Updates per second sinces last entry: " << ins_per_sec << "\n";
-      out << "Time since last entry: " << (int) cur_diff.count() << "\n";
-      out << "Total runtime so far: " << (int) total_diff.count() << "\n\n";
+    int new_pcnt = updates / (total * .01);
+    if (new_pcnt > pcnt && new_pcnt != 100) {
+      for (int i = pcnt; i < new_pcnt; i++ ) {
+        percent += ",";
+        time += ",";
+        rate += ",";
+      }
 
-      prev_updates += upd_delta;
+      pcnt = new_pcnt;
+      percent += std::to_string(pcnt);
+      time += std::to_string(cur_diff.count());
+      rate += std::to_string(ins_per_sec);
+      prev_updates = updates;
       prev = now; // reset start time to right after query
     }
     
@@ -67,9 +76,22 @@ void track_insertions(std::string output_file, uint64_t total, Graph *g, std::ch
     // display the progress
     int progress = updates / (total * .05);
     printf("Progress:%s%s", std::string(progress, '=').c_str(), std::string(20 - progress, ' ').c_str());
-    printf("| %i%% -- %i per second\r", progress * 5, ins_per_sec); fflush(stdout);
+    printf("| %i%% -- %lu per second\r", progress * 5, ins_per_sec); fflush(stdout);
   }
+  if (pcnt < 99) {
+    for (int i = pcnt; i < 99; i++) {
+      percent += ",";
+      time += ",";
+      rate += ",";
+    }
+  }
+
+
   printf("Progress:====================| Done      \n");
+
+  out << percent << std::endl;
+  out << time << std::endl;
+  out << rate << std::endl;
   out.close();
   return;
 }
@@ -121,18 +143,13 @@ InsertionData perform_insertions(std::string binary_input, std::string output_fi
   std::chrono::duration<double> runtime = g.flush_end - start;
   std::chrono::duration<double> CC_time = g.cc_alg_end - g.cc_alg_start;
 
-  std::ofstream out{output_file,  std::ofstream::out | std::ofstream::app}; // open the outfile
-  std::cout << "Number of connected components is " << num_CC << std::endl;
-  std::cout << "Writing runtime stats to " << output_file << std::endl;
-
   // calculate the insertion rate and write to file
   // insertion rate measured in stream updates 
   // (not in the two sketch updates we process per stream update)
   float ins_per_sec = (((float)(total)) / runtime.count());
-  out << "Procesing " << total << " updates took " << runtime.count() << " seconds, " << ins_per_sec << " per second\n";
 
-  out << "Connected Components algorithm took " << CC_time.count() << " and found " << num_CC << " CC\n";
-  out.close();
+  std::cout << "Proccesing " << total << " updates took " << runtime.count() << " seconds, " << ins_per_sec << " per second\n";
+  std::cout << "Connected Components algorithm took " << CC_time.count() << " and found " << num_CC << " CC\n";
 
   return {ins_per_sec, CC_time.count(), num_nodes};
 }

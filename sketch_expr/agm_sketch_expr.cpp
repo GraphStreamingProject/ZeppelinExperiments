@@ -13,17 +13,24 @@ const int seed = 0xDEADBEEF;
 // This test runs the sketching technique introduced by our paper
 // and compares it to the one given by AGM
 int main(int argc, char** argv) {
-  if (argc != 2) {
+  if (argc != 3) {
     std::cout << "Incorrect number of arguments. "
-                 "Expected one but got " << argc-1 << std::endl;
-    std::cout << "Argument is: vector_length" << std::endl;
+                 "Expected two but got " << argc-1 << std::endl;
+    std::cout << "Argument is: vector_length failure_prob" << std::endl;
     exit(EXIT_FAILURE);
   }
 
   srand(seed);
   const unsigned long n        = std::atol(argv[1]);
+  const size_t fail_prob       = std::atol(argv[2]);
   const unsigned long updates  = 500000; // 500,000 updates
-  std::cerr << "Size of vector = " << n << std::endl;
+
+  if (fail_prob < 1 || fail_prob > n) {
+    std::cerr << "ERROR: failure probability: " << fail_prob << " is out of bounds!" << std::endl;
+    exit(EXIT_FAILURE);
+  }
+
+  std::cerr << "Size of vector = " << n << " delta = " << fail_prob << std::endl;
 
   Update *stream = new Update[updates];
 
@@ -33,6 +40,7 @@ int main(int argc, char** argv) {
   }
 
   int random     = rand();
+  AGM_Sketch::configure(n, n);
   AGM_Sketch sketch  = AGM_Sketch(n, random);
 
   auto start = std::chrono::steady_clock::now();

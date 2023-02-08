@@ -13,12 +13,21 @@
 #define bucket_gen(x) double_to_ull(log2(x) + 1)
 #define guess_gen(x) double_to_ull(log2(x) + 2)
 
+enum SampleSketchRet {
+  GOOD,  // querying this sketch returned a single non-zero value
+  ZERO,  // querying this sketch returned that there are no non-zero values
+  FAIL   // querying this sketch failed to produce a single non-zero value
+};
+
 /**
  * An implementation of a "sketch" as defined in the L0 algorithm.
  * Note a sketch may only be queried once. Attempting to query multiple times
  * will raise an error.
  */
 class AGM_Sketch {
+  static size_t num_buckets;
+  static size_t num_guesses;
+
   const long seed;
   const vec_t n;
   std::vector<Bucket_Boruvka> buckets;
@@ -28,6 +37,16 @@ class AGM_Sketch {
   // Initialize a sketch of a vector of size n
  public:
   AGM_Sketch(vec_t n, long seed);
+
+  /* configure the static variables of sketches
+   * @param n        Length of the vector to sketch.
+   * @param _factor  The rate at which an individual sketch is allowed to fail (determines column width)
+   * @return nothing
+   */
+  inline static void configure(vec_t _n, vec_t _factor) {
+    num_buckets = bucket_gen(_factor);
+    num_guesses = guess_gen(_n);
+  }
 
   /**
    * Update a sketch based on information about one of its indices.
@@ -50,7 +69,7 @@ class AGM_Sketch {
    * @throws NoGoodBucketException  if there are no good buckets to choose an
    *                                index from.
    */
-  Update query();
+  std::pair<Update, SampleSketchRet> query();
 
   friend AGM_Sketch operator+(const AGM_Sketch &sketch1, const AGM_Sketch &sketch2);
   friend AGM_Sketch &operator+=(AGM_Sketch &sketch1, const AGM_Sketch &sketch2);
@@ -62,6 +81,8 @@ class AGM_Sketch {
     long bucket_size = 2 * sizeof(bucket_t) + sizeof(ubucket_t);
     return sizeof(AGM_Sketch) + bucket_size * bucket_gen(n) * guess_gen(n);
   };
+
+  inline void reset_queried() { already_quered = false; }
 };
 
 class AllBucketsZeroException : public std::exception {

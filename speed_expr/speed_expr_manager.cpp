@@ -86,8 +86,8 @@ int main(int argc, char** argv) {
   std::cout << "|   RUNNING SPEED EXPERIMENT: NO MEM LIMIT (2/9)  |" << std::endl;
   std::cout << "\\-------------------------------------------------/" << std::endl;
 
-  // shell_exec(curr_dir + "/run_unlim_speed_expr.sh no " + arg_str);
-  // shell_exec(curr_dir + "/run_unlim_speed_expr.sh yes " + arg_str);
+  shell_exec(curr_dir + "/run_unlim_speed_expr.sh no " + arg_str);
+  shell_exec(curr_dir + "/run_unlim_speed_expr.sh yes " + arg_str);
   if (aspen_terrace)
     shell_exec(curr_dir + "/../comparison_systems/experiment_runners/run_compare_unlim_speed.sh " + timeout_hrs + " " + arg_str);
   
@@ -96,7 +96,7 @@ int main(int argc, char** argv) {
   mem_usage_csv << "alg,nodes,res,swap,disk,total_no_disk\n";
   std::string result_dir;
   std::string system_name;
-  for (int s = 2; s < (aspen_terrace? 4 : 2); s++) {
+  for (int s = 0; s < (aspen_terrace? 4 : 2); s++) {
     if (s == 0) {
       result_dir = "unlim_results";
       system_name = "stream_mem";
@@ -138,12 +138,11 @@ int main(int argc, char** argv) {
       if (s != 1) 
         mem_usage_csv << system_name << "," << num_nodes << "," << res << "," << swap << ",0," << res + swap << "\n";
     
-      if (s == 2 || s == 3) {
-        unlim_progress_csv << system_name << "," << num_nodes << std::endl;
-        unlim_progress_csv << cat(result_loc + "/runtime_stats.log");
-      }
+      unlim_progress_csv << system_name << "," << num_nodes << std::endl;
+      unlim_progress_csv << cat(result_loc + "/runtime_stats.log");
     }
   }
+  // TODO: TEMPORARY RETURN HERE!!
   return 0;
 
   /******************************************************************

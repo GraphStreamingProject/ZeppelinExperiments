@@ -1,5 +1,8 @@
 #include "../include/agm_sketch.h"
 
+size_t AGM_Sketch::num_guesses;
+size_t AGM_Sketch::num_buckets;
+
 AGM_Sketch::AGM_Sketch(vec_t n, long seed)
     : seed(seed),
       n(n),
@@ -11,8 +14,6 @@ AGM_Sketch::AGM_Sketch(vec_t n, long seed)
 }
 
 void AGM_Sketch::update(Update update) {
-  const unsigned num_buckets = bucket_gen(n);
-  const unsigned num_guesses = guess_gen(n);
   for (unsigned i = 0; i < num_buckets; ++i) {
     // for each column calculate bucket seed and r
     XXH64_hash_t bucket_seed =
@@ -28,14 +29,12 @@ void AGM_Sketch::update(Update update) {
   }
 }
 
-Update AGM_Sketch::query() {
+std::pair<Update, SampleSketchRet> AGM_Sketch::query() {
   if (already_quered) {
     throw MultipleQueryException();
   }
   already_quered = true;
   bool all_buckets_zero = true;
-  const unsigned num_buckets = bucket_gen(n);
-  const unsigned num_guesses = guess_gen(n);
   for (unsigned i = 0; i < num_buckets; ++i) {
     // for each column calculate bucket seed and r
     XXH64_hash_t bucket_seed =
@@ -49,15 +48,16 @@ Update AGM_Sketch::query() {
       }
       if (bucket.is_good(n, large_prime, bucket_seed, r, 1 << j)) {
         return {
-            static_cast<vec_t>(bucket.b / bucket.a - 1),  // 0-index adjustment
-            static_cast<long>(bucket.a)};
+            {static_cast<vec_t>(bucket.b / bucket.a - 1),  // 0-index adjustment
+            static_cast<long>(bucket.a)}, GOOD
+          };
       }
     }
   }
   if (all_buckets_zero) {
-    throw AllBucketsZeroException();
+    return {{0,0}, ZERO};
   } else {
-    throw NoGoodBucketException();
+    return {{0,0}, FAIL};
   }
 }
 
