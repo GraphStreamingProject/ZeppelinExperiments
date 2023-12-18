@@ -1,6 +1,7 @@
 #include <array>
 #include <cassert>
 #include <cstdio>
+#include <stdexcept>
 
 #include "shell_exec.h"
 
