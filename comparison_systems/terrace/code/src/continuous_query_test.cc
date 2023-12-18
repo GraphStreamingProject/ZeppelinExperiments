@@ -74,6 +74,7 @@ int main (int argc, char * argv[])
   auto last_print_time = start_time;
   std::cout << "Percent\tSeconds\tIns/sec" << std::endl;
   size_t status_idx = 0;
+  const size_t status_interval = 100000;
   for (unsigned long i = 0; i < num_updates; i++)
   {
     if (++status_idx >= status_interval) {
