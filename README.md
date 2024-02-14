@@ -43,10 +43,16 @@ These commands install cmake version 3.23 but any version >= 3.15 will work.
 ### 3. Setup cgroups
 We use `cgroups` to limit the amount of memory available to GraphZeppelin, Apsen, or Terrace. A Control Group is a linux kernel feature. The following steps create `cgroups` for limiting memory to 16 GiB and 8 GiB.
 
+First determine what version of cgroup your computer is using. 
+1. Run `grep cgroup /proc/filesystems` to list what cgroup versions are supported by your system. You should either see `nodev cgroup` or `nodev cgroup, nodev cgroupv2`.
+2. Check if cgroup is already mounted by running `mount | grep cgroup`. This will list if where cgroup is mount and what version is mounted.
+3. If cgroup is not mounted then pick a supported version and run `mount -t <cgroup-version> none <mount_point>` for example `mount -t cgroup2 none /sys/fs/cgroup`.
+
+#### cgroup version 1
+Change directory to cgroup memory directory. Example, `cd /sys/fs/cgroup/memory`. If the memory directory does not exist create it.
 ```
-cd /sys/fs/cgroup/memory
 sudo mkdir 16_GB 12_GB 8_GB
-sudo chown -R {YOUR USERNAME} 16_GB 12_GB 8_GB
+sudo chown -R $USER 16_GB 12_GB 8_GB
 cd 16_GB
 echo 1 > memory.oom_control
 echo 16G > memory.limit_in_bytes
@@ -59,6 +65,12 @@ cd ../8_GB
 echo 1 > memory.oom_control
 echo 8G > memory.limit_in_bytes
 echo 8G > memory.soft_limit_in_bytes
+```
+
+#### cgroup version 2
+Navigate to the cgroup2 mount point
+```
+sudo mkdir memory
 ```
 
 ### 4. Create a swapfile
