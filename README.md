@@ -2,11 +2,20 @@
 Experiments used in Graph Zeppelin paper appearing in SIGMOD'22.
 
 ## System Requirements
-### GraphZeppelin and Experiments
+You must have root access to your machine to perform the setup steps.
+
+### Required Hardware
+* OS: Linux (tested on ubuntu-20 and ubuntu-18)
+* RAM: 16GB
+* Disk: 512 GB of storage available for full experiments, 256 GB available for limited experiments
+* CPU: 8 hyperthreads
+* C++ 14
+* cmake version 3.15 or higher
+### Recommended Hardware
 * OS: Linux (tested on ubuntu-20 and ubuntu-18)
 * RAM: 64GB
-* Disk (SATA): 2 SSDs minimum 0.5 TB (we used SAMSUNG 870 EVO (1TB)) (one holding data can be somewhat slow)
-* CPU: we used: Intel(R) Xeon(R) Gold 5220R CPU @ 2.20GHz (24 cores hyper threaded to 48)
+* Disk: 2 SSDs, each 512 GB. (we used SAMSUNG 870 EVO (1TB))
+* CPU: 48 hyperthreads (we used Intel(R) Xeon(R) Gold 5220R CPU @ 2.20GHz. 24 cores hyper threaded to 48)
 * C++ 14
 * cmake version 3.15 or higher
 
@@ -41,19 +50,31 @@ When running cmake .sh script enter y to license and n to install location.
 These commands install cmake version 3.23 but any version >= 3.15 will work.
 
 ### 3. Setup cgroups
-We use `cgroups` to limit the amount of memory available to GraphZeppelin, Apsen, or Terrace. A Control Group is a linux kernel feature. The following steps create `cgroups` for limiting memory to 16 GiB and 8 GiB.
+We use `cgroups` to limit the amount of memory available to GraphZeppelin, Apsen, or Terrace. A Control Group is a linux kernel feature. The following steps create `cgroups` for limiting memory.
 
 First determine what version of cgroup your computer is using. 
 1. Run `grep cgroup /proc/filesystems` to list what cgroup versions are supported by your system. You should either see `nodev cgroup` or `nodev cgroup, nodev cgroupv2`.
 2. Check if cgroup is already mounted by running `mount | grep cgroup`. This will list if where cgroup is mount and what version is mounted.
-3. If cgroup is not mounted then pick a supported version and run `mount -t <cgroup-version> none <mount_point>` for example `mount -t cgroup2 none /sys/fs/cgroup`.
+3. If a cgroup version is not mounted to `/sys/fs/cgroup` then pick a supported version and run `mount -t <cgroup or cgroup2> none /sys/fs/cgroup`.
+
+#### Create a cgroup user group and add yourself
+```
+sudo groupadd cgroupers
+sudo usermod --append --groups cgroupers $USER
+```
+
+#### Create directories and set permissions
+```
+cd /sys/fs/cgroup
+sudo mkdir memory
+sudo mkdir 16_GB 12_GB 8_GB
+sudo chgrp -R cgroupers .
+chmod -R g=u .
+```
 
 #### cgroup version 1
-Change directory to cgroup memory directory. Example, `cd /sys/fs/cgroup/memory`. If the memory directory does not exist create it.
 ```
-sudo mkdir 16_GB 12_GB 8_GB
-sudo chown -R $USER 16_GB 12_GB 8_GB
-cd 16_GB
+cd /sys/fs/cgroup/memory/16_GB
 echo 1 > memory.oom_control
 echo 16G > memory.limit_in_bytes
 echo 16G > memory.soft_limit_in_bytes
@@ -68,9 +89,13 @@ echo 8G > memory.soft_limit_in_bytes
 ```
 
 #### cgroup version 2
-Navigate to the cgroup2 mount point
 ```
-sudo mkdir memory
+cd /sys/fs/cgroup/memory/16_GB
+echo 16G > memory.memory_high
+cd ../12_GB
+echo 12G > memory.memory_high
+cd ../8_GB
+echo 8G > memory.memory_high
 ```
 
 ### 4. Create a swapfile
@@ -93,7 +118,7 @@ sudo Rscript plotting/R_scripts/install.R
 ```
 
 ### 5. Other systems
-Follow the dependency/installation instructions for [Aspen](comparison_systems/aspen/README.md) and [Terrace](comparison_systems/terrace/README.md)
+If you want to run our comparison experiments, follow the dependency/installation instructions for [Aspen](comparison_systems/aspen/README.md) and [Terrace](comparison_systems/terrace/README.md)
 
 ## Running Experiments
 Once the Installation steps have been completed, experiments can be run with `./run.sh`.
@@ -101,7 +126,9 @@ Once the Installation steps have been completed, experiments can be run with `./
 Be ready to supply two on disk locations for data storage (datasets and GraphZeppelin's own data-structures). Ideally these two locations will be on seperate disks.
 
 ### Experiment Options
-We give two options for how to run our experiments: `limited` or `full`. The limited experiments run fewer iterations of some of our experiments and use more aggressive timeouts. The full experiments run all experiments used in our paper with the 24hr timeouts we used.
+We give two options for how to run our experiments:
+1. `limited` or `full`. The limited experiments run fewer iterations of some of our experiments and use more aggressive timeouts. The full experiments run all experiments used in our paper with the 24hr timeouts we used.
+2. To run the comparison experiments or not. GraphZeppelin's performance can be reproduced without running Aspen and Terrace which makes your life easier. Of course, the figures won't be complete without the comparisons. 
 
-Limited experiments runtime: roughly 48 hours.  
-Full experiments runtime: roughly 4-5 days.
+Limited experiments runtime: roughly 48 hours w/ Aspen and Terrace, 18 hours without.
+Full experiments runtime: roughly 4-5 days with Aspen and Terrace, 24-36 hours without.
