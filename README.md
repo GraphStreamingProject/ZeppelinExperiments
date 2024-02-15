@@ -9,15 +9,11 @@ You must have root access to your machine to perform the setup steps.
 * RAM: 16GB
 * Disk: 512 GB of storage available for full experiments, 256 GB available for limited experiments
 * CPU: 8 hyperthreads
-* C++ 14
-* cmake version 3.15 or higher
 ### Recommended Hardware
 * OS: Linux (tested on ubuntu-20 and ubuntu-18)
 * RAM: 64GB
 * Disk: 2 SSDs, each 512 GB. (we used SAMSUNG 870 EVO (1TB))
 * CPU: 48 hyperthreads (we used Intel(R) Xeon(R) Gold 5220R CPU @ 2.20GHz. 24 cores hyper threaded to 48)
-* C++ 14
-* cmake version 3.15 or higher
 
 Example EC2 instances: c5d.9xlarge or c5d.12xlarge
 
