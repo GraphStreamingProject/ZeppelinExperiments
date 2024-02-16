@@ -41,6 +41,10 @@
 /CMakeCache.txt
 .remote-sync.json
 
+# Configuration files and logs
+experiments_log.txt
+parameter_cache.txt
+
 # CLion
 /.idea/
 /cmake-build-debug/

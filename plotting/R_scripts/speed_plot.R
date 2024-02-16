@@ -11,7 +11,7 @@ ggplot() +
   labs(color = "System\n") +
   theme(legend.position = c(0.45, -0.23), legend.direction = 'horizontal', plot.margin = grid::unit(c(0,1,2,0), 'lines')) +
   guides(linetype="none") +
-  scale_color_hue(labels = c("Aspen", "GraphZeppelin gutter tree", "GraphZeppelin leaf gutters", "Terrace"))+
-  scale_linetype_manual("", breaks=c("aspen_lim_e3", "stream_mem", "terrace_lim", "stream_ext")
-                        , values=c("dashed", "solid","longdash","dotdash"))
+  scale_color_hue(labels = c("GraphZeppelin gutter tree", "GraphZeppelin leaf gutters", "Aspen", "Terrace"))+
+  scale_linetype_manual("", breaks=c("stream_ext", "stream_mem", "aspen_lim_e3", "terrace_lim")
+                        , values=c("solid", "dotdash", "dashed", "longdash"))
 ggsave(filename = "speed.png", width = 6, height = 3.5, unit = "in")
